@@ -1,9 +1,10 @@
-import { useAuth } from "common/use-auth";
-import { Navigate, Outlet } from "react-router-dom";
+import { useUserStorage } from "common/useUserStorage";
+import LoadingToRedirect from "components/loader/LoadingToRedirect";
+import { Outlet } from "react-router-dom";
 
 export default function PrivateRoute() {
-  const { user } = useAuth();
-  if (!user) return <Navigate to="/login" />
+  const { credential, setCredential } = useUserStorage();
+  if (!credential?.authtoken) return <LoadingToRedirect />;
 
-  return <Outlet />
+  return <Outlet />;
 }

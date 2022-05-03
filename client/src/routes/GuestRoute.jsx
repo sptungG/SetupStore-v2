@@ -1,10 +1,10 @@
-import { useAuth } from "common/use-auth";
+import { useUserStorage } from "common/useUserStorage";
 import { Navigate, Outlet } from "react-router-dom";
 
 export default function GuestRoute() {
-  const { user } = useAuth();
+  const { credential, setCredential } = useUserStorage();
 
-  if (user) return <Navigate to="/" replace />;
+  if (credential?.authtoken) return <Navigate to="/" replace />;
 
   return <Outlet />;
 }
