@@ -12,7 +12,7 @@ import GuestRoute from "routes/GuestRoute";
 import NotFound from "components/nav/NotFound";
 import Loader from "components/loader/Loader";
 
-const HomePage = lazy(() => import("pages/HomePage"));
+const HomePage = lazy(() => import("pages/home/HomePage"));
 const LoginPage = lazy(() => import("pages/auth/LoginPage"));
 
 const App = () => {
@@ -36,7 +36,7 @@ const App = () => {
   }, []);
 
   return (
-    <ConfigProvider locale={locale}>
+    <ConfigProvider locale={locale} >
       <Suspense fallback={<Loader />}>
         <Routes>
           <Route path="/" element={<HomePage />} />

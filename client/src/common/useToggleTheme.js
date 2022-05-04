@@ -8,10 +8,10 @@ export function useToggleTheme() {
   const themeValue = useSelector((state) => state.theme.value);
   const dispatch = useDispatch();
 
-  useEffect(() => {
-    if (themeValue === "light") window.less.modifyVars(lightVars);
-    else window.less.modifyVars(darkVars);
-  }, [themeValue])
+  // useEffect(() => {
+  //   if (themeValue === "light") window.less.modifyVars(lightVars);
+  //   else window.less.modifyVars(darkVars);
+  // }, [themeValue])
 
   return {
     theme: themeValue,

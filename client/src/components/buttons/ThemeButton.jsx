@@ -5,9 +5,7 @@ import { useToggleTheme } from "common/useToggleTheme";
 const ThemeButton = () => {
   const { theme, toggleTheme } = useToggleTheme();
   return (
-    <div>
-      <Button onClick={toggleTheme}>{theme}</Button>
-    </div>
+    <Button className="btn-theme" onClick={toggleTheme}>{theme}</Button>
   );
 };
 
