@@ -1,8 +1,9 @@
 import React from "react";
-import { Image, Skeleton, List, Card } from "antd";
+import { Image, Skeleton, Card } from "antd";
 import axios from "axios";
+import MasonryLayout from "./MasonryLayout";
 
-const Gallery = ({count = 9, column = 3}) => {
+const Gallery = ({ count = 9, column = 3 }) => {
   const [photos, setPhotos] = React.useState([]);
   const [loading, setLoading] = React.useState(false);
   const accessKey = "uCQCPXNFMbJKFb4xJjlnd8Yiuz03HBIoGMGhK1SCZ8c";
@@ -18,40 +19,30 @@ const Gallery = ({count = 9, column = 3}) => {
         setPhotos(p.data);
         setLoading(false);
       });
-      // loadPhotos();
+    // loadPhotos();
   }, []);
 
   return (
     <>
       {photos.length === 0 || loading ? (
-        <List
-          id="gallery"
-          grid={{ gutter: [24, 24], column: column }}
-          dataSource={Array(count).fill(null)}
-          rowKey={(item) => item}
-          renderItem={(item) => (
-            <List.Item key={item} style={{ margin: 0 }}>
-              <Card id="skeleton">
+        <MasonryLayout id="gallery" columns={column}>
+          {Array(count)
+            .fill(null)
+            .map((item) => (
+              <Card id="skeleton" key={item}>
                 <Skeleton active></Skeleton>
               </Card>
-            </List.Item>
-          )}
-        />
+            ))}
+        </MasonryLayout>
       ) : (
-        <List
-          id="gallery"
-          grid={{ gutter: 24, column: column }}
-          dataSource={photos}
-          rowKey={(item) => item.id}
-          renderItem={(item) => (
-            <List.Item key={item.id}>
-              <Image width={"100%"} height={"100%"} src={item.urls.regular} alt={item.id} />
-            </List.Item>
-          )}
-        />
+        <MasonryLayout id="gallery" columns={column}>
+          {photos.map((item) => (
+            <Image key={item.id} width={"100%"} height={"100%"} src={item.urls.regular} alt={item.id} />
+          ))}
+        </MasonryLayout>
       )}
     </>
   );
-}
+};
 
 export default Gallery;
