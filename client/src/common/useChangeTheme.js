@@ -4,8 +4,8 @@ import { setTheme } from "stores/theme/theme.reducer";
 import darkVars from "config/theme.dark.json";
 import lightVars from "config/theme.light.json";
 
-export function useToggleTheme() {
-  const themeValue = useSelector((state) => state.theme.value);
+export function useChangeTheme() {
+  const themeValue = useSelector((state) => state.theme.mode);
   const dispatch = useDispatch();
 
   // useEffect(() => {
@@ -15,6 +15,6 @@ export function useToggleTheme() {
 
   return {
     theme: themeValue,
-    toggleTheme: () => dispatch(setTheme(themeValue === "light" ? "dark" : "light")),
+    changeTheme: (value) => dispatch(setTheme(value)),
   };
 }

@@ -2,10 +2,10 @@ import { createSlice } from "@reduxjs/toolkit";
 
 const themeSlice = createSlice({
   name: "theme",
-  initialState: { value: "dark" || "light" , locale: "vi" || "en" },
+  initialState: { mode: "light" , locale: "vi" },
   reducers: {
     setTheme(state, action) {
-      state.value = action.payload;
+      state.mode = action.payload;
     },
     setLocale(state, action) {
       state.locale = action.payload;

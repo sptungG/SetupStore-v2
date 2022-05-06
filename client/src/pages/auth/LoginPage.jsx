@@ -6,16 +6,17 @@ import { Form, Input, Button, Layout, Typography, Row, Col, Space, Divider, Card
 
 import { HiOutlineMail, HiOutlineLockClosed } from "react-icons/hi";
 import { FcGoogle } from "react-icons/fc";
+import { FaFacebookSquare } from "react-icons/fa";
+import { BsInstagram } from "react-icons/bs";
 
 import { auth, googleAuthProvider } from "common/firebase-config";
 import { createOrUpdateUser } from "functions/auth";
 
-import LogoOnlyLayout from "../LogoOnlyLayout";
-import Loader from "components/loader/Loader";
-import Gallery from "components/images/Gallery";
 import { signInWithEmailAndPassword, signInWithPopup } from "firebase/auth";
 import { useUserStorage } from "common/useUserStorage";
 import GalleryBgLayout from "pages/GalleryBgLayout";
+import CarouselGallery from "components/images/CarouselGallery";
+import ThemeButton from "components/buttons/ThemeButton";
 
 const LoginPage = (props) => {
   console.log("LoginPage ~ props", props);
@@ -72,66 +73,90 @@ const LoginPage = (props) => {
 
   return (
     <GalleryBgLayout>
-      <Form
-        form={form}
-        name="formAuth"
-        onFinish={handleSubmit}
-        size="large"
-        layout="vertical"
-        requiredMark={false}
-      >
-        <Typography.Title>Welcome back</Typography.Title>
-        <Typography.Title level={5} type="secondary">
-          Come to the Dashboard
-        </Typography.Title>
-        <Space align="baseline">
-          <span>Login with: </span>
-          <Button onClick={googleLogin} size="large">
-            <FcGoogle size={24} />
-          </Button>
-        </Space>
-        <Divider plain>Or</Divider>
-        <Form.Item
-          name="email"
-          rules={[
-            { required: true, message: "You should input email." },
-            {
-              type: "email",
-              warningOnly: true,
-              message: "Please input a valid email.",
-            },
-          ]}
-        >
-          <Input prefix={<HiOutlineMail size={24} />} placeholder="Enter your email..." />
-        </Form.Item>
-        <Form.Item
-          name="password"
-          rules={[{ required: true, message: "You should input password." }]}
-        >
-          <Input.Password
-            prefix={<HiOutlineLockClosed size={24} />}
-            type="password"
-            placeholder="Enter your password..."
-          />
-        </Form.Item>
-        <Form.Item>
-          <Button
-            type="primary"
-            htmlType="submit"
-            className="login-form-button"
-            loading={loading}
-            style={{ width: "100%" }}
+      <Row justify="center" align="middle" gutter={24} style={{ height: "100%" }}>
+        <Col span={18}>
+          <CarouselGallery size={"100%"} />
+        </Col>
+        <Col span={24}>
+          <Form
+            form={form}
+            name="formAuth"
+            onFinish={handleSubmit}
+            size="large"
+            layout="vertical"
+            requiredMark={false}
           >
-            Login
-          </Button>
-          <p style={{ textAlign: "right" }}>
-            <Link to="/forgot/password">Forgot Password</Link>
+            <Typography.Title>Welcome back</Typography.Title>
+            <Typography.Title level={5} type="secondary">
+              Đăng nhập vào SetupStore
+            </Typography.Title>
+            <Row gutter={16}>
+              <Col span={8}>
+                <Button onClick={googleLogin} size="large" block>
+                  <FcGoogle size={24} />
+                </Button>
+              </Col>
+              <Col span={8}>
+                <Button size="large" block disabled>
+                  <FaFacebookSquare size={24} color="#85a5ff" />
+                </Button>
+              </Col>
+              <Col span={8}>
+                <Button size="large" block disabled>
+                  <BsInstagram size={24} color="#ff85c0" />
+                </Button>
+              </Col>
+            </Row>
+            <Divider plain>Hoặc</Divider>
+            <Form.Item
+              name="email"
+              rules={[
+                { required: true, message: "Trường này không được để trống." },
+                {
+                  type: "email",
+                  warningOnly: true,
+                  message: "Hãy nhập đúng định dạng email.",
+                },
+              ]}
+            >
+              <Input prefix={<HiOutlineMail size={24} />} placeholder="Email..." />
+            </Form.Item>
+            <Form.Item
+              name="password"
+              rules={[
+                { required: true, message: "Trường này không được để trống." },
+                { min: 6, message: "Mật khẩu cần tối thiểu 6 kí tự." },
+              ]}
+            >
+              <Input.Password
+                prefix={<HiOutlineLockClosed size={24} />}
+                type="password"
+                placeholder="Mật khẩu..."
+              />
+            </Form.Item>
+            <Form.Item>
+              <Button
+                type="primary"
+                htmlType="submit"
+                className="login-form-button"
+                loading={loading}
+                block
+              >
+                Đăng nhập
+              </Button>
+              <p style={{ textAlign: "right" }}>
+                <Link to="/forgot/password">Quên mật khẩu?</Link>
+              </p>
+            </Form.Item>
+          </Form>
+          <p style={{ textAlign: "center" }}>
+            Bạn chưa có tài khoản? <Link to="/register">Đăng kí ngay</Link>
           </p>
-        </Form.Item>
-      </Form>
-      <p style={{ textAlign: "center" }}>
-        Don't have an account? <Link to="/register">Create now</Link>
-      </p>
+        </Col>
+        <Col span={24}>
+          <ThemeButton />
+        </Col>
+      </Row>
     </GalleryBgLayout>
   );
 };

@@ -1,8 +1,10 @@
 import React from "react";
 import Gallery from "components/images/Gallery";
 import styled from "styled-components";
-import Logo from "components/nav/Logo";
+import { Col, Row } from "antd";
+import CarouselGallery from "components/images/CarouselGallery";
 import ThemeButton from "components/buttons/ThemeButton";
+import Logo from "components/nav/Logo";
 
 const PageStyles = styled.div`
   position: relative;
@@ -31,47 +33,34 @@ const PageStyles = styled.div`
   .modal-overlay #gallery #skeleton {
     height: 300px;
   }
-  .logo-wrapper {
+  .header {
     position: absolute;
-    left: 48px;
-    top: 24px;
-    z-index: 20;
-    border-radius: 8px;
-    &::before {
-      content: "";
+    top: 0;
+    left: 0;
+    width: 100%;
+    & .logo-wrapper {
       position: absolute;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      width: 125%;
-      height: 125%;
-      background: url("https://firebasestorage.googleapis.com/v0/b/ecommerce-62fba.appspot.com/o/index.svg?alt=media&token=4582b9e5-16e0-4de1-a742-e1f0da3d3d62")
-        no-repeat;
-      background-size: cover;
-      filter: blur(12px);
-      z-index: 10;
+      top: 24px;
+      left: 48px;
+      z-index: 20;
+    }
+    & .btn-theme {
+      position: absolute;
+      top: 24px;
+      right: 48px;
+      z-index: 20;
     }
   }
-  .btn-theme {
-    position: absolute;
-    top: 48px;
-    left: 50%;
-    transform: translateX(-50%);
-    z-index: 999;
-  }
   .modal-content {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    flex-direction: column;
     z-index: 20;
     max-width: 480px;
     width: 100%;
     padding: 0 48px;
     height: 100vh;
     backdrop-filter: blur(10px);
-    background-color: rgba(255, 255, 255, 0.8);
-    box-shadow: 0px 0px 16px 16px rgba(0, 0, 0, 0.25);
+    background-color: ${(props) =>
+      props.theme.mode === "light" ? "rgba(255, 255, 255, 0.8)" : "rgba(20, 20, 20, 0.8)"};
+    box-shadow: 0px 0px 16px 16px rgba(140, 140, 140, 0.25);
   }
   .modal-content form {
     width: 100%;
@@ -83,9 +72,10 @@ const GalleryBgLayout = ({ children }) => {
     <PageStyles>
       <div className="modal-overlay">
         <Gallery count={20} column={4} />
-        <Logo />
-        <ThemeButton />
       </div>
+      <header className="header">
+        <Logo />
+      </header>
       <div className="modal-content">{children}</div>
     </PageStyles>
   );
