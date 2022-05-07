@@ -1,6 +1,6 @@
 import React from "react";
 
-const MasonryLayout = ({id, columns = 3, gap = 24, children }) => {
+const MasonryLayout = ({ id, columns = 3, gap = 24, children }) => {
   const columnWrapper = {};
   const result = [];
 
@@ -13,7 +13,9 @@ const MasonryLayout = ({id, columns = 3, gap = 24, children }) => {
   for (let i = 0; i < children.length; i++) {
     const columnIndex = i % columns;
     columnWrapper[`column${columnIndex}`].push(
-      <div style={{ marginBottom: `${gap}px` }}>{children[i]}</div>
+      <div key={`${Math.random() * children.length}`} style={{ marginBottom: `${gap}px` }}>
+        {children[i]}
+      </div>
     );
   }
 
@@ -21,6 +23,7 @@ const MasonryLayout = ({id, columns = 3, gap = 24, children }) => {
   for (let i = 0; i < columns; i++) {
     result.push(
       <div
+        key={`column${i}`}
         style={{
           marginLeft: `${i > 0 ? gap : 0}px`,
           flex: 1,
@@ -31,7 +34,11 @@ const MasonryLayout = ({id, columns = 3, gap = 24, children }) => {
     );
   }
 
-  return <div id={id} style={{ display: "flex" }}>{result}</div>;
+  return (
+    <div id={id} style={{ display: "flex" }}>
+      {result}
+    </div>
+  );
 };
 
 export default MasonryLayout;

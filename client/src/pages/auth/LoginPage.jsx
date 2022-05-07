@@ -17,6 +17,7 @@ import { useUserStorage } from "common/useUserStorage";
 import GalleryBgLayout from "pages/GalleryBgLayout";
 import CarouselGallery from "components/images/CarouselGallery";
 import ThemeButton from "components/buttons/ThemeButton";
+import LogoAndText from "components/nav/LogoAndText";
 
 const LoginPage = (props) => {
   console.log("LoginPage ~ props", props);
@@ -88,7 +89,7 @@ const LoginPage = (props) => {
           >
             <Typography.Title>Welcome back</Typography.Title>
             <Typography.Title level={5} type="secondary">
-              Đăng nhập vào SetupStore
+              Đăng nhập vào <LogoAndText fontSize={16} />
             </Typography.Title>
             <Row gutter={16}>
               <Col span={8}>

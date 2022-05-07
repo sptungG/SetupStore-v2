@@ -9,14 +9,21 @@ const cartSchema = new mongoose.Schema(
           type: ObjectId,
           ref: "Product",
         },
-        count: Number,
-        variant: String,
-        price: Number,
+        variants: [
+          {
+            variant: {
+              type: ObjectId,
+              ref: "Variant",
+            },
+            count: Number,
+            price: Number,
+          },
+        ],
       },
     ],
     cartTotal: Number,
     totalAfterDiscount: Number,
-    orderedBy: { type: ObjectId, ref: "User" },
+    createdBy: { type: ObjectId, ref: "User" },
   },
   { timestamps: true }
 );

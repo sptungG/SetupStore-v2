@@ -4,7 +4,7 @@ import styled from "styled-components";
 import { Col, Row } from "antd";
 import CarouselGallery from "components/images/CarouselGallery";
 import ThemeButton from "components/buttons/ThemeButton";
-import Logo from "components/nav/Logo";
+import LogoAndText from "components/nav/LogoAndText";
 
 const PageStyles = styled.div`
   position: relative;
@@ -44,12 +44,6 @@ const PageStyles = styled.div`
       left: 48px;
       z-index: 20;
     }
-    & .btn-theme {
-      position: absolute;
-      top: 24px;
-      right: 48px;
-      z-index: 20;
-    }
   }
   .modal-content {
     z-index: 20;
@@ -74,7 +68,7 @@ const GalleryBgLayout = ({ children }) => {
         <Gallery count={20} column={4} />
       </div>
       <header className="header">
-        <Logo />
+        <LogoAndText logoSize={48} fontSize={28} fontWeight={700} />
       </header>
       <div className="modal-content">{children}</div>
     </PageStyles>

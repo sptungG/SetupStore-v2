@@ -3,9 +3,14 @@ const { ObjectId } = mongoose.Schema;
 
 const VariantSchema = mongoose.Schema(
   {
-    productId: { type: ObjectId, ref: "Product" },
-    text: String,
-    createdBy: { type: ObjectId, ref: "User" },
+    product: { type: ObjectId, ref: "Product" },
+    color: {
+      label: String,
+      hex_code: String,
+    },
+    // images: {
+    //   type: Array,
+    // },
     status: { type: String, enum: ["active", "inactive", "deleted"], default: "active" },
   },
   { timestamps: true }

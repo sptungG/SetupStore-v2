@@ -3,9 +3,10 @@ const { ObjectId } = mongoose.Schema;
 
 const CommentSchema = mongoose.Schema(
   {
-    productId: { type: ObjectId, ref: "Product" },
-    text: String,
+    product: { type: ObjectId, ref: "Product" },
     createdBy: { type: ObjectId, ref: "User" },
+    text: String,
+    status: { type: String, enum: ["active", "deleted"], default: "active" },
   },
   { timestamps: true }
 );

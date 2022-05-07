@@ -23,8 +23,8 @@ const UserSchema = mongoose.Schema(
       type: String,
       default: "",
     },
-    cart: [{ type: ObjectId, ref: "Cart" }],
-    wishlist: { type: ObjectId, ref: "Wishlist" },
+    // cart: [{ type: ObjectId, ref: "Cart" }],
+    // wishlist: { type: ObjectId, ref: "Wishlist" },
     status: { type: String, enum: ["active", "inactive", "deleted"], default: "active" },
   },
   { timestamps: true }

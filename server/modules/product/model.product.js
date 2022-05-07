@@ -1,8 +1,5 @@
 const mongoose = require("mongoose");
-const slug = require("mongoose-slug-updater");
-const slugOptions = require("../../config/slug.config");
 const { ObjectId } = mongoose.Schema;
-mongoose.plugin(slug, slugOptions);
 
 const ProductSchema = new mongoose.Schema(
   {
@@ -10,19 +7,9 @@ const ProductSchema = new mongoose.Schema(
       type: String,
       required: true,
       text: true,
-    },
-    slug_product: {
-      type: String,
-      slug: ["name"],
-      unique: true,
-      text: true,
       index: true,
     },
-    desc: {
-      type: String,
-      required: true,
-      text: true,
-    },
+    desc: String,
     price: {
       type: Number,
       required: true,
@@ -43,13 +30,16 @@ const ProductSchema = new mongoose.Schema(
       type: String,
       default: "yes",
     },
-    color: {
-      label: String,
-      hex_code: String,
-    },
     brand: {
       type: String,
     },
+    view: {
+      type: Number,
+      default: 0,
+    },
+    variants: [{ type: ObjectId, ref: "Variant" }],
+    combos: [{ type: ObjectId, ref: "Combo" }],
+    wishlist: [{ type: ObjectId, ref: "User" }],
     status: { type: String, enum: ["active", "inactive", "deleted"], default: "active" },
   },
   { timestamps: true }

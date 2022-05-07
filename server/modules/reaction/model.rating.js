@@ -3,9 +3,9 @@ const { ObjectId } = mongoose.Schema;
 
 const RatingSchema = mongoose.Schema(
   {
-    productId: { type: ObjectId, ref: "Product" },
-    ratedValue: Number,
+    product: { type: ObjectId, ref: "Product" },
     createdBy: { type: ObjectId, ref: "User" },
+    ratedValue: Number,
   },
   { timestamps: true }
 );
