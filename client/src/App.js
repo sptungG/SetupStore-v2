@@ -9,7 +9,7 @@ import { useUserStorage } from "common/useUserStorage";
 import { Navigate, Route, Routes } from "react-router-dom";
 import GuestRoute from "routes/GuestRoute";
 
-import NotFound from "components/nav/NotFound";
+import ErrorResult from "components/nav/ErrorResult";
 import Loader from "components/loader/Loader";
 import { useChangeTheme } from "common/useChangeTheme";
 
@@ -46,7 +46,7 @@ const App = () => {
           <Route element={<GuestRoute />}>
             <Route path="/login" element={<LoginPage />} />
           </Route>
-          <Route path="/404" element={<NotFound />} />
+          <Route path="/404" element={<ErrorResult status="404" />} />
 
           <Route path="*" element={<Navigate to="/404" replace />} />
         </Routes>

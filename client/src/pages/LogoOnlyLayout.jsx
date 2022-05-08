@@ -1,15 +1,25 @@
 import { Layout } from "antd";
 import ThemeButton from "components/buttons/ThemeButton";
 import LogoAndText from "components/nav/LogoAndText";
+import styled from "styled-components";
+const PageStyles = styled.div`
+  padding: 48px;
+  .header{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 24px;
+  }
+`;
 const LogoOnlyLayout = ({ children }) => {
   return (
-    <>
-      <header id="header-logo-only">
-        <LogoAndText logoSize={48}/>
-        <ThemeButton/>
+    <PageStyles>
+      <header className="header">
+        <LogoAndText logoSize={40} fontSize={24} />
+        <ThemeButton />
       </header>
       <Layout.Content>{children}</Layout.Content>
-    </>
+    </PageStyles>
   );
 };
 

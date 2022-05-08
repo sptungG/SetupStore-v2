@@ -2,7 +2,7 @@ import React from "react";
 import { Link } from "react-router-dom";
 
 import { toast } from "react-toastify";
-import { Form, Input, Button, Layout, Typography, Row, Col, Space, Divider, Card } from "antd";
+import { Form, Input, Button, Typography, Row, Col, Divider } from "antd";
 
 import { HiOutlineMail, HiOutlineLockClosed } from "react-icons/hi";
 import { FcGoogle } from "react-icons/fc";
@@ -87,7 +87,10 @@ const LoginPage = (props) => {
             layout="vertical"
             requiredMark={false}
           >
-            <Typography.Title>Welcome back</Typography.Title>
+            <Row justify="space-between">
+              <Typography.Title>Welcome back</Typography.Title>
+              <ThemeButton />
+            </Row>
             <Typography.Title level={5} type="secondary">
               Đăng nhập <LogoAndText fontSize={16} /> ngay với:
             </Typography.Title>
@@ -153,9 +156,6 @@ const LoginPage = (props) => {
           <p style={{ textAlign: "center" }}>
             Bạn chưa có tài khoản? <Link to="/register">Đăng kí ngay</Link>
           </p>
-        </Col>
-        <Col span={24}>
-          <ThemeButton />
         </Col>
       </Row>
     </GalleryBgLayout>
