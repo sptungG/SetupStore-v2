@@ -4,7 +4,8 @@ import { Navigate, Outlet } from "react-router-dom";
 export default function GuestRoute() {
   const { credential, setCredential } = useUserStorage();
 
-  if (credential?.authtoken) return <Navigate to="/" replace />;
+  if (credential.user != null && credential.user?.emailVerified)
+    return <Navigate to="/" replace />;
 
   return <Outlet />;
 }

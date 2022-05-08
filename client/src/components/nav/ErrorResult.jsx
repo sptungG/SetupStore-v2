@@ -23,7 +23,7 @@ const errorStatus = [
 
 const getStatusInfo = (s) => errorStatus.find((es) => es.status === s);
 
-const ErrorResult = ({ status = "500", title, subTitle, children }) => {
+const ErrorResult = ({ status = "500", title, subTitle, extra, children }) => {
   return (
     <LogoOnlyLayout>
       <Result
@@ -31,11 +31,13 @@ const ErrorResult = ({ status = "500", title, subTitle, children }) => {
         title={title || getStatusInfo(status).title}
         subTitle={subTitle || getStatusInfo(status).subTitle}
         extra={
-          <Link to="/">
-            <Button size="large" type="primary">
-              Back Home
-            </Button>
-          </Link>
+          extra || (
+            <Link to="/">
+              <Button size="large" type="primary">
+                Back Home
+              </Button>
+            </Link>
+          )
         }
       >
         {children}

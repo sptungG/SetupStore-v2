@@ -16,47 +16,54 @@ import { useChangeTheme } from "common/useChangeTheme";
 const HomePage = lazy(() => import("pages/home/HomePage"));
 const LoginPage = lazy(() => import("pages/auth/LoginPage"));
 const RegisterPage = lazy(() => import("pages/auth/RegisterPage"));
-const RegistrationCompletePage = lazy(() => import("pages/auth/RegistrationCompletePage"));
 const ForgotPasswordPage = lazy(() => import("pages/auth/ForgotPasswordPage"));
+const VerificationPage = lazy(() => import("pages/auth/VerificationPage"));
 
 const App = () => {
   const { theme, changeTheme } = useChangeTheme();
-  const { credential, setCredential } = useUserStorage();
+  const { credential, setCredential, setEmailValueVerified } = useUserStorage();
+  const [status, setStatus] = useState("");
 
   useEffect(() => {
+    setStatus("loading");
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
       if (user) {
         const idTokenResult = await user.getIdTokenResult();
-        currentUser(idTokenResult.token)
-          .then((res) => {
-            setCredential(res.data, idTokenResult.token);
-          })
-          .catch((err) => {
-            console.log(err);
-          });
+        const res = await currentUser(idTokenResult.token);
+        setCredential({
+          ...res.data,
+          authtoken: idTokenResult.token,
+        });
       }
+      setStatus("success");
     });
     return () => unsubscribe();
   }, []);
 
   return (
-    <ThemeProvider theme={{ mode: theme }}>
-      <Suspense fallback={<Loader />}>
-        <Routes>
-          <Route path="/" element={<HomePage />} />
+    <>
+      {status === "success" ? (
+        <ThemeProvider theme={{ mode: theme }}>
+          <Suspense fallback={<Loader />}>
+            <Routes>
+              <Route path="/" element={<HomePage />} />
 
-          <Route element={<GuestRoute />}>
-            <Route path="/login" element={<LoginPage />} />
-            <Route path="/register" element={<RegisterPage />} />
-            <Route path="/register/complete" element={<RegistrationCompletePage />} />
-            <Route path="/forgot/password" element={<ForgotPasswordPage />} />
-          </Route>
-          <Route path="/404" element={<ErrorResult status="404" />} />
+              <Route element={<GuestRoute />}>
+                <Route path="/login" element={<LoginPage />} />
+                <Route path="/register" element={<RegisterPage />} />
+                <Route path="/verification/*" element={<VerificationPage />} />
+                <Route path="/forgot/password" element={<ForgotPasswordPage />} />
+              </Route>
+              <Route path="/404" element={<ErrorResult status="404" />} />
 
-          <Route path="*" element={<Navigate to="/404" replace />} />
-        </Routes>
-      </Suspense>
-    </ThemeProvider>
+              <Route path="*" element={<Navigate to="/404" replace />} />
+            </Routes>
+          </Suspense>
+        </ThemeProvider>
+      ) : (
+        <Loader />
+      )}
+    </>
   );
 };
 

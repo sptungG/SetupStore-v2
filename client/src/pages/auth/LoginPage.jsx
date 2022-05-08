@@ -1,47 +1,61 @@
-import React from "react";
-import { Link } from "react-router-dom";
-
-import { toast } from "react-toastify";
-import { Form, Input, Button, Typography, Row, Col, Divider } from "antd";
-
-import { HiOutlineMail, HiOutlineLockClosed } from "react-icons/hi";
-import { FcGoogle } from "react-icons/fc";
-import { FaFacebookSquare } from "react-icons/fa";
-import { BsInstagram } from "react-icons/bs";
-
+import { Button, Col, Divider, Form, Input, Row, Typography } from "antd";
 import { auth, googleAuthProvider } from "common/firebase-config";
-import { createOrUpdateUser } from "functions/auth";
-
-import { signInWithEmailAndPassword, signInWithPopup } from "firebase/auth";
 import { useUserStorage } from "common/useUserStorage";
-import GalleryBgLayout from "pages/GalleryBgLayout";
-import CarouselGallery from "components/images/CarouselGallery";
 import ThemeButton from "components/buttons/ThemeButton";
+import CarouselGallery from "components/images/CarouselGallery";
 import LogoAndText from "components/nav/LogoAndText";
+import { signInWithEmailAndPassword, signInWithPopup } from "firebase/auth";
+import { createOrUpdateUser } from "functions/auth";
+import GalleryBgLayout from "pages/GalleryBgLayout";
+import React, { useEffect, useState } from "react";
+import { BsInstagram } from "react-icons/bs";
+import { FaFacebookSquare } from "react-icons/fa";
+import { FcGoogle } from "react-icons/fc";
+import { HiOutlineLockClosed, HiOutlineMail } from "react-icons/hi";
+import { Link } from "react-router-dom";
+import { toast } from "react-toastify";
+import styled from "styled-components";
+
+const FormWrapperStyles = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  height: 100%;
+  .carousel-wrapper {
+    width: 100%;
+    padding: 0 48px 24px 48px;
+    & img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+  }
+  .from-container {
+    width: 100%;
+  }
+`;
 
 const LoginPage = (props) => {
-  console.log("LoginPage ~ props", props);
-  const [loading, setLoading] = React.useState(false);
+  const [form] = Form.useForm();
+  const [loading, setLoading] = useState(false);
   const { credential, setCredential } = useUserStorage();
 
-  const [form] = Form.useForm();
+  useEffect(() => {
+    form.setFieldsValue({ email: credential.emailVerifiedValue });
+  }, [form]);
 
   const handleSubmit = async ({ email, password }) => {
     setLoading(true);
     try {
       const { user } = await signInWithEmailAndPassword(auth, email, password);
       const idTokenResult = await user.getIdTokenResult();
-      createOrUpdateUser(idTokenResult.token)
-        .then((res) => {
-          setCredential(res.data, idTokenResult.token);
-          setLoading(false);
-        })
-        // .then((res) => {
-        //   roleBasedRedirect(res.data.role);
-        // })
-        .catch((err) => {
-          console.log(err);
-        });
+      const res = await createOrUpdateUser(idTokenResult.token);
+      setCredential({
+        ...res.data,
+        authtoken: idTokenResult.token,
+      });
+      setLoading(false);
     } catch (error) {
       toast.error(error.message);
       setLoading(false);
@@ -52,33 +66,31 @@ const LoginPage = (props) => {
     signInWithPopup(auth, googleAuthProvider)
       .then(async (result) => {
         const { user } = result;
+        console.log(".then ~ user", user);
         const idTokenResult = await user.getIdTokenResult();
 
-        createOrUpdateUser(idTokenResult.token)
-          .then((res) => {
-            // console.log("CREATE OR UPDATE RES", res);
-            setCredential(res.data, idTokenResult.token);
-            setLoading(false);
-          })
-          // .then((res) => {
-          //   roleBasedRedirect(res.data.role);
-          // })
-          .catch((err) => {
-            console.log(err);
-          });
+        const res = await createOrUpdateUser(idTokenResult.token);
+        // console.log("CREATE OR UPDATE RES", res);
+        setCredential({
+          ...res.data,
+          authtoken: idTokenResult.token,
+        });
+        setLoading(false);
       })
       .catch((err) => {
+        console.log("googleLogin ~ err", err);
         toast.error(err.message);
+        setLoading(false);
       });
   };
 
   return (
     <GalleryBgLayout>
-      <Row justify="center" align="middle" gutter={24} style={{ height: "100%" }}>
-        <Col span={18}>
+      <FormWrapperStyles>
+        <div className="carousel-wrapper">
           <CarouselGallery size={"100%"} />
-        </Col>
-        <Col span={24}>
+        </div>
+        <div className="from-container">
           <Form
             form={form}
             name="formAuth"
@@ -89,7 +101,7 @@ const LoginPage = (props) => {
           >
             <Row justify="space-between">
               <Typography.Title>Welcome back</Typography.Title>
-              <ThemeButton type="icon"/>
+              <ThemeButton type="icon" />
             </Row>
             <Typography.Title level={5} type="secondary">
               Đăng nhập nhanh <LogoAndText fontSize={16} /> với:
@@ -144,6 +156,7 @@ const LoginPage = (props) => {
                 htmlType="submit"
                 className="login-form-button"
                 loading={loading}
+                disabled={loading}
                 block
               >
                 Đăng nhập
@@ -156,8 +169,8 @@ const LoginPage = (props) => {
           <p style={{ textAlign: "center" }}>
             Bạn chưa có tài khoản? <Link to="/register">Đăng kí ngay</Link>
           </p>
-        </Col>
-      </Row>
+        </div>
+      </FormWrapperStyles>
     </GalleryBgLayout>
   );
 };

@@ -1,84 +1,74 @@
-import React from "react";
-import { Link } from "react-router-dom";
-
-import { toast } from "react-toastify";
-import { Form, Input, Button, Typography, Row, Col, Divider } from "antd";
-
-import { HiOutlineMail, HiOutlineLockClosed } from "react-icons/hi";
-import { FcGoogle } from "react-icons/fc";
-import { FaFacebookSquare } from "react-icons/fa";
-import { BsInstagram } from "react-icons/bs";
-
-import { auth, googleAuthProvider } from "common/firebase-config";
-import { createOrUpdateUser } from "functions/auth";
-
-import { signInWithEmailAndPassword, signInWithPopup } from "firebase/auth";
-import { useUserStorage } from "common/useUserStorage";
+import { Alert, Button, Form, Input, Typography } from "antd";
+import { auth } from "common/firebase-config";
+import { sendPasswordResetEmail } from "firebase/auth";
 import GalleryBgLayout from "pages/GalleryBgLayout";
-import CarouselGallery from "components/images/CarouselGallery";
-import ThemeButton from "components/buttons/ThemeButton";
-import LogoAndText from "components/nav/LogoAndText";
+import React from "react";
+import { HiOutlineMail } from "react-icons/hi";
+import { Link, useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
+import styled from "styled-components";
+
+
+const FormWrapperStyles = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  height: 100%;
+  .carousel-wrapper {
+    width: 100%;
+    padding: 0 48px 24px 48px;
+    & img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+  }
+  .from-container {
+    width: 100%;
+  }
+`;
 
 const ForgotPasswordPage = (props) => {
-  console.log("LoginPage ~ props", props);
-  const [loading, setLoading] = React.useState(false);
-  const { credential, setCredential } = useUserStorage();
+  const [status, setStatus] = React.useState("");
 
   const [form] = Form.useForm();
 
-  const handleSubmit = async ({ email, password }) => {
-    setLoading(true);
-    try {
-      const { user } = await signInWithEmailAndPassword(auth, email, password);
-      const idTokenResult = await user.getIdTokenResult();
-      createOrUpdateUser(idTokenResult.token)
-        .then((res) => {
-          setCredential(res.data, idTokenResult.token);
-          setLoading(false);
-        })
-        // .then((res) => {
-        //   roleBasedRedirect(res.data.role);
-        // })
-        .catch((err) => {
-          console.log(err);
-        });
-    } catch (error) {
-      toast.error(error.message);
-      setLoading(false);
-    }
-  };
+  let navigate = useNavigate();
 
-  const googleLogin = async () => {
-    signInWithPopup(auth, googleAuthProvider)
-      .then(async (result) => {
-        const { user } = result;
-        const idTokenResult = await user.getIdTokenResult();
+  const handleSubmit = ({ email }) => {
+    setStatus("loading");
+    const config = {
+      url: process.env.REACT_APP_FORGOT_PASSWORD_REDIRECT,
+      handleCodeInApp: true,
+    };
 
-        createOrUpdateUser(idTokenResult.token)
-          .then((res) => {
-            // console.log("CREATE OR UPDATE RES", res);
-            setCredential(res.data, idTokenResult.token);
-            setLoading(false);
-          })
-          // .then((res) => {
-          //   roleBasedRedirect(res.data.role);
-          // })
-          .catch((err) => {
-            console.log(err);
-          });
+    sendPasswordResetEmail(auth, email, config)
+      .then(() => {
+        form.resetFields();
+        setStatus("success");
+        toast.success("Check your email for password reset link");
+        setTimeout(() => {
+          navigate("/");
+        }, 3000);
       })
-      .catch((err) => {
-        toast.error(err.message);
+      .catch((error) => {
+        setStatus("error");
+        toast.error(error.message);
+        console.log("ERROR MSG IN FORGOT PASSWORD", error);
       });
   };
 
   return (
     <GalleryBgLayout>
-      <Row justify="center" align="middle" gutter={24} style={{ height: "100%" }}>
-        <Col span={18}>
-          <CarouselGallery size={"100%"} />
-        </Col>
-        <Col span={24}>
+      <FormWrapperStyles>
+        <div className="carousel-wrapper">
+          <img
+            src="https://firebasestorage.googleapis.com/v0/b/setup-store-v2.appspot.com/o/forgot-password-amicoo.svg?alt=media&token=8a085927-017c-47b1-8774-60edc4985f3f"
+            alt="forgot-password-amico"
+          />
+        </div>
+        <div className="from-container">
           <Form
             form={form}
             name="formAuth"
@@ -87,33 +77,14 @@ const ForgotPasswordPage = (props) => {
             layout="vertical"
             requiredMark={false}
           >
-            <Row justify="space-between">
-              <Typography.Title>Welcome back</Typography.Title>
-              <ThemeButton type="icon"/>
-            </Row>
-            <Typography.Title level={5} type="secondary">
-              Đăng nhập nhanh <LogoAndText fontSize={16} /> với:
-            </Typography.Title>
-            <Row gutter={16}>
-              <Col span={8}>
-                <Button onClick={googleLogin} size="large" block>
-                  <FcGoogle size={24} />
-                </Button>
-              </Col>
-              <Col span={8}>
-                <Button size="large" block disabled>
-                  <FaFacebookSquare size={24} color="#85a5ff" />
-                </Button>
-              </Col>
-              <Col span={8}>
-                <Button size="large" block disabled>
-                  <BsInstagram size={24} color="#ff85c0" />
-                </Button>
-              </Col>
-            </Row>
-            <Divider plain>Hoặc</Divider>
+            <Typography.Title>Quên mật khẩu?</Typography.Title>
             <Form.Item
               name="email"
+              label={
+                <Typography.Title level={5} type="secondary" style={{ marginBottom: 2 }}>
+                  Hãy nhập địa chỉ email của bạn để khôi phục mật khẩu.
+                </Typography.Title>
+              }
               rules={[
                 { required: true, message: "Trường này không được để trống." },
                 {
@@ -125,39 +96,39 @@ const ForgotPasswordPage = (props) => {
             >
               <Input prefix={<HiOutlineMail size={24} />} placeholder="Email..." />
             </Form.Item>
-            <Form.Item
-              name="password"
-              rules={[
-                { required: true, message: "Trường này không được để trống." },
-                { min: 6, message: "Mật khẩu cần tối thiểu 6 kí tự." },
-              ]}
-            >
-              <Input.Password
-                prefix={<HiOutlineLockClosed size={24} />}
-                type="password"
-                placeholder="Mật khẩu..."
-              />
-            </Form.Item>
-            <Form.Item>
+            <Form.Item style={{ marginTop: 16 }}>
               <Button
                 type="primary"
                 htmlType="submit"
-                className="login-form-button"
-                loading={loading}
+                className="forgot-form-button"
+                loading={status === "loading"}
+                disabled={status === "loading"}
                 block
               >
-                Đăng nhập
+                Xác nhận
               </Button>
-              <p style={{ textAlign: "right" }}>
-                <Link to="/forgot/password">Quên mật khẩu?</Link>
-              </p>
             </Form.Item>
           </Form>
           <p style={{ textAlign: "center" }}>
-            Bạn chưa có tài khoản? <Link to="/register">Đăng kí ngay</Link>
+            Trở lại trang <Link to="/login">Đăng nhập</Link>
           </p>
-        </Col>
-      </Row>
+          {status === "success" && (
+            <Alert
+              message={"Đường dẫn xác nhận đã được gửi đến email của bạn."}
+              type="info"
+              action={
+                <a
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  href={"https://mail.google.com/mail/u/0/#inbox"}
+                >
+                  Đi đến hòm thư
+                </a>
+              }
+            />
+          )}
+        </div>
+      </FormWrapperStyles>
     </GalleryBgLayout>
   );
 };

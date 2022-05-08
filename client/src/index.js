@@ -1,10 +1,10 @@
-import React from 'react';
-import * as ReactDOM from 'react-dom';
+import React from "react";
+import * as ReactDOM from "react-dom";
 import { BrowserRouter } from "react-router-dom";
-import { Provider } from 'react-redux';
-import { store } from 'stores/store';
-import App from './App';
-import './index.less';
+import { Provider } from "react-redux";
+import { store } from "stores/store";
+import App from "./App";
+import "./index.less";
 
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -14,10 +14,9 @@ ReactDOM.render(
     <Provider store={store}>
       <BrowserRouter>
         <App />
-        <ToastContainer></ToastContainer>
+        <ToastContainer autoClose={1500}/>
       </BrowserRouter>
     </Provider>
   </React.StrictMode>,
-  document.getElementById('root')
+  document.getElementById("root")
 );
-

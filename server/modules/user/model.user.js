@@ -23,6 +23,7 @@ const UserSchema = mongoose.Schema(
       type: String,
       default: "",
     },
+    emailVerified: { type: Boolean, default: false },
     // cart: [{ type: ObjectId, ref: "Cart" }],
     // wishlist: { type: ObjectId, ref: "Wishlist" },
     status: { type: String, enum: ["active", "inactive", "deleted"], default: "active" },
