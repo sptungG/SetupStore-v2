@@ -16,7 +16,7 @@ const LogoOnlyLayout = ({ children }) => {
     <PageStyles>
       <header className="header">
         <LogoAndText logoSize={40} fontSize={24} />
-        <ThemeButton />
+        <ThemeButton type="icon"/>
       </header>
       <Layout.Content>{children}</Layout.Content>
     </PageStyles>

@@ -15,13 +15,15 @@ import { useChangeTheme } from "common/useChangeTheme";
 
 const HomePage = lazy(() => import("pages/home/HomePage"));
 const LoginPage = lazy(() => import("pages/auth/LoginPage"));
+const RegisterPage = lazy(() => import("pages/auth/RegisterPage"));
+const RegistrationCompletePage = lazy(() => import("pages/auth/RegistrationCompletePage"));
+const ForgotPasswordPage = lazy(() => import("pages/auth/ForgotPasswordPage"));
 
 const App = () => {
   const { theme, changeTheme } = useChangeTheme();
   const { credential, setCredential } = useUserStorage();
 
   useEffect(() => {
-    changeTheme("light");
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
       if (user) {
         const idTokenResult = await user.getIdTokenResult();
@@ -45,6 +47,9 @@ const App = () => {
 
           <Route element={<GuestRoute />}>
             <Route path="/login" element={<LoginPage />} />
+            <Route path="/register" element={<RegisterPage />} />
+            <Route path="/register/complete" element={<RegistrationCompletePage />} />
+            <Route path="/forgot/password" element={<ForgotPasswordPage />} />
           </Route>
           <Route path="/404" element={<ErrorResult status="404" />} />
 

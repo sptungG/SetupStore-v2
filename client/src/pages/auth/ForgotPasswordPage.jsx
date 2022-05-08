@@ -19,7 +19,7 @@ import CarouselGallery from "components/images/CarouselGallery";
 import ThemeButton from "components/buttons/ThemeButton";
 import LogoAndText from "components/nav/LogoAndText";
 
-const LoginPage = (props) => {
+const ForgotPasswordPage = (props) => {
   console.log("LoginPage ~ props", props);
   const [loading, setLoading] = React.useState(false);
   const { credential, setCredential } = useUserStorage();
@@ -161,4 +161,4 @@ const LoginPage = (props) => {
     </GalleryBgLayout>
   );
 };
-export default LoginPage;
+export default ForgotPasswordPage;
