@@ -8,24 +8,28 @@ import LogoAndText from "components/nav/LogoAndText";
 
 const PageStyles = styled.div`
   position: relative;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  .modal-overlay {
-    position: fixed;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  overflow: hidden;
+  &::after {
+    content: "";
+    position: absolute;
     top: 0;
     left: 0;
-    right: 0;
-    bottom: 0;
-    z-index: 10;
+    width: 1440px;
+    height: 234px;
+    background: url("./valley-white.svg") top right / cover no-repeat;
+    transform: translate(200px,-520px) rotate(152deg) scale(2);
+    z-index: 19;
   }
   .modal-overlay #gallery {
     position: fixed;
     top: 0;
     left: 0;
-    transform: rotate(-28deg) translateY(-40%);
-    width: 100%;
-    height: 100%;
+    transform: rotate(-28deg) translateY(-36%);
+    width: 100vw;
+    height: 100vh;
     min-width: 1440px;
     z-index: 0;
     flex-shrink: 0;
@@ -33,23 +37,18 @@ const PageStyles = styled.div`
   .modal-overlay #gallery #skeleton {
     height: 300px;
   }
-  .header {
+  .header .logo-wrapper {
     position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    & .logo-wrapper {
-      position: absolute;
-      top: 24px;
-      left: 48px;
-      z-index: 20;
-    }
+    top: 24px;
+    left: 24px;
+    z-index: 20;
   }
   .modal-content {
     z-index: 20;
+    padding: 0 48px;
+    min-width: 320px;
     max-width: 480px;
     width: 100%;
-    padding: 0 48px;
     height: 100vh;
     backdrop-filter: blur(10px);
     background-color: ${(props) =>
@@ -65,7 +64,7 @@ const GalleryBgLayout = ({ children }) => {
   return (
     <PageStyles>
       <div className="modal-overlay">
-        <Gallery count={20} column={4} />
+        <Gallery count={24} column={4} />
       </div>
       <header className="header">
         <LogoAndText logoSize={48} fontSize={28} fontWeight={700} />

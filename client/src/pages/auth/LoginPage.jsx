@@ -89,7 +89,7 @@ const LoginPage = (props) => {
           >
             <Typography.Title>Welcome back</Typography.Title>
             <Typography.Title level={5} type="secondary">
-              Đăng nhập vào <LogoAndText fontSize={16} />
+              Đăng nhập <LogoAndText fontSize={16} /> ngay với:
             </Typography.Title>
             <Row gutter={16}>
               <Col span={8}>
