@@ -9,6 +9,6 @@ export function useUserStorage() {
   return {
     credential,
     setEmailValueVerified: (value) => dispatch(setEmailVerifiedValue(value)),
-    setCredential: (data) => dispatch(setUserCredential(data)),
+    setCredential: (user, authtoken) => dispatch(setUserCredential({ user, authtoken })),
   };
 }

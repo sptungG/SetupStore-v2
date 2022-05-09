@@ -52,10 +52,7 @@ const VerificationPage = () => {
     try {
       const idTokenResult = await auth.currentUser.getIdTokenResult();
       let res = await createOrUpdateUser(idTokenResult.token);
-      setCredential({
-        ...res.data,
-        authtoken: idTokenResult.token,
-      });
+      setCredential(res.data, idTokenResult.token);
       setEmailValueVerified(auth.currentUser.email);
       setStatus("success");
       setTimeout(() => {

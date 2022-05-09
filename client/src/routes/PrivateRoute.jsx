@@ -4,7 +4,7 @@ import { Outlet } from "react-router-dom";
 
 export default function PrivateRoute() {
   const { credential, setCredential } = useUserStorage();
-  if (credential.user == null || !credential.user?.role || !credential.user?.emailVerified)
+  if (credential.user == null)
     return <LoadingToRedirect />;
 
   return <Outlet />;

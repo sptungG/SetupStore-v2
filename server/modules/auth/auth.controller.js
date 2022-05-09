@@ -2,7 +2,6 @@ const User = require("../user/model.user");
 
 exports.createOrUpdateUser = async (req, res) => {
   const { name, picture, email, phone, email_verified } = req.user;
-  console.log("exports.createOrUpdateUser= ~ req", req.user);
 
   const user = await User.findOneAndUpdate(
     { email },
@@ -19,6 +18,7 @@ exports.createOrUpdateUser = async (req, res) => {
       phone: phone,
       name: name ?? email.split("@")[0],
       picture: picture ?? "https://source.unsplash.com/random?setup",
+      emailVerified: email_verified 
     }).save();
     // console.log("USER CREATED", newUser);
     res.json(newUser);

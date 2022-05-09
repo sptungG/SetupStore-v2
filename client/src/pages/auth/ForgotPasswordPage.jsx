@@ -1,5 +1,6 @@
 import { Alert, Button, Form, Input, Typography } from "antd";
 import { auth } from "common/firebase-config";
+import { useUserStorage } from "common/useUserStorage";
 import { sendPasswordResetEmail } from "firebase/auth";
 import GalleryBgLayout from "pages/GalleryBgLayout";
 import React from "react";
@@ -7,7 +8,6 @@ import { HiOutlineMail } from "react-icons/hi";
 import { Link, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import styled from "styled-components";
-
 
 const FormWrapperStyles = styled.div`
   display: flex;
@@ -31,6 +31,7 @@ const FormWrapperStyles = styled.div`
 
 const ForgotPasswordPage = (props) => {
   const [status, setStatus] = React.useState("");
+  const { credential, setCredential, setEmailValueVerified } = useUserStorage();
 
   const [form] = Form.useForm();
 
@@ -48,8 +49,9 @@ const ForgotPasswordPage = (props) => {
         form.resetFields();
         setStatus("success");
         toast.success("Check your email for password reset link");
+        setEmailValueVerified(email);
         setTimeout(() => {
-          navigate("/");
+          navigate("/login");
         }, 3000);
       })
       .catch((error) => {

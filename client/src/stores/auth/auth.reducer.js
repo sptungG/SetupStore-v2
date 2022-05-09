@@ -2,10 +2,12 @@ import { createSlice } from "@reduxjs/toolkit";
 
 const authSlice = createSlice({
   name: "auth",
-  initialState: { user: null, emailVerifiedValue: "" },
+  initialState: { user: null, authtoken: null, emailVerifiedValue: "" },
   reducers: {
     setUserCredential(state, action) {
-      state.user = action.payload;
+      const {user, authtoken} = action.payload
+      state.user = user;
+      state.authtoken = authtoken;
     },
     setEmailVerifiedValue(state, action) {
       state.emailVerifiedValue = action.payload;

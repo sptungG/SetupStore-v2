@@ -30,10 +30,7 @@ const App = () => {
       if (user) {
         const idTokenResult = await user.getIdTokenResult();
         const res = await currentUser(idTokenResult.token);
-        setCredential({
-          ...res.data,
-          authtoken: idTokenResult.token,
-        });
+        setCredential(res.data, idTokenResult.token);
       }
       setStatus("success");
     });

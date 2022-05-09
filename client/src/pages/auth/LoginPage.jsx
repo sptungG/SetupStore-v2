@@ -12,7 +12,7 @@ import { BsInstagram } from "react-icons/bs";
 import { FaFacebookSquare } from "react-icons/fa";
 import { FcGoogle } from "react-icons/fc";
 import { HiOutlineLockClosed, HiOutlineMail } from "react-icons/hi";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import styled from "styled-components";
 
@@ -40,6 +40,7 @@ const LoginPage = (props) => {
   const [form] = Form.useForm();
   const [loading, setLoading] = useState(false);
   const { credential, setCredential } = useUserStorage();
+  let navigate = useNavigate();
 
   useEffect(() => {
     form.setFieldsValue({ email: credential.emailVerifiedValue });
@@ -51,11 +52,9 @@ const LoginPage = (props) => {
       const { user } = await signInWithEmailAndPassword(auth, email, password);
       const idTokenResult = await user.getIdTokenResult();
       const res = await createOrUpdateUser(idTokenResult.token);
-      setCredential({
-        ...res.data,
-        authtoken: idTokenResult.token,
-      });
+      setCredential(res.data, idTokenResult.token);
       setLoading(false);
+      navigate("/");
     } catch (error) {
       toast.error(error.message);
       setLoading(false);
@@ -66,7 +65,6 @@ const LoginPage = (props) => {
     signInWithPopup(auth, googleAuthProvider)
       .then(async (result) => {
         const { user } = result;
-        console.log(".then ~ user", user);
         const idTokenResult = await user.getIdTokenResult();
 
         const res = await createOrUpdateUser(idTokenResult.token);
@@ -76,9 +74,9 @@ const LoginPage = (props) => {
           authtoken: idTokenResult.token,
         });
         setLoading(false);
+        navigate("/");
       })
       .catch((err) => {
-        console.log("googleLogin ~ err", err);
         toast.error(err.message);
         setLoading(false);
       });
