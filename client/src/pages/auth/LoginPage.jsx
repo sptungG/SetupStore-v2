@@ -69,10 +69,7 @@ const LoginPage = (props) => {
 
         const res = await createOrUpdateUser(idTokenResult.token);
         // console.log("CREATE OR UPDATE RES", res);
-        setCredential({
-          ...res.data,
-          authtoken: idTokenResult.token,
-        });
+        setCredential(res.data, idTokenResult.token);
         setLoading(false);
         navigate("/");
       })
