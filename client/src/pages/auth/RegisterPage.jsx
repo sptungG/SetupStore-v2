@@ -23,7 +23,7 @@ const FormWrapperStyles = styled.div`
   height: 100%;
   .carousel-wrapper {
     width: 100%;
-    padding: 0 48px 24px 48px;
+    padding: 0 40px 24px 40px;
   }
   .from-container {
     width: 100%;

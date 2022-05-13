@@ -21,10 +21,11 @@ const FormWrapperStyles = styled.div`
   align-items: center;
   justify-content: center;
   flex-direction: column;
+  flex-shrink: 0;
   height: 100%;
   .carousel-wrapper {
     width: 100%;
-    padding: 0 48px 24px 48px;
+    padding: 0 40px 24px 40px;
     & img {
       width: 100%;
       height: 100%;
