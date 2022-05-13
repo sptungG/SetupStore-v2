@@ -47,7 +47,11 @@ const LogoWrapper = styled.div`
 const LogoAndText = ({ logoSize = 0, fontSize = 0, fontWeight = 500 }) => {
   return (
     <Link to="/" className="logo-wrapper">
-      <LogoWrapper logoSize={logoSize} fontSize={fontSize} fontWeight={fontWeight}>
+      <LogoWrapper
+        logoSize={logoSize}
+        fontSize={fontSize}
+        fontWeight={fontWeight}
+      >
         {logoSize > 0 && (
           <div className="logo-img" size={logoSize}>
             <img alt="logo" src={logo00} />
@@ -60,3 +64,23 @@ const LogoAndText = ({ logoSize = 0, fontSize = 0, fontWeight = 500 }) => {
 };
 
 export default LogoAndText;
+
+export const Logo = ({ logoSize = 0, fontSize = 0, fontWeight = 500 }) => {
+  return (
+    <span role="img" aria-label="desktop" className="anticon anticon-desktop ant-menu-item-icon">
+      <Link to="/" className="logo-wrapper">
+        <LogoWrapper
+          logoSize={logoSize}
+          fontSize={fontSize}
+          fontWeight={fontWeight}
+        >
+          {logoSize > 0 && (
+            <div className="logo-img" size={logoSize}>
+              <img alt="logo" src={logo00} />
+            </div>
+          )}
+        </LogoWrapper>
+      </Link>
+    </span>
+  );
+};
