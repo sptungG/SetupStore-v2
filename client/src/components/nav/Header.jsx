@@ -1,63 +1,69 @@
-import React from "react";
-import { Row, Col, Avatar, Badge } from "antd";
-import ThemeButton from "components/buttons/ThemeButton";
-import AutocompleteSearch from "components/input/AutocompleteSearch";
-import styled from "styled-components"
 import {
+  BellOutlined,
   SearchOutlined,
   ShoppingCartOutlined,
-  BellOutlined,
   UserOutlined,
 } from "@ant-design/icons";
+import { Avatar, Badge, Button, Space } from "antd";
+import ThemeButton from "components/buttons/ThemeButton";
+import CollapsedButton from "components/buttons/CollapsedButton";
+import AutocompleteSearch from "components/input/AutocompleteSearch";
+import React from "react";
+import styled from "styled-components";
+import LogoAndText from "./LogoAndText";
+import { Link } from "react-router-dom";
+import { useUserStorage } from "common/useUserStorage";
+import ProfileDropdownMenu from "./ProfileDropdown";
 
-const MyHeader = styled.div`
-  margin-top: 1rem;
-  height: 100%;
+const HeaderWrapper = styled.header`
+  height: 64px;
   width: 100%;
-  box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
-  .ant-col .ant-col-4{
-    text-align: center;
-    margin: auto;
+  display: flex;
+  align-items: center;
+  padding: 24px;
+  .header-left {
   }
-`
+  .header-center {
+    margin: 0 auto;
+  }
+  .header-right {
+  }
+`;
 
 const Header = () => {
+  const { credential, setCredential } = useUserStorage();
+  const isSignedIn = credential.user != null && credential.authtoken != null;
   return (
-    <MyHeader>
-      <Row justify="space-between" align="middle">
-        <Col span={8} offset={16}>
-          <Row>
-            <Col span={4}>
-              <ThemeButton></ThemeButton>
-            </Col>
-            <Col span={4}>
-              <Badge dot>
-                <SearchOutlined style={{ fontSize: "24px" }} />
-              </Badge>
-            </Col>
-            <Col span={4}>
-              <Badge dot>
-                <ShoppingCartOutlined style={{ fontSize: "24px" }} />
-              </Badge>
-            </Col>
-            <Col span={4}>
-              <Badge dot>
-                <BellOutlined style={{ fontSize: "24px" }} />
-              </Badge>
-            </Col>
-            <Col span={4}>
-              <p style={{'marginBottom': '0','fontSize': '14px','textAlign': 'right'}}>Name</p>
-              <p style={{'fontSize': '12px','textAlign': 'right'}}>Type</p>
-            </Col>
-            <Col span={4}>
-              <Badge dot>
-                <Avatar size={36} icon={<UserOutlined />} />
-              </Badge>
-            </Col>
-          </Row>
-        </Col>
-      </Row>
-    </MyHeader>
+    <HeaderWrapper>
+      <div className="header-left">
+        <CollapsedButton />
+      </div>
+      <div className="header-center">
+        <LogoAndText fontSize={24} />
+      </div>
+      <div className="header-right">
+        <Space>
+          <Badge dot>
+            <ShoppingCartOutlined style={{ fontSize: "24px" }} />
+          </Badge>
+          <Badge dot>
+            <BellOutlined style={{ fontSize: "24px" }} />
+          </Badge>
+          {isSignedIn ? (
+            <ProfileDropdownMenu />
+          ) : (
+            <Space>
+              <Button type="link" shape="round" size="large">
+                <Link to="/login">Login</Link>
+              </Button>
+              <Button type="primary" shape="round" size="large">
+                <Link to="/register">Register</Link>
+              </Button>
+            </Space>
+          )}
+        </Space>
+      </div>
+    </HeaderWrapper>
   );
 };
 

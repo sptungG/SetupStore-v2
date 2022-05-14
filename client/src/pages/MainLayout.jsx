@@ -1,30 +1,26 @@
-import { Layout, Row, Col } from "antd";
-import Header from "components/nav/Header";
+import { useChangeCollapsed } from "common/useChangeCollapsed";
+import DropdownMenu from "components/nav/DropdownMenu";
 import Footer from "components/nav/Footer";
-import HomeMenu from "components/nav/Menu";
+import Header from "components/nav/Header";
 import React from "react";
+import styled from "styled-components";
+
+const Wrapper = styled.main`
+  position: relative;
+  overflow: hidden;
+  min-height: 50vh;
+`;
 
 const MainLayout = ({ children }) => {
-  const [collapsed, setCollapsed] = React.useState(false);
+  const { collapsed } = useChangeCollapsed();
   return (
     <>
-      <Row>
-        <Col span={collapsed ? 2 : 6}>
-          <HomeMenu
-            collapsed={collapsed}
-            setCollapsed={setCollapsed}
-          ></HomeMenu>
-        </Col>
-        <Col span={collapsed ? 20 : 17} offset={collapsed ? 1 : 0}>
-          <Row>
-            <Header></Header>
-          </Row>
-          <Row>
-            <Layout.Content>{children}</Layout.Content>
-          </Row>
-        </Col>
-      </Row>
-      <Footer></Footer>
+      <Header />
+      <Wrapper>
+        <DropdownMenu />
+        {children}
+      </Wrapper>
+      <Footer />
     </>
   );
 };

@@ -1,16 +1,13 @@
 import React from "react";
 import Gallery from "components/images/Gallery";
 import styled from "styled-components";
-import { Col, Row } from "antd";
-import CarouselGallery from "components/images/CarouselGallery";
-import ThemeButton from "components/buttons/ThemeButton";
 import LogoAndText from "components/nav/LogoAndText";
 
 const PageStyles = styled.div`
   position: relative;
-  display:flex;
-  align-items:center;
-  justify-content:center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   overflow: hidden;
   &::after {
     content: "";
@@ -19,8 +16,9 @@ const PageStyles = styled.div`
     left: 0;
     width: 1440px;
     height: 234px;
-    background: url("./valley-white.svg") top right / cover no-repeat;
-    transform: translate(200px,-520px) rotate(152deg) scale(2);
+    background: url("https://firebasestorage.googleapis.com/v0/b/setup-store-v2.appspot.com/o/valley-white.svg?alt=media&token=15f3857c-980e-4c0f-9c81-6adca8636525")
+      top right / cover no-repeat;
+    transform: translate(200px, -520px) rotate(152deg) scale(2);
     z-index: 19;
   }
   .modal-overlay #gallery {
