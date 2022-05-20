@@ -1,5 +1,6 @@
 const Category = require("./model.category");
 const Product = require("../product/model.product");
+const { vietnameseSlug } = require("../../common/utils");
 
 exports.getAllCategory = async (req, res) => {
   const { status } = req.query;
@@ -22,7 +23,10 @@ exports.getCategoryById = async (req, res) => {
 exports.createCategory = async (req, res) => {
   try {
     const { name, image } = req.body;
-    const category = await new Category({ name, image }).save();
+    const category = await new Category({
+      name,
+      image: image || `https://source.unsplash.com/random?setup,${vietnameseSlug(name)}`,
+    }).save();
     res.json(category);
   } catch (err) {
     // console.log(err);
