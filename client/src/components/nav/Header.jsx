@@ -4,7 +4,7 @@ import {
   ShoppingCartOutlined,
   UserOutlined,
 } from "@ant-design/icons";
-import { Avatar, Badge, Button, Space } from "antd";
+import { Avatar, Badge, Button, Space, Typography } from "antd";
 import ThemeButton from "components/buttons/ThemeButton";
 import CollapsedButton from "components/buttons/CollapsedButton";
 import AutocompleteSearch from "components/input/AutocompleteSearch";
@@ -36,11 +36,13 @@ const Header = () => {
   return (
     <HeaderWrapper>
       <div className="header-left">
-        <CollapsedButton />
-      </div>
-      <div className="header-center">
         <LogoAndText fontSize={24} />
+        <Space align="center">
+          <Typography.Text strong>Danh mục</Typography.Text>
+          <CollapsedButton />
+        </Space>
       </div>
+      <div className="header-center"></div>
       <div className="header-right">
         <Space>
           <Badge dot>
