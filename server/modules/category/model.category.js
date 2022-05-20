@@ -1,4 +1,5 @@
 const mongoose = require("mongoose");
+const { NOT_FOUND_IMG } = require("../../common/constants");
 
 const CategorySchema = new mongoose.Schema(
   {
@@ -9,7 +10,7 @@ const CategorySchema = new mongoose.Schema(
     },
     image: {
       type: String,
-      default: "https://source.unsplash.com/random?setup",
+      default: NOT_FOUND_IMG,
     },
     status: { type: String, enum: ["active", "inactive", "deleted"], default: "active" },
   },
