@@ -26,7 +26,7 @@ exports.createCategory = async (req, res) => {
     const { name, image } = req.body;
     const category = await new Category({
       name,
-      image,
+      image: image,
     }).save();
     res.json(category);
   } catch (err) {
