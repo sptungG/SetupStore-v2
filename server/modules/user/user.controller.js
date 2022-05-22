@@ -7,16 +7,8 @@ exports.getAllUsers = async (req, res) => {
 
 };
 // updateUsers
-exports.updateUsers = async (req, res) => {
-
-};
+exports.updateUsers = async (req, res) => {};
 // removeUsers
-exports.removeUsers = async (req, res) => {
-
-};
+exports.removeUsers = async (req, res) => {};
 // updateUserAddress
-exports.updateUserAddress = async (req, res) => {
-
-};
-
-
+exports.updateUserAddress = async (req, res) => {};

@@ -25,7 +25,7 @@ const UserSchema = mongoose.Schema(
     },
     emailVerified: { type: Boolean, default: false },
     // cart: [{ type: ObjectId, ref: "Cart" }],
-    // wishlist: { type: ObjectId, ref: "Wishlist" },
+    wishlist: [{ type: ObjectId, ref: "Product" }],
     status: { type: String, enum: ["active", "inactive", "deleted"], default: "active" },
   },
   { timestamps: true }

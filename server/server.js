@@ -10,6 +10,13 @@ const app = express();
 app.use(compression({ level: 6, threshold: 100 * 1000 }));
 const http = require("http").createServer(app);
 
+// Handle Uncaught exceptions
+process.on('uncaughtException', err => {
+  console.log(`ERROR: ${err.stack}`);
+  console.log('Shutting down due to uncaught exception');
+  process.exit(1)
+})
+
 // db
 mongoose
 .connect(process.env.MONGO_URI)
@@ -31,3 +38,13 @@ http.listen(port, (err) => {
   if (err) throw err;
   console.log(`Server is running on port ${port}`);
 });
+
+
+// Handle Unhandled Promise rejections
+process.on('unhandledRejection', err => {
+  console.log(`ERROR: ${err.stack}`);
+  console.log('Shutting down the server due to Unhandled Promise rejection');
+  server.close(() => {
+      process.exit(1)
+  })
+})

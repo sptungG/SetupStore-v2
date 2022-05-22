@@ -1,4 +1,6 @@
-export function vietnameseSlug(str, separator = "-") {
+exports.convertToNumber = (value) => (Number.isNaN(Number(value)) ? 0 : Number(value));
+
+exports.vietnameseSlug = (str, separator = "-") => {
   if (str) {
     str = str.trim();
     str = str.toLowerCase();
@@ -28,4 +30,4 @@ export function vietnameseSlug(str, separator = "-") {
     }
     return str;
   } else return "";
-}
+};

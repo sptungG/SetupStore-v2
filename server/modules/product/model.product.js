@@ -5,27 +5,40 @@ const ProductSchema = new mongoose.Schema(
   {
     name: {
       type: String,
-      required: true,
+      required: [true, "Please enter product name"],
       text: true,
+      trim: true,
       index: true,
     },
     desc: String,
     price: {
       type: Number,
       required: true,
+      default: 0.0,
     },
     category: {
       type: ObjectId,
       ref: "Category",
     },
-    quantity: Number,
+    quantity: { type: Number, required: [true, "Please enter product quantity"] },
     sold: {
       type: Number,
       default: 0,
     },
-    images: {
-      type: Array,
-    },
+    images: [
+      {
+        public_id: {
+          type: String,
+          required: true,
+        },
+        url: {
+          type: String,
+          required: true,
+        },
+        thumbUrl: String,
+        uid: String,
+      },
+    ],
     shipping: {
       type: String,
       default: "yes",
@@ -33,7 +46,15 @@ const ProductSchema = new mongoose.Schema(
     brand: {
       type: String,
     },
-    view: {
+    numOfViews: {
+      type: Number,
+      default: 0,
+    },
+    avgRating: {
+      type: Number,
+      default: 0,
+    },
+    numOfReviews: {
       type: Number,
       default: 0,
     },

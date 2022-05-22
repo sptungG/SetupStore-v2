@@ -11,7 +11,7 @@ exports.createOrUpdateUser = async (req, res) => {
 
   if (user) {
     // console.log("USER UPDATED", user);
-    res.json(user);
+    res.status(200).json(user);
   } else {
     const newUser = await new User({
       email,
@@ -21,13 +21,13 @@ exports.createOrUpdateUser = async (req, res) => {
       emailVerified: email_verified 
     }).save();
     // console.log("USER CREATED", newUser);
-    res.json(newUser);
+    res.status(200).json(newUser);
   }
 };
 
 exports.currentUser = async (req, res) => {
-  User.findOne({ email: req.user.email }).exec((err, user) => {
-    if (err) throw new Error(err);
-    res.json(user);
-  });
+  const foundUser = await User.findOne({ email: req.user.email }).exec();
+  if (!foundUser) return res.status(404).json({ err: `${email} not found!` });
+  if (["deleted", "inactive"].includes(foundUser.status)) return res.status(401).json({ err: `${email} is inactive user` });
+  res.status(200).json(foundUser);
 };
