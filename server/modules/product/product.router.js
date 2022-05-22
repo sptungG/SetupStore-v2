@@ -15,13 +15,19 @@ const {
   viewProduct,
 } = require("./product.controller");
 
+const { createVariant, removeVariant, updateVariant } = require("./variant.controller");
+
 // routes
 router.post("/product", authCheck, adminCheck, createProduct);
 router.get("/products", getFilteredProducts);
 router.get("/admin/products", authCheck, adminCheck, getAdminProducts);
 router.get("/product/:productId", getSingleProduct);
-router.put("/product/:productId", authCheck, adminCheck, updateProduct);
-router.put("/product/:productId/view", viewProduct);
-router.delete("/product/:productId", authCheck, adminCheck, deleteProduct);
+router.put("/product", authCheck, adminCheck, updateProduct);
+router.put("/product/view", viewProduct);
+router.delete("/product", authCheck, adminCheck, deleteProduct);
+
+router.post("/variant", authCheck, adminCheck, createVariant);
+router.put("/variant", authCheck, adminCheck, updateVariant);
+router.delete("/variant", authCheck, adminCheck, removeVariant);
 
 module.exports = router;

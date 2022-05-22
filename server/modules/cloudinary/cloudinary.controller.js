@@ -1,5 +1,5 @@
-const cloudinary = require("cloudinary");
-
+const cloudinary = require("cloudinary").v2;
+const { v4: uuidv4 } = require("uuid");
 // config
 cloudinary.config({
   cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
@@ -8,24 +8,70 @@ cloudinary.config({
 });
 
 // req.files.file.path
-exports.upload = async (req, res) => {
-  let result = await cloudinary.uploader.upload(req.body.image, {
-    public_id: `${Date.now()}`,
-    resource_type: "auto", // jpeg, png
-  });
-  res.json({
-    public_id: result.public_id,
-    uid: result.public_id,
-    url: result.secure_url,
-    thumbUrl: result.secure_url,
-  });
+exports.userUpload = async (req, res) => {
+  try {
+    const { userId } = req.query;
+    let result = await cloudinary.uploader.upload(req.body.image, {
+      public_id: uuidv4(),
+      resource_type: "auto", // jpeg, png
+      folder: "users",
+    });
+    res.status(200).json({
+      success: true,
+      data: {
+        public_id: result.public_id,
+        url: result.secure_url,
+        uid: result.public_id,
+        thumbUrl: result.secure_url,
+      },
+    });
+  } catch (err) {
+    res.status(400).json({ success: false, err: err.message });
+  }
+};
+exports.adminUpload = async (req, res) => {
+  try {
+    const { productId, userId, comboId, bannerId } = req.query;
+    let folderName = "";
+    if (productId) folderName = "products";
+    if (userId) folderName = "users";
+    if (comboId) folderName = "combos";
+    if (bannerId) folderName = "banners";
+    let result = await cloudinary.uploader.upload(req.body.image, {
+      public_id: uuidv4(),
+      resource_type: "auto", // jpeg, png
+      folder: folderName,
+    });
+    res.status(200).json({
+      success: true,
+      data: {
+        public_id: result.public_id,
+        url: result.secure_url,
+        uid: result.public_id,
+        thumbUrl: result.secure_url,
+      },
+    });
+  } catch (err) {
+    res.status(400).json({ success: false, err: err.message });
+  }
 };
 
-exports.remove = (req, res) => {
-  let image_id = req.body.public_id;
+exports.userRemove = async (req, res) => {
+  try {
+    let { public_id: image_id } = req.body;
+    let result = await cloudinary.uploader.destroy(image_id);
+    res.status(200).json({ success: true });
+  } catch (err) {
+    res.status(400).json({ success: false, err: err.message });
+  }
+};
 
-  cloudinary.uploader.destroy(image_id, (err, result) => {
-    if (err) return res.json({ success: false, err });
-    res.send("ok");
-  });
+exports.adminRemove = async (req, res) => {
+  try {
+    let { public_id: image_id } = req.body;
+    let result = await cloudinary.uploader.destroy(image_id);
+    res.status(200).json({ success: true });
+  } catch (err) {
+    res.status(400).json({ success: false, err: err.message });
+  }
 };

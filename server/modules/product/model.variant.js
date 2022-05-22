@@ -8,10 +8,7 @@ const VariantSchema = mongoose.Schema(
       label: String,
       hex_code: String,
     },
-    // images: {
-    //   type: Array,
-    // },
-    status: { type: String, enum: ["active", "inactive", "deleted"], default: "active" },
+    image_id: String,
   },
   { timestamps: true }
 );
