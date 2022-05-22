@@ -59,7 +59,7 @@ exports.getFilteredProducts = async (req, res) => {
         .populate("variants", "_id color image_id")
         .skip((currentPage - 1) * limitNumber)
         .limit(limitNumber)
-        .sort(sortCondition),
+        .sort(sort ? sortCondition : { createdAt: -1 }),
       Product.countDocuments(filter),
     ]);
 
@@ -87,7 +87,29 @@ exports.createProduct = async (req, res) => {
 // Get all products (Admin)  =>   /api/admin/products
 exports.getAdminProducts = async (req, res) => {
   try {
-    const products = await Product.find();
+    const { keyword, sort } = req.query;
+    let filter = {};
+    let sortCondition = {};
+
+    if (keyword) {
+      const regex = new RegExp(`${keyword}`, "i");
+      const regexCond = { $regex: regex };
+      console.log(regexCond);
+      filter["$or"] = [{ name: regexCond }, { desc: regexCond }];
+    }
+
+    if (sort) {
+      const [sortField, sortDirection] = sort.split("_");
+      if (sortField && sortDirection) {
+        sortCondition[sortField] = sortDirection === "desc" ? -1 : 1;
+      }
+    }
+
+    const products = await Product.find(filter)
+      .populate("category", "_id name")
+      .populate("wishlist", "_id name picture")
+      .populate("variants", "_id color image_id")
+      .sort(sort ? sortCondition : { createdAt: -1 });
 
     res.status(200).json({
       success: true,
@@ -102,7 +124,10 @@ exports.getAdminProducts = async (req, res) => {
 exports.getSingleProduct = async (req, res) => {
   try {
     const { productId } = req.params;
-    const foundProduct = await Product.findById(productId);
+    const foundProduct = await Product.findById(productId)
+      .populate("category", "_id name")
+      .populate("wishlist", "_id name picture")
+      .populate("variants", "_id color image_id");
 
     if (!foundProduct) throw { status: 404, message: `${productId} not found!` };
 
