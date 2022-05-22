@@ -119,11 +119,14 @@ exports.createProductReview = async (req, res) => {
     const foundProduct = await Product.findOne({ _id: productId });
     if (!foundProduct) throw { status: 404, message: `${productId} not found!` };
 
-    const foundProductReviews = await Review.find({ product: productId, status: "active" });
-    const isReviewed = foundProductReviews.find(
-      (r) => r.createdBy.toString() === foundUser._id.toString()
-    );
-    if (isReviewed) throw { status: 400, message: `${productId} has been already reviewed!` };
+    const foundProductReview = await Review.find({
+      product: productId,
+      createdBy: foundUser._id,
+      status: "active",
+    });
+
+    if (foundProductReview.length > 0)
+      throw { status: 400, message: `${productId} has been already reviewed!` };
 
     const reviewData = {
       product: productId,
@@ -141,7 +144,7 @@ exports.createProductReview = async (req, res) => {
           productReview.length
         : 0;
 
-    await Product.findByIdAndUpdate(
+    const updatedProduct = await Product.findByIdAndUpdate(
       productId,
       {
         avgRating,
@@ -159,28 +162,30 @@ exports.createProductReview = async (req, res) => {
   }
 };
 
-// removeReview
+// [ADMIN] removeReview
 exports.removeReview = async (req, res) => {
   try {
     const { productId, userId } = req.query;
 
+    const foundUser = await User.findById(userId).exec();
+    if (!foundUser) throw { status: 404, message: `${userId} not found` };
+
+    const foundProduct = await Product.findOne({ _id: productId });
+    if (!foundProduct) throw { status: 404, message: `${productId} not found!` };
+
     const foundProductReview = await Review.find({
       product: productId,
       createdBy: userId,
-      status: "active",
     });
 
     if (foundProductReview.length === 0)
-      throw { status: 404, message: `${productId}-${userId} not found!` };
+      throw { status: 404, message: `Review of ${userId} in ${productId} not found!` };
+    
+    const { _id: reviewId } = foundProductReview[0];
 
-    const [review] = foundProductReview;
-    const deletedReview = await Review.findOneAndUpdate(
-      { _id: review._id },
-      { status: "deleted" },
-      { new: true }
-    );
+    const deletedReview = await Review.findOneAndRemove({ _id: reviewId });
 
-    const productReviews = await Review.find({ product: productId, status: "active" });
+    const productReviews = await Review.find({ product: productId });
 
     const numOfReviews = productReviews.length;
 
@@ -190,7 +195,7 @@ exports.removeReview = async (req, res) => {
           productReviews.length
         : 0;
 
-    await Product.findByIdAndUpdate(
+    const updatedProduct = await Product.findByIdAndUpdate(
       productId,
       {
         avgRating,

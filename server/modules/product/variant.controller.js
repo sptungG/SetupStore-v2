@@ -46,10 +46,14 @@ exports.updateVariant = async (req, res) => {
 
 exports.removeVariant = async (req, res) => {
   try {
-    const { variantId, productId } = req.query;
+    const { variantId } = req.query;
     const removedVariant = await Variant.findOneAndRemove({ _id: variantId });
     if (!removedVariant) throw { status: 404, message: `${variantId} not found!` };
-    await Product.findByIdAndUpdate(productId, { $pull: { variants: variantId } }, { new: true });
+    await Product.findByIdAndUpdate(
+      removedVariant.product,
+      { $pull: { variants: variantId } },
+      { new: true }
+    );
     res.status(200).json({ success: true, data: removedVariant });
   } catch (err) {
     // console.log(err);
