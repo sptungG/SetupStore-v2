@@ -26,7 +26,8 @@ exports.createOrUpdateUser = async (req, res) => {
 };
 
 exports.currentUser = async (req, res) => {
-  const foundUser = await User.findOne({ email: req.user.email }).exec();
+  const { email } = req.user;
+  const foundUser = await User.findOne({ email }).exec();
   if (!foundUser) return res.status(404).json({ success: false, err: `${email} not found!` });
   if (["deleted", "inactive"].includes(foundUser.status))
     return res.status(401).json({ success: false, err: `${email} is inactive user` });

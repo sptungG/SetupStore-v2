@@ -1,3 +1,4 @@
+const cloudinary = require("cloudinary").v2;
 const { convertToNumber } = require("../../common/utils");
 const Product = require("./model.product");
 const Variant = require("./model.variant");
@@ -8,7 +9,7 @@ const Review = require("../reaction/model.review");
 // getFilteredProducts (pagination, sort, search)
 exports.getFilteredProducts = async (req, res) => {
   try {
-    const { status, rating, price, keyword, page, limit, sort } = req.query;
+    const { status, rating, price, color, keyword, page, limit, sort } = req.query;
     const currentPage = page || 1;
 
     const limitNumber = limit && Number(limit) ? Number(limit) : 4;
@@ -46,6 +47,9 @@ exports.getFilteredProducts = async (req, res) => {
       const regexCond = { $regex: regex };
       console.log(regexCond);
       filter["$or"] = [{ name: regexCond }, { desc: regexCond }];
+    }
+
+    if (color) {
     }
 
     const [products, totalProduct] = await Promise.all([
@@ -136,11 +140,16 @@ exports.deleteProduct = async (req, res) => {
 
     if (!foundProduct) throw { status: 404, message: `${productId} not found!` };
 
+    // Deleting images associated with the product
+    // for (let i = 0; i < foundProduct.images.length; i++) {
+    //   const result = await cloudinary.uploader.destroy(foundProduct.images[i].public_id);
+    // }
+
     const deletedProduct = await Product.findByIdAndRemove(productId);
     await User.updateMany({}, { $pull: { wishlist: productId } }, { new: true });
-    await Variant.remove({ product: productId });
-    await Wishlist.remove({ product: productId });
-    await Review.remove({ product: productId });
+    await Variant.deleteMany({ product: productId });
+    await Wishlist.deleteMany({ product: productId });
+    await Review.deleteMany({ product: productId });
 
     res.status(200).json({ success: true, data: deletedProduct });
   } catch (err) {

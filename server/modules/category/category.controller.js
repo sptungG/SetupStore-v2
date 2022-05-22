@@ -1,5 +1,10 @@
+const cloudinary = require("cloudinary").v2;
 const Category = require("./model.category");
 const Product = require("../product/model.product");
+const Variant = require("../product/model.variant");
+const Review = require("../reaction/model.review");
+const Wishlist = require("../reaction/model.wishlist");
+const User = require("../user/model.user");
 const { vietnameseSlug } = require("../../common/utils");
 const { NOT_FOUND_IMG } = require("../../common/constants");
 
@@ -66,7 +71,22 @@ exports.deleteCategory = async (req, res) => {
     const { id } = req.params;
     const category = await Category.findOneAndRemove({ _id: id });
     if (!category) throw { status: 404, message: `${id} not found!` };
-    const products = await Product.remove({ category: id });
+    
+    const foundProducts = await Product.find({ category: id });
+    let i = 0,
+      len = foundProducts.length;
+    while (i < len) {
+      // for (let j = 0; j < foundProducts[i].images.length; j++) {
+      //   await cloudinary.uploader.destroy(foundProducts[i].images[j].public_id);
+      // }
+      await User.updateMany({}, { $pull: { wishlist: foundProducts[i]._id } }, { new: true });
+      await Variant.deleteMany({ product: foundProducts[i]._id });
+      await Wishlist.deleteMany({ product: foundProducts[i]._id });
+      await Review.deleteMany({ product: foundProducts[i]._id });
+      i++;
+    }
+
+    const deletedProducts = await Product.deleteMany({ category: id });
     res.status(200).json({ success: true, data: category });
   } catch (err) {
     res.status(err?.status || 400).json({ success: false, err: err.message });
