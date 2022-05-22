@@ -71,7 +71,7 @@ exports.deleteCategory = async (req, res) => {
     const { id } = req.params;
     const category = await Category.findOneAndRemove({ _id: id });
     if (!category) throw { status: 404, message: `${id} not found!` };
-    
+
     const foundProducts = await Product.find({ category: id });
     let i = 0,
       len = foundProducts.length;
@@ -79,10 +79,12 @@ exports.deleteCategory = async (req, res) => {
       // for (let j = 0; j < foundProducts[i].images.length; j++) {
       //   await cloudinary.uploader.destroy(foundProducts[i].images[j].public_id);
       // }
-      await User.updateMany({}, { $pull: { wishlist: foundProducts[i]._id } }, { new: true });
-      await Variant.deleteMany({ product: foundProducts[i]._id });
-      await Wishlist.deleteMany({ product: foundProducts[i]._id });
-      await Review.deleteMany({ product: foundProducts[i]._id });
+      await Promise.all(
+        User.updateMany({}, { $pull: { wishlist: foundProducts[i]._id } }, { new: true }),
+        Variant.deleteMany({ product: foundProducts[i]._id }),
+        Wishlist.deleteMany({ product: foundProducts[i]._id }),
+        Review.deleteMany({ product: foundProducts[i]._id })
+      );
       i++;
     }
 

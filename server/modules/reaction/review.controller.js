@@ -1,6 +1,7 @@
 const Review = require("./model.review");
 const Product = require("../product/model.product");
 const User = require("../user/model.user");
+const { convertToNumber } = require("../../common/utils");
 
 // getAllReviews (non-pagination)
 exports.getAllReviews = async (req, res) => {
@@ -24,7 +25,7 @@ exports.getFilteredReviews = async (req, res) => {
     const { page, limit, sort } = req.query;
     const currentPage = page || 1;
 
-    const limitNumber = limit && Number(limit) ? Number(limit) : 4;
+    const limitNumber = convertToNumber(limit) || 4;
 
     let filter = { status: "active" };
     let sortCondition = {};
@@ -66,7 +67,7 @@ exports.getFilteredProductReviews = async (req, res) => {
     const { productId } = req.params;
     const { rating, page, limit, sort } = req.query;
     const currentPage = page || 1;
-    const limitNumber = limit && Number(limit) ? Number(limit) : 4;
+    const limitNumber = convertToNumber(limit) || 4;
 
     let filter = { product: productId, status: "active" };
     let sortCondition = {};
@@ -79,7 +80,7 @@ exports.getFilteredProductReviews = async (req, res) => {
     }
 
     if (rating) {
-      filter.rating = { $gte: Number(rating) };
+      filter.rating = { $gte: convertToNumber(rating) };
     }
 
     const [reviews, totalReview] = await Promise.all([

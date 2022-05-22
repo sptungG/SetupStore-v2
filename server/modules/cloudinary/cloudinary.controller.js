@@ -58,8 +58,8 @@ exports.adminUpload = async (req, res) => {
 
 exports.userRemove = async (req, res) => {
   try {
-    let { public_id: image_id } = req.body;
-    let result = await cloudinary.uploader.destroy(image_id);
+    let { public_id } = req.body;
+    let result = await cloudinary.uploader.destroy(public_id);
     res.status(200).json({ success: true });
   } catch (err) {
     res.status(400).json({ success: false, err: err.message });
@@ -68,8 +68,8 @@ exports.userRemove = async (req, res) => {
 
 exports.adminRemove = async (req, res) => {
   try {
-    let { public_id: image_id } = req.body;
-    let result = await cloudinary.uploader.destroy(image_id);
+    let { public_id } = req.body;
+    let result = await cloudinary.uploader.destroy(public_id);
     res.status(200).json({ success: true });
   } catch (err) {
     res.status(400).json({ success: false, err: err.message });

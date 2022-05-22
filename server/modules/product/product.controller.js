@@ -5,6 +5,7 @@ const Variant = require("./model.variant");
 const User = require("../user/model.user");
 const Wishlist = require("../reaction/model.wishlist");
 const Review = require("../reaction/model.review");
+const Category = require("../category/model.category");
 
 // getFilteredProducts (pagination, sort, search)
 exports.getFilteredProducts = async (req, res) => {
@@ -12,7 +13,7 @@ exports.getFilteredProducts = async (req, res) => {
     const { status, rating, price, color, keyword, page, limit, sort } = req.query;
     const currentPage = page || 1;
 
-    const limitNumber = limit && Number(limit) ? Number(limit) : 4;
+    const limitNumber = convertToNumber(limit) || 4;
 
     let filter = {};
     let sortCondition = {};
@@ -22,7 +23,10 @@ exports.getFilteredProducts = async (req, res) => {
     }
 
     if (rating) {
-      filter.avgRating = { $gte: convertToNumber(rating) };
+      filter.avgRating = {
+        $gte: convertToNumber(rating),
+        $lte: convertToNumber(rating) > 4 ? 5 : convertToNumber(rating) + 1,
+      };
     }
 
     if (price) {
@@ -56,7 +60,7 @@ exports.getFilteredProducts = async (req, res) => {
       Product.find(filter)
         .populate("category", "_id name")
         .populate("wishlist", "_id name picture")
-        .populate("variants", "_id color image_id")
+        .populate("variants", "_id color_label color_hex_code image_id")
         .skip((currentPage - 1) * limitNumber)
         .limit(limitNumber)
         .sort(sort ? sortCondition : { createdAt: -1 }),
@@ -76,11 +80,14 @@ exports.getFilteredProducts = async (req, res) => {
 exports.createProduct = async (req, res) => {
   try {
     // console.log(req.body);
+    const { category } = req.body;
+    const foundCategory = await Category.findById(category);
+    if (!foundCategory) throw { status: 404, message: `${category} not found!` };
     const newProduct = await new Product(req.body).save();
     res.status(200).json({ success: true, data: newProduct });
   } catch (err) {
     // console.log(err);
-    res.status(400).json({ success: false, err: err.message });
+    res.status(err?.status || 400).json({ success: false, err: err.message });
   }
 };
 
@@ -108,7 +115,7 @@ exports.getAdminProducts = async (req, res) => {
     const products = await Product.find(filter)
       .populate("category", "_id name")
       .populate("wishlist", "_id name picture")
-      .populate("variants", "_id color image_id")
+      .populate("variants", "_id color_label color_hex_code image_id")
       .sort(sort ? sortCondition : { createdAt: -1 });
 
     res.status(200).json({
@@ -127,7 +134,7 @@ exports.getSingleProduct = async (req, res) => {
     const foundProduct = await Product.findById(productId)
       .populate("category", "_id name")
       .populate("wishlist", "_id name picture")
-      .populate("variants", "_id color image_id");
+      .populate("variants", "_id color_label color_hex_code image_id");
 
     if (!foundProduct) throw { status: 404, message: `${productId} not found!` };
 
@@ -171,10 +178,13 @@ exports.deleteProduct = async (req, res) => {
     // }
 
     const deletedProduct = await Product.findByIdAndRemove(productId);
-    await User.updateMany({}, { $pull: { wishlist: productId } }, { new: true });
-    await Variant.deleteMany({ product: productId });
-    await Wishlist.deleteMany({ product: productId });
-    await Review.deleteMany({ product: productId });
+
+    await Promise.all(
+      User.updateMany({}, { $pull: { wishlist: productId } }, { new: true }),
+      Variant.deleteMany({ product: productId }),
+      Wishlist.deleteMany({ product: productId }),
+      Review.deleteMany({ product: productId })
+    );
 
     res.status(200).json({ success: true, data: deletedProduct });
   } catch (err) {

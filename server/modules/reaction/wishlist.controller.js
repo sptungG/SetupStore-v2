@@ -44,16 +44,11 @@ exports.toggleProductInWishlist = async (req, res) => {
         createdBy: foundUser._id,
       }).save();
 
-      await User.findByIdAndUpdate(
-        foundUser._id,
-        { $push: { wishlist: productId } },
-        { new: true }
+      await Promise.all(
+        User.findByIdAndUpdate(foundUser._id, { $push: { wishlist: productId } }, { new: true }),
+        Product.findByIdAndUpdate(productId, { $push: { wishlist: foundUser._id } }, { new: true })
       );
-      await Product.findByIdAndUpdate(
-        productId,
-        { $push: { wishlist: foundUser._id } },
-        { new: true }
-      );
+
       return res.status(200).json({
         success: true,
         data: newProductInWishlist,
@@ -61,15 +56,9 @@ exports.toggleProductInWishlist = async (req, res) => {
     } else {
       const [foundWishlist] = foundProductInWishlist;
       const removedProductFromWishlist = await Wishlist.findByIdAndRemove(foundWishlist._id);
-      await User.findByIdAndUpdate(
-        foundUser._id,
-        { $pull: { wishlist: productId } },
-        { new: true }
-      );
-      await Product.findByIdAndUpdate(
-        productId,
-        { $pull: { wishlist: foundUser._id } },
-        { new: true }
+      await Promise.all(
+        User.findByIdAndUpdate(foundUser._id, { $pull: { wishlist: productId } }, { new: true }),
+        Product.findByIdAndUpdate(productId, { $pull: { wishlist: foundUser._id } }, { new: true })
       );
       return res.status(200).json({
         success: true,
