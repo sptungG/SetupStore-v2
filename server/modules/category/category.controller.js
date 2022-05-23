@@ -10,8 +10,17 @@ const { NOT_FOUND_IMG } = require("../../common/constants");
 
 exports.getAllCategory = async (req, res) => {
   try {
-    const { status } = req.query;
-    const categoryList = await Category.find({ status }).sort({ createdAt: -1 }).exec();
+    const { sort } = req.query;
+    let sortCondition = {};
+
+    if (sort) {
+      const [sortField, sortDirection] = sort.split("_");
+      if (sortField && sortDirection) {
+        sortCondition[sortField] = sortDirection === "desc" ? -1 : 1;
+      }
+    }
+
+    const categoryList = await Category.find({}).sort(sort ? sortCondition : { createdAt: -1 });
     res.status(200).json({ success: true, data: categoryList });
   } catch (err) {
     res.status(400).send({ success: false, err: "Get categories failed" });
@@ -41,7 +50,7 @@ exports.createCategory = async (req, res) => {
     const { name, image } = req.body;
     const category = await new Category({
       name,
-      image,
+      image: image || NOT_FOUND_IMG,
     }).save();
     res.status(200).json({ success: true, data: category });
   } catch (err) {
@@ -56,7 +65,7 @@ exports.updateCategory = async (req, res) => {
     const { name, image, status } = req.body;
     const updated = await Category.findOneAndUpdate(
       { _id: id },
-      { name, image, status },
+      { name, image: image || NOT_FOUND_IMG, status },
       { new: true }
     );
     if (!updated) throw { status: 404, message: `${id} not found!` };

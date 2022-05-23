@@ -22,21 +22,26 @@ exports.getAllReviews = async (req, res) => {
 // getFilteredReviews (pagination, sort)
 exports.getFilteredReviews = async (req, res) => {
   try {
-    const { page, limit, sort } = req.query;
+    const { page, limit, sort, rating } = req.query;
     const currentPage = page || 1;
 
     const limitNumber = convertToNumber(limit) || 4;
 
-    let filter = { status: "active" };
+    let filter = {};
     let sortCondition = {};
+
+    if (rating) {
+      filter.rating = {
+        $gte: convertToNumber(rating),
+        $lte: convertToNumber(rating) > 4 ? 5 : convertToNumber(rating) + 1,
+      };
+    }
 
     if (sort) {
       const [sortField, sortDirection] = sort.split("_");
       if (sortField && sortDirection) {
         sortCondition[sortField] = sortDirection === "desc" ? -1 : 1;
       }
-    } else {
-      sortCondition["createdAt"] = -1;
     }
 
     const [reviews, totalReview] = await Promise.all([
@@ -45,7 +50,7 @@ exports.getFilteredReviews = async (req, res) => {
         .populate("createdBy", "_id name picture")
         .skip((currentPage - 1) * limitNumber)
         .limit(limitNumber)
-        .sort(sortCondition),
+        .sort(sort ? sortCondition : { createdAt: -1 }),
       Review.countDocuments(filter),
     ]);
 
@@ -69,7 +74,7 @@ exports.getFilteredProductReviews = async (req, res) => {
     const currentPage = page || 1;
     const limitNumber = convertToNumber(limit) || 4;
 
-    let filter = { product: productId, status: "active" };
+    let filter = { product: productId };
     let sortCondition = {};
 
     if (sort) {
@@ -80,21 +85,28 @@ exports.getFilteredProductReviews = async (req, res) => {
     }
 
     if (rating) {
-      filter.rating = { $gte: convertToNumber(rating) };
+      filter.rating = {
+        $gte: convertToNumber(rating),
+        $lte: convertToNumber(rating) > 4 ? 5 : convertToNumber(rating) + 1,
+      };
     }
 
-    const [reviews, totalReview] = await Promise.all([
+    const [reviews, reviewers, totalReview] = await Promise.all([
       Review.find(filter)
         .populate("product", "_id name")
         .populate("createdBy", "_id name picture")
         .skip((currentPage - 1) * limitNumber)
         .limit(limitNumber)
-        .sort(sortCondition),
+        .sort(sort ? sortCondition : { createdAt: -1 }),
+      Review.find({ product: productId })
+        .populate("createdBy", "_id name picture")
+        .sort(sort ? sortCondition : { createdAt: -1 }),
       Review.countDocuments(filter),
     ]);
 
     res.status(200).json({
       success: true,
+      reviewers: reviewers.map((r) => r.createdBy),
       data: reviews,
       pagination: { page: currentPage, limit: limitNumber, total: totalReview },
     });
@@ -137,7 +149,7 @@ exports.createProductReview = async (req, res) => {
     };
 
     const newReview = await new Review(reviewData).save();
-    const productReview = await Review.find({ product: productId, status: "active" });
+    const productReview = await Review.find({ product: productId });
 
     const avgRating =
       productReview.length > 0
@@ -156,6 +168,7 @@ exports.createProductReview = async (req, res) => {
 
     res.status(200).json({
       success: true,
+      reviewer: { name: foundUser.name, picture: foundUser.picture },
       data: newReview,
     });
   } catch (err) {
@@ -166,27 +179,31 @@ exports.createProductReview = async (req, res) => {
 // [ADMIN] removeReview
 exports.removeReview = async (req, res) => {
   try {
-    const { productId, userId } = req.query;
+    const { reviewId } = req.query;
 
-    const foundUser = await User.findById(userId).exec();
-    if (!foundUser) throw { status: 404, message: `${userId} not found` };
+    // const foundUser = await User.findById(userId).exec();
+    // if (!foundUser) throw { status: 404, message: `${userId} not found` };
 
-    const foundProduct = await Product.findOne({ _id: productId });
-    if (!foundProduct) throw { status: 404, message: `${productId} not found!` };
+    // const foundProduct = await Product.findOne({ _id: productId });
+    // if (!foundProduct) throw { status: 404, message: `${productId} not found!` };
 
-    const foundProductReview = await Review.find({
-      product: productId,
-      createdBy: userId,
-    });
+    // const foundProductReview = await Review.find({
+    //   product: productId,
+    //   createdBy: userId,
+    // });
 
-    if (foundProductReview.length === 0)
-      throw { status: 404, message: `Review of ${userId} in ${productId} not found!` };
-    
-    const { _id: reviewId } = foundProductReview[0];
+    // const { _id: reviewId } = foundProductReview[0];
+
+    const foundProductReview = await Review.findById(reviewId);
+    if (!foundProductReview)
+      throw {
+        status: 404,
+        message: `Review of ${foundProductReview.createdBy} in ${foundProductReview.product} not found!`,
+      };
 
     const deletedReview = await Review.findOneAndRemove({ _id: reviewId });
 
-    const productReviews = await Review.find({ product: productId });
+    const productReviews = await Review.find({ product: foundProductReview.product });
 
     const numOfReviews = productReviews.length;
 
@@ -197,7 +214,7 @@ exports.removeReview = async (req, res) => {
         : 0;
 
     const updatedProduct = await Product.findByIdAndUpdate(
-      productId,
+      foundProductReview.product,
       {
         avgRating,
         numOfReviews,

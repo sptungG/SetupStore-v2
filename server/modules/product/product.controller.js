@@ -179,11 +179,11 @@ exports.deleteProduct = async (req, res) => {
 
     const deletedProduct = await Product.findByIdAndRemove(productId);
 
-    await Promise.all(
+    const promisesRes = await Promise.all([
       User.updateMany({}, { $pull: { wishlist: productId } }, { new: true }),
       Variant.deleteMany({ product: productId }),
       Wishlist.deleteMany({ product: productId }),
-      Review.deleteMany({ product: productId })
+      Review.deleteMany({ product: productId })]
     );
 
     res.status(200).json({ success: true, data: deletedProduct });
