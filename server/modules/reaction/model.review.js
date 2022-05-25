@@ -3,7 +3,12 @@ const { ObjectId } = mongoose.Schema;
 
 const ReviewSchema = mongoose.Schema(
   {
-    product: { type: ObjectId, ref: "Product" },
+    modelId: { type: ObjectId, refPath: "onModel" },
+    onModel: {
+      type: String,
+      required: true,
+      enum: ["Combo", "Product"],
+    },
     createdBy: { type: ObjectId, ref: "User" },
     comment: String,
     rating: { type: Number, required: true },

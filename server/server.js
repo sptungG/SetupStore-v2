@@ -5,26 +5,29 @@ const cors = require("cors");
 const compression = require("compression");
 const morgan = require("morgan");
 const { readdirSync } = require("fs");
+const cloudinary = require("cloudinary").v2;
+const fileupload = require("express-fileupload");
 // app
 const app = express();
 app.use(compression({ level: 6, threshold: 100 * 1000 }));
 const http = require("http").createServer(app);
 
-// Handle Uncaught exceptions
-process.on('uncaughtException', err => {
-  console.log(`ERROR: ${err.stack}`);
-  console.log('Shutting down due to uncaught exception');
-  process.exit(1)
-})
+// config
+cloudinary.config({
+  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+  api_key: process.env.CLOUDINARY_API_KEY,
+  api_secret: process.env.CLOUDINARY_API_SECRET,
+});
 
 // db
 mongoose
-.connect(process.env.MONGO_URI)
-.then(() => console.log("DB CONNECTED"))
-.catch((err) => console.log("DB CONNECTION ERR", err));
+  .connect(process.env.MONGO_URI)
+  .then(() => console.log("DB CONNECTED"))
+  .catch((err) => console.log("DB CONNECTION ERR", err));
 
 // middleware
 app.use(morgan("dev"));
+app.use(fileupload({ useTempFiles: true }));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cors());
@@ -38,13 +41,3 @@ http.listen(port, (err) => {
   if (err) throw err;
   console.log(`Server is running on port ${port}`);
 });
-
-
-// Handle Unhandled Promise rejections
-process.on('unhandledRejection', err => {
-  console.log(`ERROR: ${err.stack}`);
-  console.log('Shutting down the server due to Unhandled Promise rejection');
-  server.close(() => {
-      process.exit(1)
-  })
-})

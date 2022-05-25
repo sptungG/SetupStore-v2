@@ -9,20 +9,26 @@ const {
   createProductReview,
   getAllReviews,
   getFilteredProductReviews,
+  getFilteredComboReviews,
   getFilteredReviews,
   removeReview,
 } = require("./review.controller");
-const { getProductWishlistByUserId, toggleProductInWishlist } = require("./wishlist.controller");
+const {
+  getWishlistByUserId,
+  toggleProductInWishlist,
+  toggleComboInWishlist,
+} = require("./wishlist.controller");
 
 // routes
 router.post("/review", authCheck, createProductReview);
 router.get("/reviews", getFilteredReviews);
-router.get("/reviews/:productId", getFilteredProductReviews);
+router.get("/product/:productId/reviews", getFilteredProductReviews);
+router.get("/combo/:comboId/reviews", getFilteredComboReviews);
 router.get("/admin/reviews", authCheck, adminCheck, getAllReviews);
-router.delete("/review", authCheck, adminCheck, removeReview);
+router.delete("/admin/review", authCheck, adminCheck, removeReview);
 
-router.post("/wishlist", authCheck, toggleProductInWishlist);
-router.get("/wishlist", authCheck, getProductWishlistByUserId);
-router.put("/wishlist", authCheck, toggleProductInWishlist);
+router.get("/wishlist", authCheck, getWishlistByUserId);
+router.put("/wishlist/product", authCheck, toggleProductInWishlist);
+router.put("/wishlist/combo", authCheck, toggleComboInWishlist);
 
 module.exports = router;

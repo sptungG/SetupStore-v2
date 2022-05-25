@@ -9,14 +9,26 @@ const ComboSchema = new mongoose.Schema(
       text: true,
     },
     desc: String,
-    images: {
-      type: Array,
-    },
-    view: {
+    numOfViews: {
       type: Number,
       default: 0,
     },
-    productIds: [{ type: ObjectId, ref: "Product" }],
+    avgRating: {
+      type: Number,
+      default: 0,
+    },
+    numOfReviews: {
+      type: Number,
+      default: 0,
+    },
+    wishlist: [{ type: ObjectId, ref: "User" }],
+    image: { type: ObjectId, ref: "Image" },
+    products: [
+      {
+        product: { type: ObjectId, ref: "Product" },
+        position: { type: String, trim: true, default: "50%,50%" },
+      },
+    ],
     status: { type: String, enum: ["active", "inactive", "deleted"], default: "active" },
   },
   { timestamps: true }

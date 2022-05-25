@@ -3,7 +3,12 @@ const { ObjectId } = mongoose.Schema;
 
 const WishlistSchema = mongoose.Schema(
   {
-    product: { type: ObjectId, ref: "Product" },
+    modelId: { type: ObjectId, refPath: "onModel" },
+    onModel: {
+      type: String,
+      required: true,
+      enum: ["Combo", "Product"],
+    },
     createdBy: { type: ObjectId, ref: "User" },
   },
   { timestamps: true }

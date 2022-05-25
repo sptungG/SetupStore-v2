@@ -10,11 +10,11 @@ const ProductSchema = new mongoose.Schema(
       trim: true,
       index: true,
     },
-    desc: String,
+    desc: { type: String, trim: true },
     price: {
       type: Number,
       required: true,
-      default: 0.0,
+      default: 0,
     },
     category: {
       type: ObjectId,
@@ -25,26 +25,14 @@ const ProductSchema = new mongoose.Schema(
       type: Number,
       default: 0,
     },
-    images: [
-      {
-        public_id: {
-          type: String,
-          required: true,
-        },
-        url: {
-          type: String,
-          required: true,
-        },
-        thumbUrl: String,
-        uid: String,
-      },
-    ],
+    images: [{ type: ObjectId, ref: "Image" }],
     shipping: {
       type: String,
       default: "yes",
     },
     brand: {
       type: String,
+      trim: true,
     },
     numOfViews: {
       type: Number,

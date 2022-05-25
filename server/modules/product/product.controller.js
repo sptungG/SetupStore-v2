@@ -6,6 +6,8 @@ const User = require("../user/model.user");
 const Wishlist = require("../reaction/model.wishlist");
 const Review = require("../reaction/model.review");
 const Category = require("../category/model.category");
+const Image = require("../cloudinary/model.image");
+const Combo = require("../combo/model.combo");
 
 // getFilteredProducts (pagination, sort, search)
 exports.getFilteredProducts = async (req, res) => {
@@ -59,8 +61,9 @@ exports.getFilteredProducts = async (req, res) => {
     const [products, totalProduct] = await Promise.all([
       Product.find(filter)
         .populate("category", "_id name")
+        .populate("images", "_id public_id url modelId onModel")
         .populate("wishlist", "_id name picture")
-        .populate("variants", "_id color_label color_hex_code image_id")
+        .populate("variants", "_id color_label color_hex_code image")
         .skip((currentPage - 1) * limitNumber)
         .limit(limitNumber)
         .sort(sort ? sortCondition : { createdAt: -1 }),
@@ -80,10 +83,23 @@ exports.getFilteredProducts = async (req, res) => {
 exports.createProduct = async (req, res) => {
   try {
     // console.log(req.body);
-    const { category } = req.body;
+    const { category, images } = req.body;
     const foundCategory = await Category.findById(category);
     if (!foundCategory) throw { status: 404, message: `${category} not found!` };
-    const newProduct = await new Product(req.body).save();
+
+    const promisesFoundImages = images.map((img) => Image.findById(img));
+    let foundImages = await Promise.all(promisesFoundImages);
+    foundImages.filter((img) => img?.onModel === "Product");
+
+    const newProduct = await new Product({ ...req.body, category, images: foundImages });
+    const updateImages = await Promise.all(
+      foundImages.map((img) =>
+        Image.findByIdAndUpdate(img, { modelId: newProduct._id }, { new: true })
+      )
+    );
+    newProduct.images = updateImages;
+    await newProduct.save();
+
     res.status(200).json({ success: true, data: newProduct });
   } catch (err) {
     // console.log(err);
@@ -114,8 +130,9 @@ exports.getAdminProducts = async (req, res) => {
 
     const products = await Product.find(filter)
       .populate("category", "_id name")
+      .populate("images", "_id public_id url modelId onModel")
       .populate("wishlist", "_id name picture")
-      .populate("variants", "_id color_label color_hex_code image_id")
+      .populate("variants", "_id color_label color_hex_code image")
       .sort(sort ? sortCondition : { createdAt: -1 });
 
     res.status(200).json({
@@ -133,8 +150,9 @@ exports.getSingleProduct = async (req, res) => {
     const { productId } = req.params;
     const foundProduct = await Product.findById(productId)
       .populate("category", "_id name")
+      .populate("images", "_id public_id url modelId onModel")
       .populate("wishlist", "_id name picture")
-      .populate("variants", "_id color_label color_hex_code image_id");
+      .populate("variants", "_id color_label color_hex_code image");
 
     if (!foundProduct) throw { status: 404, message: `${productId} not found!` };
 
@@ -151,12 +169,19 @@ exports.getSingleProduct = async (req, res) => {
 exports.updateProduct = async (req, res) => {
   try {
     const { productId } = req.query;
-    const foundProduct = await Product.findOne({ _id: productId });
-
-    if (!foundProduct) throw { status: 404, message: `${productId} not found!` };
     const dataUpdate = req.body;
 
-    const updatedProduct = await Product.findByIdAndUpdate(productId, dataUpdate, { new: true });
+    const foundProduct = await Product.findOne({ _id: productId });
+    if (!foundProduct) throw { status: 404, message: `${productId} not found!` };
+
+    const foundCategory = await Category.findById(dataUpdate?.category);
+    if (!foundCategory) throw { status: 404, message: `${dataUpdate?.category} not found!` };
+
+    const updatedProduct = await Product.findByIdAndUpdate(productId, dataUpdate, { new: true })
+      .populate("category", "_id name")
+      .populate("images", "_id public_id url modelId onModel")
+      .populate("wishlist", "_id name picture")
+      .populate("variants", "_id color_label color_hex_code image");
 
     res.status(200).json({ success: true, data: updatedProduct });
   } catch (err) {
@@ -168,25 +193,30 @@ exports.updateProduct = async (req, res) => {
 exports.deleteProduct = async (req, res) => {
   try {
     const { productId } = req.query;
-    const foundProduct = await Product.findOne({ _id: productId });
 
+    const foundProduct = await Product.findOne({ _id: productId });
     if (!foundProduct) throw { status: 404, message: `${productId} not found!` };
 
     // Deleting images associated with the product
     // for (let i = 0; i < foundProduct.images.length; i++) {
     //   const result = await cloudinary.uploader.destroy(foundProduct.images[i].public_id);
     // }
-
-    const deletedProduct = await Product.findByIdAndRemove(productId);
-
-    const promisesRes = await Promise.all([
-      User.updateMany({}, { $pull: { wishlist: productId } }, { new: true }),
-      Variant.deleteMany({ product: productId }),
-      Wishlist.deleteMany({ product: productId }),
-      Review.deleteMany({ product: productId })]
+    const foundImages = await Image.findOneAndRemove({ modelId: productId });
+    const promisesDestroyImage = foundImages.map((image) =>
+      image ? cloudinary.uploader.destroy(image?.public_id) : null
     );
 
-    res.status(200).json({ success: true, data: deletedProduct });
+    const promisesRes = await Promise.all([
+      ...promisesDestroyImage,
+      User.updateMany({}, { $pull: { wishlist_products: productId } }, { new: true }),
+      Combo.updateMany({}, { $pull: { products: { product: productId } } }, { new: true }),
+      Variant.deleteMany({ product: productId }),
+      Wishlist.deleteMany({ modelId: productId }),
+      Review.deleteMany({ modelId: productId }),
+    ]);
+
+    const deletedProduct = await Product.findByIdAndRemove(productId);
+    res.status(200).json({ success: true, data: deletedProduct, extra: promisesRes });
   } catch (err) {
     res.status(err?.status || 400).json({ success: false, err: err.message });
   }
@@ -194,7 +224,7 @@ exports.deleteProduct = async (req, res) => {
 
 exports.viewProduct = async (req, res) => {
   try {
-    const { productId } = req.query;
+    const { productId } = req.params;
 
     const updatedProduct = await Product.findByIdAndUpdate(
       productId,

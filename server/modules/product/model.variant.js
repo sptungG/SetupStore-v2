@@ -6,7 +6,7 @@ const VariantSchema = mongoose.Schema(
     product: { type: ObjectId, ref: "Product" },
     color_label: String,
     color_hex_code: String,
-    image_id: String,
+    image: { type: ObjectId, ref: "Image" },
   },
   { timestamps: true }
 );
