@@ -7,14 +7,8 @@ const User = require("../user/model.user");
 // req.files.file.path
 exports.userUpload = async (req, res) => {
   try {
-    const { email } = req.user;
     const { imageUrl, image } = req.body;
     const public_id_v4 = uuidv4();
-
-    const foundUser = await User.findOne({ email }).exec();
-    if (!foundUser) throw { status: 404, message: `${email} not found` };
-    if (["deleted", "inactive"].includes(foundUser.status))
-      throw { status: 400, message: `${email} is inactive` };
 
     let result = null;
     if (!imageUrl) {

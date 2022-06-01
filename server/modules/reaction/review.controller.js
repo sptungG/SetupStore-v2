@@ -198,7 +198,6 @@ exports.getFilteredComboReviews = async (req, res) => {
 // createProductReview
 exports.createProductReview = async (req, res) => {
   try {
-    const { email } = req.user;
     const { productId, comboId } = req.query;
     const { rating, comment } = req.body;
 
@@ -214,11 +213,6 @@ exports.createProductReview = async (req, res) => {
       model.modelId = comboId;
       model.onModel = "Combo";
     }
-
-    const foundUser = await User.findOne({ email }).exec();
-    if (!foundUser) throw { status: 404, message: `${email} not found` };
-    if (["deleted", "inactive"].includes(foundUser.status))
-      throw { status: 400, message: `${email} is inactive` };
 
     let foundModel = null;
     if (productId) foundModel = await Product.findOne({ _id: productId });

@@ -16,6 +16,21 @@ exports.authCheck = async (req, res, next) => {
   }
 };
 
+exports.isAuthenticatedUser = async (req, res, next) => {
+  try {
+    const { email } = req.user;
+    const foundUser = await User.findOne({ email }).exec();
+    if (!foundUser) throw { status: 404, message: `${email} not found` };
+    if (["deleted", "inactive"].includes(foundUser.status))
+      throw { status: 400, message: `${email} is inactive` };
+    if (!foundUser.emailVerified) throw { status: 400, message: `${email} hasn't been verified!` };
+    req.user = foundUser;
+    next();
+  } catch (err) {
+    res.status(err?.status || 400).json({ success: false, err: err.message });
+  }
+};
+
 exports.adminCheck = async (req, res, next) => {
   const { email } = req.user;
 

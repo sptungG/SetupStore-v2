@@ -63,13 +63,7 @@ exports.getWishlistByUserId = async (req, res) => {
 // toggleProductInWishlist
 exports.toggleProductInWishlist = async (req, res) => {
   try {
-    const { email } = req.user;
     const { productId } = req.query;
-
-    const foundUser = await User.findOne({ email }).exec();
-    if (!foundUser) throw { status: 404, message: `${email} not found` };
-    if (["deleted", "inactive"].includes(foundUser.status))
-      throw { status: 400, message: `${email} is inactive` };
 
     const foundProduct = await Product.findOne({ _id: productId });
     if (!foundProduct) throw { status: 404, message: `${productId} not found!` };
@@ -124,13 +118,7 @@ exports.toggleProductInWishlist = async (req, res) => {
 // toggleComboInWishlist
 exports.toggleComboInWishlist = async (req, res) => {
   try {
-    const { email } = req.user;
     const { comboId } = req.query;
-
-    const foundUser = await User.findOne({ email }).exec();
-    if (!foundUser) throw { status: 404, message: `${email} not found` };
-    if (["deleted", "inactive"].includes(foundUser.status))
-      throw { status: 400, message: `${email} is inactive` };
 
     const foundCombo = await Combo.findOne({ _id: comboId });
     if (!foundCombo) throw { status: 404, message: `${comboId} not found!` };
