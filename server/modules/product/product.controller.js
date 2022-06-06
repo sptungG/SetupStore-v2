@@ -198,16 +198,13 @@ exports.deleteProduct = async (req, res) => {
     if (!foundProduct) throw { status: 404, message: `${productId} not found!` };
 
     // Deleting images associated with the product
-    // for (let i = 0; i < foundProduct.images.length; i++) {
-    //   const result = await cloudinary.uploader.destroy(foundProduct.images[i].public_id);
-    // }
-    const foundImages = await Image.findOneAndRemove({ modelId: productId });
-    const promisesDestroyImage = foundImages.map((image) =>
-      image ? cloudinary.uploader.destroy(image?.public_id) : null
-    );
+    // const foundImages = await Image.findOneAndRemove({ modelId: productId });
+    // const promisesDestroyImage = foundImages.map((image) =>
+    //   image ? cloudinary.uploader.destroy(image?.public_id) : null
+    // );
 
     const promisesRes = await Promise.all([
-      ...promisesDestroyImage,
+      // ...promisesDestroyImage,
       User.updateMany({}, { $pull: { wishlist_products: productId } }, { new: true }),
       Combo.updateMany({}, { $pull: { products: { product: productId } } }, { new: true }),
       Variant.deleteMany({ product: productId }),

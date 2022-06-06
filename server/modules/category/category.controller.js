@@ -93,12 +93,12 @@ exports.deleteCategory = async (req, res) => {
       len = foundProducts.length,
       promisesRes = [];
     while (i < len) {
-      const foundImages = await Image.findOneAndRemove({ modelId: foundProducts[i]._id });
-      const promisesDestroyImage = foundImages.map((image) =>
-        image ? cloudinary.uploader.destroy(image?.public_id) : null
-      );
+      // const foundImages = await Image.findOneAndRemove({ modelId: foundProducts[i]._id });
+      // const promisesDestroyImage = foundImages.map((image) =>
+      //   image ? cloudinary.uploader.destroy(image?.public_id) : null
+      // );
       promisesRes = await Promise.all([
-        ...promisesDestroyImage,
+        // ...promisesDestroyImage,
         User.updateMany({}, { $pull: { wishlist_products: foundProducts[i]._id } }, { new: true }),
         Combo.updateMany(
           {},

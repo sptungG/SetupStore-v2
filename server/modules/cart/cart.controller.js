@@ -1,6 +1,7 @@
 const Cart = require("./model.cart");
 const Product = require("../product/model.product");
 const Variant = require("../product/model.variant");
+const User = require("../user/model.user");
 const { convertToNumber } = require("../../common/utils");
 
 exports.addProductToCart = async (req, res) => {
@@ -13,7 +14,10 @@ exports.addProductToCart = async (req, res) => {
     if (!foundProduct) throw { status: 404, message: `Product:${productId} not found!` };
     if (!foundVariant) throw { status: 404, message: `Variant:${variantId} not found!` };
     if (foundProduct.quantity < quantityNumber)
-      throw { status: 400, message: `Exceed maximum quantity ${foundProduct.quantity} of Product:${productId}!` };
+      throw {
+        status: 400,
+        message: `Exceed maximum quantity ${foundProduct.quantity} of Product:${productId}!`,
+      };
 
     let newCart = null;
     const foundCart = await Cart.findOne({ createdBy: userId });
@@ -66,14 +70,15 @@ exports.addProductToCart = async (req, res) => {
         );
       }
     }
-    if (newCart != null) {
-      const updatedProduct = await Product.findByIdAndUpdate(
-        productId,
-        { $inc: { quantity: -quantityNumber } },
-        { new: true }
-      );
-      res.status(200).json({ success: true, data: newCart, extra: updatedProduct });
-    } else throw { status: 400, message: `Failed to add Product:${productId}!` };
+    if (newCart == null) throw { status: 400, message: `Failed to add Product:${productId}!` };
+
+    // const updatedProduct = await Product.findByIdAndUpdate(
+    //   productId,
+    //   { $inc: { quantity: -quantityNumber } },
+    //   { new: true }
+    // );
+    const updatedUser = await User.findByIdAndUpdate(userId, { cart: newCart._id }, { new: true });
+    res.status(200).json({ success: true, data: newCart, extra: updatedUser });
   } catch (err) {
     res.status(err?.status || 400).json({ success: false, err: err.message });
   }
@@ -135,12 +140,12 @@ exports.removeProductFromCart = async (req, res) => {
         },
         { new: true }
       );
-      const updatedProduct = await Product.findByIdAndUpdate(
-        foundProductInCart.product,
-        { $inc: { quantity: foundProductInCart.count } },
-        { new: true }
-      );
-      res.status(200).json({ success: true, data: updatedCart, extra: updatedProduct });
+      // const updatedProduct = await Product.findByIdAndUpdate(
+      //   foundProductInCart.product,
+      //   { $inc: { quantity: foundProductInCart.count } },
+      //   { new: true }
+      // );
+      res.status(200).json({ success: true, data: updatedCart });
     } else
       throw {
         status: 404,
