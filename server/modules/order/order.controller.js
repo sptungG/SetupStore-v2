@@ -77,6 +77,8 @@ exports.createOrder = async (req, res) => {
       { new: true }
     );
 
+    const updatedCart = await Cart.findByIdAndRemove(foundCart._id);
+
     res.status(200).json({
       success: true,
       data: newOrder,
@@ -118,7 +120,16 @@ exports.getMyOrders = async (req, res) => {
 
 exports.getAllOrders = async (req, res) => {
   try {
-    const foundOrders = await Order.find();
+    const { sort } = req.query;
+    let sortCondition = {};
+
+    if (sort) {
+      const [sortField, sortDirection] = sort.split("_");
+      if (sortField && sortDirection) {
+        sortCondition[sortField] = sortDirection === "desc" ? -1 : 1;
+      }
+    }
+    const foundOrders = await Order.find().sort(sort ? sortCondition : { createdAt: -1 });
 
     let totalAmount = 0;
 
@@ -170,6 +181,7 @@ async function updateProductQuantity(id, quantity) {
   const product = await Product.findById(id);
 
   product.quantity = product.quantity - quantity;
+  product.sold = product.sold + quantity;
 
   await product.save({ validateBeforeSave: false });
 }

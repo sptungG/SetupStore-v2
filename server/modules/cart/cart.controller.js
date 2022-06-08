@@ -13,6 +13,8 @@ exports.addProductToCart = async (req, res) => {
     const foundVariant = await Variant.findById(variantId);
     if (!foundProduct) throw { status: 404, message: `Product:${productId} not found!` };
     if (!foundVariant) throw { status: 404, message: `Variant:${variantId} not found!` };
+    if (foundVariant.product.toString() !== foundProduct._id.toString())
+      throw { status: 400, message: `Variant:${variantId} not in Product:${productId}!` };
     if (foundProduct.quantity < quantityNumber)
       throw {
         status: 400,
@@ -72,11 +74,11 @@ exports.addProductToCart = async (req, res) => {
     }
     if (newCart == null) throw { status: 400, message: `Failed to add Product:${productId}!` };
 
-    // const updatedProduct = await Product.findByIdAndUpdate(
-    //   productId,
-    //   { $inc: { quantity: -quantityNumber } },
-    //   { new: true }
-    // );
+    const updatedProduct = await Product.findByIdAndUpdate(
+      productId,
+      { $inc: { quantity: -quantityNumber } },
+      { new: true }
+    );
     const updatedUser = await User.findByIdAndUpdate(userId, { cart: newCart._id }, { new: true });
     res.status(200).json({ success: true, data: newCart, extra: updatedUser });
   } catch (err) {
@@ -140,11 +142,11 @@ exports.removeProductFromCart = async (req, res) => {
         },
         { new: true }
       );
-      // const updatedProduct = await Product.findByIdAndUpdate(
-      //   foundProductInCart.product,
-      //   { $inc: { quantity: foundProductInCart.count } },
-      //   { new: true }
-      // );
+      const updatedProduct = await Product.findByIdAndUpdate(
+        foundProductInCart.product,
+        { $inc: { quantity: foundProductInCart.count } },
+        { new: true }
+      );
       res.status(200).json({ success: true, data: updatedCart });
     } else
       throw {

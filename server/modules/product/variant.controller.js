@@ -13,7 +13,7 @@ exports.createVariant = async (req, res) => {
     const newVariant = await new Variant({
       product: productId,
       color_label,
-      color_hex_code,
+      color_hex_code: color_hex_code.replace(/[^\w\s]/g, ""),
       image,
     }).save();
     await Product.findByIdAndUpdate(
@@ -38,10 +38,10 @@ exports.updateVariant = async (req, res) => {
     // console.log(req.body);
     let updatedVariant = await Variant.findOne({ _id: variantId });
     if (!updatedVariant) throw { status: 404, message: `${variantId} not found!` };
-    
+
     updatedVariant = await Variant.findOneAndUpdate(
       { _id: variantId },
-      { color_label, color_hex_code, image },
+      { color_label, color_hex_code: color_hex_code.replace(/[^\w\s]/g, ""), image },
       { new: true }
     );
 

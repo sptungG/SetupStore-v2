@@ -12,12 +12,12 @@ const Combo = require("../combo/model.combo");
 // getFilteredProducts (pagination, sort, search)
 exports.getFilteredProducts = async (req, res) => {
   try {
-    const { status, rating, price, color, keyword, page, limit, sort } = req.query;
+    const { status, rating, price, color, category, keyword, page, limit, sort } = req.query;
     const currentPage = page || 1;
 
     const limitNumber = convertToNumber(limit) || 4;
 
-    let filter = {};
+    let filter = { status: "active" };
     let sortCondition = {};
 
     if (status) {
@@ -56,6 +56,18 @@ exports.getFilteredProducts = async (req, res) => {
     }
 
     if (color) {
+      const regex = new RegExp(`${color.toLowerCase()}`, "i");
+      const regexCond = { $regex: regex };
+      const foundVariants = await Variant.find({
+        $or: [{ color_label: regexCond }, { color_hex_code: regexCond }],
+      });
+      const variantIds = foundVariants.map((v) => v._id);
+      filter.variants = { $in: variantIds };
+    }
+
+    if (category) {
+      const categoryIds = category.split(",");
+      filter.category = { $in: categoryIds };
     }
 
     const [products, totalProduct] = await Promise.all([

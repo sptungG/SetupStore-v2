@@ -4,8 +4,8 @@ const { ObjectId } = mongoose.Schema;
 const VariantSchema = mongoose.Schema(
   {
     product: { type: ObjectId, ref: "Product" },
-    color_label: String,
-    color_hex_code: String,
+    color_label: { type: String, lowercase: true },
+    color_hex_code: { type: String, lowercase: true },
     image: { type: ObjectId, ref: "Image" },
   },
   { timestamps: true }

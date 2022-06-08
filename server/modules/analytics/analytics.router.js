@@ -5,10 +5,14 @@ const router = express.Router();
 // middlewares
 const { authCheck, adminCheck } = require("../auth/auth.validation");
 // controllers
-
+const {
+  getIncomeStats,
+  getUsersStats,
+  getProductVariantsStats,
+} = require("./analytics.controller");
 // routes
-router.get("/analytics", authCheck, adminCheck, (req, res) => {
-  res.json("analytics");
-});
+router.get("/stats/income", authCheck, adminCheck, getIncomeStats);
+router.get("/stats/variants", authCheck, adminCheck, getProductVariantsStats);
+router.get("/stats/users", authCheck, adminCheck, getUsersStats);
 
 module.exports = router;

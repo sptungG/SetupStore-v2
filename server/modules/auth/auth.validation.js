@@ -34,13 +34,18 @@ exports.isAuthenticatedUser = async (req, res, next) => {
 exports.adminCheck = async (req, res, next) => {
   const { email } = req.user;
 
-  const adminUser = await User.findOne({ email }).exec();
+  const foundAdmin = await User.findOne({ email }).exec();
+  if (!foundAdmin) throw { status: 404, message: `${email} not found` };
+  if (["deleted", "inactive"].includes(foundAdmin.status))
+    throw { status: 400, message: `${email} is inactive` };
+  if (!foundAdmin.emailVerified) throw { status: 400, message: `${email} hasn't been verified!` };
 
-  if (adminUser.role !== "admin") {
+  if (foundAdmin.role !== "admin") {
     res.status(403).json({
       err: "Admin resource. Access denied.",
     });
   } else {
+    req.user = foundAdmin;
     next();
   }
 };
