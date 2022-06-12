@@ -1,10 +1,10 @@
 import { Carousel } from "antd";
 import React from "react";
-import setup00 from "assets/setup00.png";
-import setup01 from "assets/setup01.png";
-import setup02 from "assets/setup02.png";
-import setup03 from "assets/setup03.png";
-import setup04 from "assets/setup04.png";
+import setup00 from "src/assets/setup00.png";
+import setup01 from "src/assets/setup01.png";
+import setup02 from "src/assets/setup02.png";
+import setup03 from "src/assets/setup03.png";
+import setup04 from "src/assets/setup04.png";
 
 const IMAGES = [setup00, setup01, setup02, setup03, setup04];
 

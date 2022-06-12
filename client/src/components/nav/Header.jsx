@@ -5,14 +5,13 @@ import {
   UserOutlined,
 } from "@ant-design/icons";
 import { Avatar, Badge, Button, Space, Typography } from "antd";
-import ThemeButton from "components/buttons/ThemeButton";
-import CollapsedButton from "components/buttons/CollapsedButton";
-import AutocompleteSearch from "components/input/AutocompleteSearch";
+import CollapsedButton from "src/components/button/CollapsedButton";
+import AutocompleteSearch from "src/components/input/AutocompleteSearch";
 import React from "react";
 import styled from "styled-components";
 import LogoAndText from "./LogoAndText";
 import { Link } from "react-router-dom";
-import { useUserStorage } from "common/useUserStorage";
+import { useUserStorage } from "src/common/useUserStorage";
 import ProfileDropdownMenu from "./ProfileDropdown";
 
 const HeaderWrapper = styled.header`
@@ -56,10 +55,10 @@ const Header = () => {
           ) : (
             <Space>
               <Button type="link" shape="round" size="large">
-                <Link to="/login">Login</Link>
+                <Link to="/login">Đăng nhập</Link>
               </Button>
               <Button type="primary" shape="round" size="large">
-                <Link to="/register">Register</Link>
+                <Link to="/register">Đăng kí</Link>
               </Button>
             </Space>
           )}

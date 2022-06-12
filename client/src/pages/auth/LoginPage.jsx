@@ -1,19 +1,18 @@
-import { Button, Col, Divider, Form, Input, Row, Typography } from "antd";
-import { auth, googleAuthProvider } from "common/firebase-config";
-import { useUserStorage } from "common/useUserStorage";
-import ThemeButton from "components/buttons/ThemeButton";
-import CarouselGallery from "components/images/CarouselGallery";
-import LogoAndText from "components/nav/LogoAndText";
+import { Button, Col, Divider, Form, Input, Row, Typography, notification } from "antd";
+import { auth, googleAuthProvider } from "src/common/firebase-config";
+import { useUserStorage } from "src/common/useUserStorage";
+import ThemeButton from "src/components/button/ThemeButton";
+import CarouselGallery from "src/components/images/CarouselGallery";
+import LogoAndText from "src/components/nav/LogoAndText";
 import { signInWithEmailAndPassword, signInWithPopup } from "firebase/auth";
-import { createOrUpdateUser } from "functions/auth";
-import GalleryBgLayout from "pages/GalleryBgLayout";
+import { createOrUpdateUser } from "src/functions/auth";
+import GalleryBgLayout from "src/layout/GalleryBgLayout";
 import React, { useEffect, useState } from "react";
 import { BsInstagram } from "react-icons/bs";
 import { FaFacebookSquare } from "react-icons/fa";
 import { FcGoogle } from "react-icons/fc";
 import { HiOutlineLockClosed, HiOutlineMail } from "react-icons/hi";
 import { Link, useNavigate } from "react-router-dom";
-import { toast } from "react-toastify";
 import styled from "styled-components";
 
 const FormWrapperStyles = styled.div`
@@ -57,7 +56,7 @@ const LoginPage = (props) => {
       setLoading(false);
       navigate("/");
     } catch (error) {
-      toast.error(error.message);
+      notification.error({message: error.message});
       setLoading(false);
     }
   };
@@ -75,7 +74,7 @@ const LoginPage = (props) => {
         navigate("/");
       })
       .catch((err) => {
-        toast.error(err.message);
+        notification.error({message: err.message});
         setLoading(false);
       });
   };
@@ -97,7 +96,7 @@ const LoginPage = (props) => {
           >
             <Row justify="space-between">
               <Typography.Title>Welcome back</Typography.Title>
-              <ThemeButton type="icon" />
+              <ThemeButton type="dropdown" />
             </Row>
             <Typography.Title level={5} type="secondary">
               Đăng nhập nhanh <LogoAndText fontSize={16} /> với:

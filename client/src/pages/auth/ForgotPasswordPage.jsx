@@ -1,12 +1,11 @@
-import { Alert, Button, Form, Input, Typography } from "antd";
-import { auth } from "common/firebase-config";
-import { useUserStorage } from "common/useUserStorage";
+import { Alert, Button, Form, Input, Typography, notification } from "antd";
+import { auth } from "src/common/firebase-config";
+import { useUserStorage } from "src/common/useUserStorage";
 import { sendPasswordResetEmail } from "firebase/auth";
-import GalleryBgLayout from "pages/GalleryBgLayout";
+import GalleryBgLayout from "src/layout/GalleryBgLayout";
 import React from "react";
 import { HiOutlineMail } from "react-icons/hi";
 import { Link, useNavigate } from "react-router-dom";
-import { toast } from "react-toastify";
 import styled from "styled-components";
 
 const FormWrapperStyles = styled.div`
@@ -48,7 +47,7 @@ const ForgotPasswordPage = (props) => {
       .then(() => {
         form.resetFields();
         setStatus("success");
-        toast.success("Check your email for password reset link");
+        notification.success({ message: "Check your email for password reset link" });
         setEmailValueVerified(email);
         setTimeout(() => {
           navigate("/login");
@@ -56,7 +55,7 @@ const ForgotPasswordPage = (props) => {
       })
       .catch((error) => {
         setStatus("error");
-        toast.error(error.message);
+        notification.error({ message: error.message });
         console.log("ERROR MSG IN FORGOT PASSWORD", error);
       });
   };

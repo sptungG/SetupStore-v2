@@ -1,26 +1,27 @@
-import React, { lazy, Suspense, useEffect, useState } from "react";
+import { ConfigProvider } from "antd";
+import "antd/dist/antd.variable.min.css";
+import { lazy, Suspense, useEffect, useState } from "react";
 import { ThemeProvider } from "styled-components";
-import { useChangeLang } from "common/useChangeLang";
-import { currentUser } from "functions/auth";
 import { onAuthStateChanged } from "firebase/auth";
-import { auth } from "common/firebase-config";
-import { useUserStorage } from "common/useUserStorage";
+import { currentUser } from "src/functions/auth";
+import { auth } from "src/common/firebase-config";
+import { useChangeThemeProvider } from "./common/useChangeThemeProvider";
 
 import { Navigate, Route, Routes } from "react-router-dom";
-import GuestRoute from "routes/GuestRoute";
+import Loader from "src/components/loader/Loader";
+import ErrorResult from "src/components/nav/ErrorResult";
+import GuestRoute from "./routes/GuestRoute";
+import { useUserStorage } from "./common/useUserStorage";
 
-import ErrorResult from "components/nav/ErrorResult";
-import Loader from "components/loader/Loader";
-import { useChangeTheme } from "common/useChangeTheme";
+const HomePage = lazy(() => import("src/pages/home/HomePage"));
+const LoginPage = lazy(() => import("src/pages/auth/LoginPage"));
+const RegisterPage = lazy(() => import("src/pages/auth/RegisterPage"));
+const ForgotPasswordPage = lazy(() => import("src/pages/auth/ForgotPasswordPage"));
+const VerificationPage = lazy(() => import("src/pages/auth/VerificationPage"));
 
-const HomePage = lazy(() => import("pages/home/HomePage"));
-const LoginPage = lazy(() => import("pages/auth/LoginPage"));
-const RegisterPage = lazy(() => import("pages/auth/RegisterPage"));
-const ForgotPasswordPage = lazy(() => import("pages/auth/ForgotPasswordPage"));
-const VerificationPage = lazy(() => import("pages/auth/VerificationPage"));
+function App() {
+  const { themeProvider, changeThemeProvider } = useChangeThemeProvider();
 
-const App = () => {
-  const { theme, changeTheme } = useChangeTheme();
   const { credential, setCredential, setEmailValueVerified } = useUserStorage();
   const [status, setStatus] = useState("");
 
@@ -37,31 +38,39 @@ const App = () => {
     return () => unsubscribe();
   }, []);
 
+  useEffect(() => {
+    ConfigProvider.config({
+      theme: {
+        primaryColor: themeProvider.primaryColor,
+      },
+    });
+  }, [themeProvider]);
+
   return (
-    <>
-      {status === "success" ? (
-        <ThemeProvider theme={{ mode: theme }}>
-          <Suspense fallback={<Loader />}>
-            <Routes>
-              <Route path="/" element={<HomePage />} />
+    <ThemeProvider
+      theme={{
+        mode: themeProvider.mode,
+        primaryColor: themeProvider.primaryColor,
+        generatedColors: themeProvider.generatedColors,
+      }}
+    >
+      <Suspense fallback={<Loader />}>
+        <Routes>
+          <Route path="/" element={<HomePage />} />
 
-              <Route element={<GuestRoute />}>
-                <Route path="/login" element={<LoginPage />} />
-                <Route path="/register" element={<RegisterPage />} />
-                <Route path="/verification/*" element={<VerificationPage />} />
-                <Route path="/forgot/password" element={<ForgotPasswordPage />} />
-              </Route>
-              <Route path="/404" element={<ErrorResult status="404" />} />
+          <Route element={<GuestRoute />}>
+            <Route path="/login" element={<LoginPage />} />
+            <Route path="/register" element={<RegisterPage />} />
+            <Route path="/verification/*" element={<VerificationPage />} />
+            <Route path="/forgot/password" element={<ForgotPasswordPage />} />
+          </Route>
+          <Route path="/404" element={<ErrorResult status="404" />} />
 
-              <Route path="*" element={<Navigate to="/404" replace />} />
-            </Routes>
-          </Suspense>
-        </ThemeProvider>
-      ) : (
-        <Loader />
-      )}
-    </>
+          <Route path="*" element={<Navigate to="/404" replace />} />
+        </Routes>
+      </Suspense>
+    </ThemeProvider>
   );
-};
+}
 
 export default App;

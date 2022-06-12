@@ -1,6 +1,6 @@
 import React from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { setUserCredential, setEmailVerifiedValue } from "stores/auth/auth.reducer";
+import { setUserCredential, setEmailVerifiedValue } from "src/stores/auth/auth.reducer";
 
 export function useUserStorage() {
   const credential = useSelector((state) => state.auth);

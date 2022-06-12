@@ -1,6 +1,6 @@
 import { Avatar, Button, Dropdown, Menu, Space, Typography } from "antd";
-import { auth } from "common/firebase-config";
-import { useUserStorage } from "common/useUserStorage";
+import { auth } from "src/common/firebase-config";
+import { useUserStorage } from "src/common/useUserStorage";
 import { signOut } from "firebase/auth";
 import React from "react";
 import { FaAlignRight, FaRegUserCircle } from "react-icons/fa";
@@ -17,17 +17,6 @@ const AvatarWrapper = styled.div`
   justify-content: center;
   padding: 1px;
   position: relative;
-  & .dropdown-caret {
-    position: absolute;
-    top: 0;
-    right: 0;
-    transform: translateX(6px);
-    z-index: -1;
-    color: #d9d9d9;
-  }
-  &:hover .dropdown-caret {
-    color: #9147ff;
-  }
 `;
 
 const iconSize = 22;
@@ -96,18 +85,15 @@ const ProfileDropdownMenu = () => {
   const menu = <Menu style={{ borderRadius: 8, padding: 8 }} items={items} />;
   return (
     <Dropdown overlay={menu} placement="bottomRight">
-      <Space size="small" align="center" style={{ display: "flex" }}>
-        <Button size="large" shape="circle">
-          <AvatarWrapper>
-            <Avatar
-              size={33}
-              src={user.picture ?? "https://source.unsplash.com/random?vietnam,nature"}
-              alt="avatar"
-            />
-            <FaAlignRight className="dropdown-caret" size={24} />
-          </AvatarWrapper>
-        </Button>
-      </Space>
+      <Button size="large" shape="circle">
+        <AvatarWrapper>
+          <Avatar
+            size={33}
+            src={user.picture ?? "https://source.unsplash.com/random?vietnam,nature"}
+            alt="avatar"
+          />
+        </AvatarWrapper>
+      </Button>
     </Dropdown>
   );
 };

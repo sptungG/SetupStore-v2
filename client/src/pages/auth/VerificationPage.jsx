@@ -1,9 +1,9 @@
 import { Button, Result, Skeleton } from "antd";
-import { auth } from "common/firebase-config";
-import { useUserStorage } from "common/useUserStorage";
-import ErrorResult from "components/nav/ErrorResult";
+import { auth } from "src/common/firebase-config";
+import { useUserStorage } from "src/common/useUserStorage";
+import ErrorResult from "src/components/nav/ErrorResult";
 import { applyActionCode, reload } from "firebase/auth";
-import { createOrUpdateUser } from "functions/auth";
+import { createOrUpdateUser } from "src/functions/auth";
 import queryString from "query-string";
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";

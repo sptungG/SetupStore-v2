@@ -1,18 +1,14 @@
-import { Alert, Button, Form, Input, Row, Typography } from "antd";
-import { auth } from "common/firebase-config";
-import { useUserStorage } from "common/useUserStorage";
-import ThemeButton from "components/buttons/ThemeButton";
-import CarouselGallery from "components/images/CarouselGallery";
-import LogoAndText from "components/nav/LogoAndText";
-import {
-  createUserWithEmailAndPassword,
-  sendEmailVerification, signOut
-} from "firebase/auth";
-import GalleryBgLayout from "pages/GalleryBgLayout";
+import { Alert, Button, Form, Input, notification, Row, Typography } from "antd";
+import { auth } from "src/common/firebase-config";
+import { useUserStorage } from "src/common/useUserStorage";
+import ThemeButton from "src/components/button/ThemeButton";
+import CarouselGallery from "src/components/images/CarouselGallery";
+import LogoAndText from "src/components/nav/LogoAndText";
+import { createUserWithEmailAndPassword, sendEmailVerification, signOut } from "firebase/auth";
+import GalleryBgLayout from "src/layout/GalleryBgLayout";
 import React from "react";
 import { HiOutlineLockClosed, HiOutlineMail } from "react-icons/hi";
 import { Link, useNavigate } from "react-router-dom";
-import { toast } from "react-toastify";
 import styled from "styled-components";
 
 const FormWrapperStyles = styled.div`
@@ -45,17 +41,19 @@ const RegisterPage = (props) => {
 
       await signOut(auth);
 
-      toast.success(
-        <>
-          Email is sent to {email}.<br />
-          Click the link to complete your registration.
-        </>
-      );
+      notification.success({
+        message: (
+          <>
+            Email is sent to {email}.<br />
+            Click the link to complete your registration.
+          </>
+        ),
+      });
       setStatus("success");
       setEmailValueVerified(email);
       form.resetFields();
     } catch (error) {
-      toast.error(error.message);
+      notification.error({ message: error.message });
       setStatus("error");
     }
   };

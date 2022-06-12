@@ -1,4 +1,4 @@
-import { useUserStorage } from "common/useUserStorage";
+import { useUserStorage } from "src/common/useUserStorage";
 import { Navigate, Outlet } from "react-router-dom";
 
 export default function GuestRoute() {

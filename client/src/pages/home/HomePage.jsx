@@ -1,20 +1,13 @@
-import { Col, Row } from "antd";
-import { useUserStorage } from "common/useUserStorage";
-import MainLayout from "pages/MainLayout";
-import MainSideLayout from "pages/MainSideLayout";
 import React from "react";
+import MainLayout from "src/layout/MainLayout";
+import { generate } from "@ant-design/colors";
 
 const HomePage = () => {
-  const { credential, setCredential } = useUserStorage();
-  const isSignedIn = credential.user == null;
-  return (
-    <MainLayout>
-      <Row>
-        <Col span={6}></Col>
-        <Col span={18}></Col>
-      </Row>
-    </MainLayout>
-  );
+  const colors = generate("#772ce8")
+  console.log("HomePage ~ colors", colors);
+  return <MainLayout>
+
+  </MainLayout>;
 };
 
 export default HomePage;

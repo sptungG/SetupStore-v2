@@ -1,5 +1,5 @@
-import { useUserStorage } from "common/useUserStorage";
-import LoadingToRedirect from "components/loader/LoadingToRedirect";
+import { useUserStorage } from "src/common/useUserStorage";
+import LoadingToRedirect from "src/components/loader/LoadingToRedirect";
 import { Outlet } from "react-router-dom";
 
 export default function PrivateRoute() {

@@ -1,7 +1,7 @@
-import React from "react";
 import { Link } from "react-router-dom";
+import logo00 from "src/assets/logo00.svg";
 import styled, { keyframes } from "styled-components";
-import logo00 from "assets/logo00.svg";
+import LogoSvg from "./LogoSvg";
 
 const gradient = keyframes`
 0% {
@@ -36,7 +36,8 @@ const LogoWrapper = styled.div`
     font-size: ${(props) => props.fontSize + "px"} !important;
     font-weight: ${(props) => props.fontWeight} !important;
     animation: ${gradient} 5s ease-in-out infinite;
-    background: linear-gradient(to right, #a970ff, #d1b3ff, #9147ff, #772ce8);
+    background: ${(props) =>
+      `linear-gradient(to right,${props.theme.generatedColors[4]},${props.theme.generatedColors[2]},${props.theme.generatedColors[4]},${props.theme.primaryColor})`};
     background-size: 300%;
     background-clip: text;
     -webkit-background-clip: text;
@@ -47,14 +48,10 @@ const LogoWrapper = styled.div`
 const LogoAndText = ({ logoSize = 0, fontSize = 0, fontWeight = 500 }) => {
   return (
     <Link to="/" className="logo-wrapper">
-      <LogoWrapper
-        logoSize={logoSize}
-        fontSize={fontSize}
-        fontWeight={fontWeight}
-      >
+      <LogoWrapper logoSize={logoSize} fontSize={fontSize} fontWeight={fontWeight}>
         {logoSize > 0 && (
           <div className="logo-img" size={logoSize}>
-            <img alt="logo" src={logo00} />
+            <LogoSvg />
           </div>
         )}
         {fontSize > 0 && <span className="logo-text">SetupStore</span>}
@@ -69,14 +66,10 @@ export const Logo = ({ logoSize = 0, fontSize = 0, fontWeight = 500 }) => {
   return (
     <span role="img" aria-label="desktop" className="anticon anticon-desktop ant-menu-item-icon">
       <Link to="/" className="logo-wrapper">
-        <LogoWrapper
-          logoSize={logoSize}
-          fontSize={fontSize}
-          fontWeight={fontWeight}
-        >
+        <LogoWrapper logoSize={logoSize} fontSize={fontSize} fontWeight={fontWeight}>
           {logoSize > 0 && (
             <div className="logo-img" size={logoSize}>
-              <img alt="logo" src={logo00} />
+              <LogoSvg />
             </div>
           )}
         </LogoWrapper>

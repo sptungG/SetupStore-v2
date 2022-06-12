@@ -1,5 +1,5 @@
 import { Button, Result } from "antd";
-import LogoOnlyLayout from "pages/LogoOnlyLayout";
+import LogoOnlyLayout from "src/layout/LogoOnlyLayout";
 import React from "react";
 import { Link } from "react-router-dom";
 
