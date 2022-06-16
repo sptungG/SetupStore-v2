@@ -1,19 +1,42 @@
 import React from "react";
-import "./style.css";
+import styled from "styled-components";
+import WaterfallLoader from "./WaterfallLoader";
 
-const Loader = () => {
+const ModalWrapper = styled.div`
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 999999;
+  background-color: rgba(0, 0, 0, 0.25);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  .modal-container {
+    width: 100vw;
+    height: 100vh;
+  }
+  .modal-container .text-redirect {
+    margin-top: 30vh;
+    text-align: center;
+    color: rgba(0, 0, 0, 0.65);
+  }
+  .modal-container .text-counter {
+    color: ${(props) => props.theme.primaryColor};
+  }
+`;
+
+const Loader = ({ children }) => {
   return (
-    <div className="modal">
+    <ModalWrapper>
       <div className="modal-container">
-        <img
-          alt="loader"
-          src={
-            "https://firebasestorage.googleapis.com/v0/b/ecommerce-62fba.appspot.com/o/index.svg?alt=media&token=4582b9e5-16e0-4de1-a742-e1f0da3d3d62"
-          }
-        />
+        <WaterfallLoader />
+        {children}
       </div>
-    </div>
+    </ModalWrapper>
   );
 };
+
 
 export default Loader;

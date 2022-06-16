@@ -44,7 +44,7 @@ function App() {
         primaryColor: themeProvider.primaryColor,
       },
     });
-  }, [themeProvider]);
+  }, [themeProvider.primaryColor]);
 
   return (
     <ThemeProvider

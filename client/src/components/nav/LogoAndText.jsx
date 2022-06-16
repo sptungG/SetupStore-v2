@@ -1,7 +1,6 @@
 import { Link } from "react-router-dom";
-import logo00 from "src/assets/logo00.svg";
 import styled, { keyframes } from "styled-components";
-import LogoSvg from "./LogoSvg";
+import LogoCube from "./LogoCube";
 
 const gradient = keyframes`
 0% {
@@ -49,11 +48,7 @@ const LogoAndText = ({ logoSize = 0, fontSize = 0, fontWeight = 500 }) => {
   return (
     <Link to="/" className="logo-wrapper">
       <LogoWrapper logoSize={logoSize} fontSize={fontSize} fontWeight={fontWeight}>
-        {logoSize > 0 && (
-          <div className="logo-img" size={logoSize}>
-            <LogoSvg />
-          </div>
-        )}
+        {logoSize > 0 && <LogoCube />}
         {fontSize > 0 && <span className="logo-text">SetupStore</span>}
       </LogoWrapper>
     </Link>
@@ -67,11 +62,7 @@ export const Logo = ({ logoSize = 0, fontSize = 0, fontWeight = 500 }) => {
     <span role="img" aria-label="desktop" className="anticon anticon-desktop ant-menu-item-icon">
       <Link to="/" className="logo-wrapper">
         <LogoWrapper logoSize={logoSize} fontSize={fontSize} fontWeight={fontWeight}>
-          {logoSize > 0 && (
-            <div className="logo-img" size={logoSize}>
-              <LogoSvg />
-            </div>
-          )}
+          {logoSize > 0 && <LogoCube />}
         </LogoWrapper>
       </Link>
     </span>
