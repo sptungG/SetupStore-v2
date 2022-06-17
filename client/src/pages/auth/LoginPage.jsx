@@ -1,4 +1,5 @@
-import { Button, Col, Divider, Form, Input, Row, Typography, notification } from "antd";
+import { Col, Divider, Form, Input, Row, Typography, notification } from "antd";
+import Button from "src/components/button/Button";
 import { auth, googleAuthProvider } from "src/common/firebase-config";
 import { useUserStorage } from "src/common/useUserStorage";
 import ThemeButton from "src/components/button/ThemeButton";
@@ -44,7 +45,7 @@ const LoginPage = (props) => {
 
   useEffect(() => {
     form.setFieldsValue({ email: credential.emailVerifiedValue });
-  }, [form]);
+  }, [credential.emailVerifiedValue, form]);
 
   const handleSubmit = async ({ email, password }) => {
     setLoading(true);
@@ -56,12 +57,13 @@ const LoginPage = (props) => {
       setLoading(false);
       navigate("/");
     } catch (error) {
-      notification.error({message: error.message});
+      notification.error({ message: error.message });
       setLoading(false);
     }
   };
 
-  const googleLogin = async () => {
+  const googleLogin = () => {
+    setLoading(true);
     signInWithPopup(auth, googleAuthProvider)
       .then(async (result) => {
         const { user } = result;
@@ -74,7 +76,7 @@ const LoginPage = (props) => {
         navigate("/");
       })
       .catch((err) => {
-        notification.error({message: err.message});
+        notification.error({ message: err.message });
         setLoading(false);
       });
   };
@@ -103,7 +105,13 @@ const LoginPage = (props) => {
             </Typography.Title>
             <Row gutter={16}>
               <Col span={8}>
-                <Button onClick={googleLogin} size="large" block>
+                <Button
+                  onClick={googleLogin}
+                  size="large"
+                  block
+                  disabled={loading}
+                  loading={loading}
+                >
                   <FcGoogle size={24} />
                 </Button>
               </Col>

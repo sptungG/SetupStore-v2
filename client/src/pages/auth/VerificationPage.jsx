@@ -1,4 +1,5 @@
-import { Button, Result, Skeleton } from "antd";
+import { Result, Skeleton } from "antd";
+import Button from "src/components/button/Button";
 import { auth } from "src/common/firebase-config";
 import { useUserStorage } from "src/common/useUserStorage";
 import ErrorResult from "src/components/nav/ErrorResult";

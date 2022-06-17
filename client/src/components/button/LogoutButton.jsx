@@ -1,5 +1,5 @@
 import React from "react";
-import { Button } from "antd";
+import Button from "./Button";
 import { FiLogOut } from "react-icons/fi";
 import { signOut } from "firebase/auth";
 import { auth } from "common/firebase-config";

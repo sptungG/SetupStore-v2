@@ -1,10 +1,11 @@
-import { Button, Dropdown } from "antd";
+import { Dropdown } from "antd";
 import { useState } from "react";
 import { BsFillMoonStarsFill } from "react-icons/bs";
 import { FaMagic, FaSun } from "react-icons/fa";
 import { useChangeThemeProvider } from "src/common/useChangeThemeProvider";
 import styled from "styled-components";
 import SketchColorPicker from "../picker/SketchColorPicker";
+import Button from "./Button";
 
 const DropdownWrapper = styled.div`
   margin-top: 8px;
@@ -22,14 +23,6 @@ const DropdownWrapper = styled.div`
   & .btn-theme {
     margin-top: 8px;
   }
-`;
-
-const BtnContent = styled.div`
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  gap: 4px;
-  flex-wrap: nowrap;
 `;
 
 const ThemeButton = ({ type = "icon" }) => {
@@ -74,14 +67,12 @@ const ThemeButton = ({ type = "icon" }) => {
             block
             disabled
           >
-            <BtnContent>
-              {themeProvider.mode === "light" ? (
-                <FaSun size={16} />
-              ) : (
-                <BsFillMoonStarsFill size={14} />
-              )}
-              {themeProvider.mode}
-            </BtnContent>
+            {themeProvider.mode === "light" ? (
+              <FaSun size={16} />
+            ) : (
+              <BsFillMoonStarsFill size={14} />
+            )}
+            {themeProvider.mode}
           </Button>
         </DropdownWrapper>
       }
