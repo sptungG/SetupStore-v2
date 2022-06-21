@@ -1,19 +1,18 @@
 import { createSlice } from "@reduxjs/toolkit";
 const initialHeaderState = {
-  collapsed: true,
+  sidevisible: false,
 };
 
 const headerSlice = createSlice({
   name: "header",
   initialState: initialHeaderState,
   reducers: {
-    setHeaderState(state, action) {
-      const { collapsed = true } = action.payload;
-      state.collapsed = collapsed;
+    setSidebarCollapsed(state, action) {
+      state.sidevisible = action.payload;
     },
   },
 });
 
-export const { setHeaderState } = headerSlice.actions;
+export const { setSidebarCollapsed } = headerSlice.actions;
 
 export default headerSlice.reducer;

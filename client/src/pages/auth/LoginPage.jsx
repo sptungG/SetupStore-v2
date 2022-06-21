@@ -1,19 +1,24 @@
-import { Col, Divider, Form, Input, Row, Typography, notification } from "antd";
-import Button from "src/components/button/Button";
-import { auth, googleAuthProvider } from "src/common/firebase-config";
-import { useUserStorage } from "src/common/useUserStorage";
-import ThemeButton from "src/components/button/ThemeButton";
-import CarouselGallery from "src/components/images/CarouselGallery";
-import LogoAndText from "src/components/nav/LogoAndText";
-import { signInWithEmailAndPassword, signInWithPopup } from "firebase/auth";
-import { createOrUpdateUser } from "src/functions/auth";
-import GalleryBgLayout from "src/layout/GalleryBgLayout";
-import React, { useEffect, useState } from "react";
+import { Col, Divider, Form, Input, notification, Row, Typography } from "antd";
+import {
+  signInWithEmailAndPassword,
+  signInWithPopup,
+  signInWithRedirect
+} from "firebase/auth";
+import { useEffect, useState } from "react";
 import { BsInstagram } from "react-icons/bs";
 import { FaFacebookSquare } from "react-icons/fa";
 import { FcGoogle } from "react-icons/fc";
 import { HiOutlineLockClosed, HiOutlineMail } from "react-icons/hi";
+import { useDispatch, useSelector } from "react-redux";
 import { Link, useNavigate } from "react-router-dom";
+import { auth, googleAuthProvider } from "src/common/firebase-config";
+import Button from "src/components/button/Button";
+import ThemeButton from "src/components/button/ThemeButton";
+import CarouselGallery from "src/components/images/CarouselGallery";
+import LogoAndText from "src/components/nav/LogoAndText";
+import GalleryBgLayout from "src/layout/GalleryBgLayout";
+import { useCreateOrUpdateUserMutation } from "src/stores/auth/auth.query";
+import { setAuthtokenCredential, setRefreshToken, setUserCredential } from "src/stores/auth/auth.reducer";
 import styled from "styled-components";
 
 const FormWrapperStyles = styled.div`
@@ -38,9 +43,11 @@ const FormWrapperStyles = styled.div`
 `;
 
 const LoginPage = (props) => {
+  const credential = useSelector((state) => state.auth);
+  const [createOrUpdateUser] = useCreateOrUpdateUserMutation();
   const [form] = Form.useForm();
   const [loading, setLoading] = useState(false);
-  const { credential, setCredential } = useUserStorage();
+  const dispatch = useDispatch();
   let navigate = useNavigate();
 
   useEffect(() => {
@@ -52,8 +59,10 @@ const LoginPage = (props) => {
     try {
       const { user } = await signInWithEmailAndPassword(auth, email, password);
       const idTokenResult = await user.getIdTokenResult();
-      const res = await createOrUpdateUser(idTokenResult.token);
-      setCredential(res.data, idTokenResult.token);
+      const res = await createOrUpdateUser(idTokenResult.token).unwrap();
+      dispatch(setRefreshToken(user.refreshToken));
+      dispatch(setAuthtokenCredential(idTokenResult.token));
+      dispatch(setUserCredential(res));
       setLoading(false);
       navigate("/");
     } catch (error) {
@@ -68,12 +77,10 @@ const LoginPage = (props) => {
       .then(async (result) => {
         const { user } = result;
         const idTokenResult = await user.getIdTokenResult();
-
-        const res = await createOrUpdateUser(idTokenResult.token);
-        // console.log("CREATE OR UPDATE RES", res);
-        setCredential(res.data, idTokenResult.token);
+        const res = await createOrUpdateUser(idTokenResult.token).unwrap();
+        dispatch(setAuthtokenCredential(idTokenResult.token));
+        dispatch(setUserCredential(res));
         setLoading(false);
-        navigate("/");
       })
       .catch((err) => {
         notification.error({ message: err.message });
@@ -98,7 +105,7 @@ const LoginPage = (props) => {
           >
             <Row justify="space-between">
               <Typography.Title>Welcome back</Typography.Title>
-              <ThemeButton type="dropdown" />
+              <ThemeButton type="dropdown" btntype="dashed" shape="circle" size="large"/>
             </Row>
             <Typography.Title level={5} type="secondary">
               Đăng nhập nhanh <LogoAndText fontSize={16} /> với:
@@ -106,7 +113,10 @@ const LoginPage = (props) => {
             <Row gutter={16}>
               <Col span={8}>
                 <Button
-                  onClick={googleLogin}
+                  onClick={() => {
+                    signInWithRedirect(auth, googleAuthProvider);
+                    window.history.replaceState({}, "", "/");
+                  }}
                   size="large"
                   block
                   disabled={loading}
@@ -155,6 +165,7 @@ const LoginPage = (props) => {
             </Form.Item>
             <Form.Item>
               <Button
+                size="large"
                 type="primary"
                 htmlType="submit"
                 className="login-form-button"

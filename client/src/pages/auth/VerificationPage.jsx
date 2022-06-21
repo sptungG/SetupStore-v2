@@ -1,15 +1,19 @@
 import { Result, Skeleton } from "antd";
 import Button from "src/components/button/Button";
 import { auth } from "src/common/firebase-config";
-import { useUserStorage } from "src/common/useUserStorage";
 import ErrorResult from "src/components/nav/ErrorResult";
 import { applyActionCode, reload } from "firebase/auth";
-import { createOrUpdateUser } from "src/functions/auth";
 import queryString from "query-string";
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import styled from "styled-components";
-
+import { useDispatch } from "react-redux";
+import {
+  setAuthtokenCredential,
+  setEmailVerifiedValue,
+  setUserCredential,
+} from "src/stores/auth/auth.reducer";
+import { useCreateOrUpdateUserMutation } from "src/stores/auth/auth.query";
 
 const WrapperStyles = styled.div`
   display: flex;
@@ -24,9 +28,10 @@ const WrapperStyles = styled.div`
 `;
 
 const VerificationPage = () => {
+  const dispatch = useDispatch();
+  const [createOrUpdateUser] = useCreateOrUpdateUserMutation();
   const [status, setStatus] = useState("");
   const [verifyCode, setVerifyCode] = useState("");
-  const { credential, setCredential, setEmailValueVerified } = useUserStorage();
   let navigate = useNavigate();
 
   useEffect(() => {
@@ -52,9 +57,10 @@ const VerificationPage = () => {
     setStatus("loading");
     try {
       const idTokenResult = await auth.currentUser.getIdTokenResult();
-      let res = await createOrUpdateUser(idTokenResult.token);
-      setCredential(res.data, idTokenResult.token);
-      setEmailValueVerified(auth.currentUser.email);
+      dispatch(setAuthtokenCredential(idTokenResult.token));
+      let res = await createOrUpdateUser(idTokenResult.token).unwrap();
+      dispatch(setUserCredential(res));
+      dispatch(setEmailVerifiedValue(auth.currentUser.email));
       setStatus("success");
       setTimeout(() => {
         navigate("/login", { replace: true });
@@ -87,7 +93,9 @@ const VerificationPage = () => {
             subTitle={`Email: ${auth.currentUser.email} đã đăng kí thành công`}
           ></Result>
         )}
-        {status === "error" && <ErrorResult status="500" extra={<Button>Gửi lại đường dẫn</Button>} />}
+        {status === "error" && (
+          <ErrorResult status="500" extra={<Button>Gửi lại đường dẫn</Button>} />
+        )}
         {status === "loading" && <Skeleton active />}
       </div>
     </WrapperStyles>

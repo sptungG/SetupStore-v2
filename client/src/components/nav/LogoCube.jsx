@@ -25,7 +25,7 @@ const CubeWrapper = styled.div`
     border: ${(props) => `2px solid ${props.theme.generatedColors[4]}`};
   }
   & div:nth-of-type(1) {
-    transform: translateZ(-20px) rotateY(180deg);
+    transform: translateZ(calc(${(props) => -20 * (props.size / 40) + "px"})) rotateY(180deg);
   }
   & div:nth-of-type(2) {
     transform: rotateY(-270deg) translateX(50%);
@@ -44,7 +44,7 @@ const CubeWrapper = styled.div`
     transform-origin: bottom center;
   }
   & div:nth-of-type(6) {
-    transform: translateZ(20px);
+    transform: translateZ(calc(${(props) => 20 * (props.size / 40) + "px"}));
   }
 `;
 const CubeLoadingWrapper = styled.div`
@@ -60,7 +60,7 @@ const CubeLoadingWrapper = styled.div`
     border: ${(props) => `2px solid ${props.theme.generatedColors[4]}`};
   }
   & div:nth-of-type(1) {
-    transform: translateZ(-20px) rotateY(180deg);
+    transform: translateZ(calc(${(props) => -20 * (props.size / 40) + "px"})) rotateY(180deg);
   }
   & div:nth-of-type(2) {
     transform: rotateY(-270deg) translateX(50%);
@@ -79,13 +79,13 @@ const CubeLoadingWrapper = styled.div`
     transform-origin: bottom center;
   }
   & div:nth-of-type(6) {
-    transform: translateZ(20px);
+    transform: translateZ(calc(${(props) => 20 * (props.size / 40) + "px"}));
   }
 `;
 const LogoCube = ({ loading = false, size = 40 }) => {
   if (loading)
     return (
-      <CubeLoadingWrapper size={size}>
+      <CubeLoadingWrapper size={size} id="logo-cube">
         <div></div>
         <div></div>
         <div></div>
@@ -95,7 +95,7 @@ const LogoCube = ({ loading = false, size = 40 }) => {
       </CubeLoadingWrapper>
     );
   return (
-    <CubeWrapper size={size}>
+    <CubeWrapper size={size} id="logo-cube">
       <div></div>
       <div></div>
       <div></div>

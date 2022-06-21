@@ -2,20 +2,26 @@ import Footer from "src/components/nav/Footer";
 import Header from "src/components/nav/Header";
 import React from "react";
 import styled from "styled-components";
+import { useSelector } from "react-redux";
+import SideBar from "src/components/nav/SideBar";
 
-const Wrapper = styled.main` 
+const MainWrapper = styled.main`
   position: relative;
   overflow: hidden;
   min-height: 100vh;
+`;
+
+const Wrapper = styled.div`
+  position: relative;
+  overflow: hidden;
 `;
 
 const MainLayout = ({ children }) => {
   return (
     <>
       <Header />
-      <Wrapper>
-        {children}
-      </Wrapper>
+      <SideBar />
+      <MainWrapper>{children}</MainWrapper>
       {/* <Footer /> */}
     </>
   );

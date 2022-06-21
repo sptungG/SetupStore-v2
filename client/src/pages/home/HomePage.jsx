@@ -1,13 +1,16 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
+import { ProductsFilter } from "src/common/constant";
 import MainLayout from "src/layout/MainLayout";
-import { generate } from "@ant-design/colors";
+import { useGetProductsFilteredQuery } from "src/stores/product/products.query";
 
 const HomePage = () => {
-  const colors = generate("#772ce8")
-  console.log("HomePage ~ colors", colors);
-  return <MainLayout>
+  const [productsFilterValue, setProductsFilterValue] = useState(
+    new ProductsFilter({ page: 1, limit: 1 })
+  );
+  const { data: productsFilteredQuery, isLoading, isSuccess,  } = useGetProductsFilteredQuery(productsFilterValue);
+  const [productsFiltered, setProductsFiltered] = useState([]);
 
-  </MainLayout>;
+  return <MainLayout>{JSON.stringify(productsFilteredQuery)}</MainLayout>;
 };
 
 export default HomePage;

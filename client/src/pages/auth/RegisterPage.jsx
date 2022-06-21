@@ -1,6 +1,5 @@
 import { Alert, Button, Form, Input, notification, Row, Typography } from "antd";
 import { auth } from "src/common/firebase-config";
-import { useUserStorage } from "src/common/useUserStorage";
 import ThemeButton from "src/components/button/ThemeButton";
 import CarouselGallery from "src/components/images/CarouselGallery";
 import LogoAndText from "src/components/nav/LogoAndText";
@@ -10,6 +9,8 @@ import React from "react";
 import { HiOutlineLockClosed, HiOutlineMail } from "react-icons/hi";
 import { Link, useNavigate } from "react-router-dom";
 import styled from "styled-components";
+import { useDispatch } from "react-redux";
+import { setEmailVerifiedValue } from "src/stores/auth/auth.reducer";
 
 const FormWrapperStyles = styled.div`
   display: flex;
@@ -27,8 +28,8 @@ const FormWrapperStyles = styled.div`
 `;
 
 const RegisterPage = (props) => {
+  const dispatch = useDispatch();
   const [form] = Form.useForm();
-  const { credential, setCredential, setEmailValueVerified } = useUserStorage();
   const [status, setStatus] = React.useState("");
   let navigate = useNavigate();
 
@@ -50,7 +51,7 @@ const RegisterPage = (props) => {
         ),
       });
       setStatus("success");
-      setEmailValueVerified(email);
+      dispatch(setEmailVerifiedValue(email));
       form.resetFields();
     } catch (error) {
       notification.error({ message: error.message });
@@ -75,7 +76,7 @@ const RegisterPage = (props) => {
           >
             <Row justify="space-between">
               <Typography.Title>Create new account</Typography.Title>
-              <ThemeButton type="icon" />
+              <ThemeButton type="icon" btntype="dashed" shape="circle" size="large" />
             </Row>
             <Form.Item
               name="email"

@@ -16,21 +16,9 @@ const gradient = keyframes`
 const LogoWrapper = styled.div`
   display: inline-flex;
   flex-wrap: nowrap;
-  align-items: end;
+  align-items: center;
   flex-shrink: 0;
   column-gap: 4;
-  .logo-img {
-    width: ${(props) => props.logoSize + "px"};
-    height: ${(props) => props.logoSize + "px"};
-    padding: 2px;
-    border-radius: 50%;
-    overflow: hidden;
-    & img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-    }
-  }
   .logo-text {
     font-size: ${(props) => props.fontSize + "px"} !important;
     font-weight: ${(props) => props.fontWeight} !important;
@@ -47,8 +35,8 @@ const LogoWrapper = styled.div`
 const LogoAndText = ({ logoSize = 0, fontSize = 0, fontWeight = 500 }) => {
   return (
     <Link to="/" className="logo-wrapper">
-      <LogoWrapper logoSize={logoSize} fontSize={fontSize} fontWeight={fontWeight}>
-        {logoSize > 0 && <LogoCube />}
+      <LogoWrapper fontSize={fontSize} fontWeight={fontWeight}>
+        {logoSize > 0 && <LogoCube size={logoSize} />}
         {fontSize > 0 && <span className="logo-text">SetupStore</span>}
       </LogoWrapper>
     </Link>
@@ -61,8 +49,8 @@ export const Logo = ({ logoSize = 0, fontSize = 0, fontWeight = 500 }) => {
   return (
     <span role="img" aria-label="desktop" className="anticon anticon-desktop ant-menu-item-icon">
       <Link to="/" className="logo-wrapper">
-        <LogoWrapper logoSize={logoSize} fontSize={fontSize} fontWeight={fontWeight}>
-          {logoSize > 0 && <LogoCube />}
+        <LogoWrapper fontSize={fontSize} fontWeight={fontWeight}>
+          {logoSize > 0 && <LogoCube size={logoSize} />}
         </LogoWrapper>
       </Link>
     </span>

@@ -1,6 +1,7 @@
 import React from "react";
 import { Button as AntdButton } from "antd";
 import styled from "styled-components";
+import { useChangeThemeProvider } from "src/common/useChangeThemeProvider";
 
 const BtnContent = styled.div`
   display: inline-flex;
@@ -20,8 +21,25 @@ const Button = ({
   shape = "default",
   className = "",
   htmlType = "button",
+  ghost = false,
+  size = "middle",
+  extraType = "",
   onClick = () => null,
 }) => {
+  const { themeProvider } = useChangeThemeProvider();
+
+  let style = {
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    flexWrap: "nowrap",
+    gap: 4,
+  };
+
+  if (extraType === "btntag" && type === "link") {
+    style.backgroundColor = themeProvider.generatedColors[0];
+  }
+
   return (
     <AntdButton
       className={className}
@@ -33,13 +51,9 @@ const Button = ({
       block={block}
       htmlType={htmlType}
       icon={icon}
-      style={{
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "center",
-        flexWrap: "nowrap",
-        gap: 4,
-      }}
+      ghost={ghost}
+      size={size}
+      style={style}
     >
       {children}
     </AntdButton>

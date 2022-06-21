@@ -1,12 +1,13 @@
 import { Alert, Button, Form, Input, Typography, notification } from "antd";
 import { auth } from "src/common/firebase-config";
-import { useUserStorage } from "src/common/useUserStorage";
 import { sendPasswordResetEmail } from "firebase/auth";
 import GalleryBgLayout from "src/layout/GalleryBgLayout";
 import React from "react";
 import { HiOutlineMail } from "react-icons/hi";
 import { Link, useNavigate } from "react-router-dom";
 import styled from "styled-components";
+import { useDispatch } from "react-redux";
+import { setEmailVerifiedValue } from "src/stores/auth/auth.reducer";
 
 const FormWrapperStyles = styled.div`
   display: flex;
@@ -29,8 +30,8 @@ const FormWrapperStyles = styled.div`
 `;
 
 const ForgotPasswordPage = (props) => {
+  const dispatch = useDispatch();
   const [status, setStatus] = React.useState("");
-  const { credential, setCredential, setEmailValueVerified } = useUserStorage();
 
   const [form] = Form.useForm();
 
@@ -48,7 +49,7 @@ const ForgotPasswordPage = (props) => {
         form.resetFields();
         setStatus("success");
         notification.success({ message: "Check your email for password reset link" });
-        setEmailValueVerified(email);
+        dispatch(setEmailVerifiedValue(email));
         setTimeout(() => {
           navigate("/login");
         }, 3000);

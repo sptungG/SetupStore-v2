@@ -65,7 +65,7 @@ const GalleryBgLayout = ({ children }) => {
         <Gallery count={24} column={4} />
       </div>
       <header className="header">
-        <LogoAndText logoSize={48} fontSize={28} fontWeight={700} />
+        <LogoAndText logoSize={30} fontSize={28} fontWeight={700} />
       </header>
       <div className="modal-content">{children}</div>
     </PageStyles>

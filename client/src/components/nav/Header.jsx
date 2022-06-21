@@ -1,18 +1,17 @@
-import {
-  BellOutlined,
-  SearchOutlined,
-  ShoppingCartOutlined,
-  UserOutlined,
-} from "@ant-design/icons";
-import { Avatar, Badge, Button, Space, Typography } from "antd";
+import { Avatar, Badge, Divider, Space, Typography } from "antd";
 import CollapsedButton from "src/components/button/CollapsedButton";
 import AutocompleteSearch from "src/components/input/AutocompleteSearch";
-import React from "react";
+import React, { useEffect, useLayoutEffect, useState } from "react";
 import styled from "styled-components";
 import LogoAndText from "./LogoAndText";
 import { Link } from "react-router-dom";
-import { useUserStorage } from "src/common/useUserStorage";
 import ProfileDropdownMenu from "./ProfileDropdown";
+import Button from "../button/Button";
+import { useSelector } from "react-redux";
+import { FaShoppingCart, FaStore } from "react-icons/fa";
+import ThemeButton from "../button/ThemeButton";
+import { useContainerDimensions } from "src/common/useContainerDimensions";
+import { useRef } from "react";
 
 const HeaderWrapper = styled.header`
   height: 64px;
@@ -23,45 +22,67 @@ const HeaderWrapper = styled.header`
   .header-left {
   }
   .header-center {
+    max-width: 480px;
     margin: 0 auto;
+    flex: 1 0 auto;
   }
   .header-right {
   }
 `;
 
 const Header = () => {
-  const { credential, setCredential } = useUserStorage();
+  const ref = useRef(null);
+  const [width, setWidth] = useState(0);
+  const credential = useSelector((state) => state.auth);
   const isSignedIn = credential.user != null && credential.authtoken != null;
+
+  useEffect(() => {
+    function handleResize() {
+      setWidth(ref.current.getBoundingClientRect().width);
+    }
+    window.addEventListener("resize", handleResize);
+    return (_) => {
+      window.removeEventListener("resize", handleResize);
+    };
+  });
   return (
     <HeaderWrapper>
       <div className="header-left">
-        <LogoAndText fontSize={24} />
-        <Space align="center">
-          <Typography.Text strong>Danh mục</Typography.Text>
+        <Space wrap={false}>
+          <LogoAndText fontSize={24} logoSize={24} />
           <CollapsedButton />
         </Space>
       </div>
-      <div className="header-center"></div>
+      <div className="header-center" ref={ref}>
+        <AutocompleteSearch width={width || 480} />
+      </div>
       <div className="header-right">
-        <Space>
-          <Badge dot>
-            <ShoppingCartOutlined style={{ fontSize: "24px" }} />
-          </Badge>
-          <Badge dot>
-            <BellOutlined style={{ fontSize: "24px" }} />
-          </Badge>
+        <Space split={<Divider type="vertical" />} wrap={false}>
           {isSignedIn ? (
             <ProfileDropdownMenu />
           ) : (
-            <Space>
-              <Button type="link" shape="round" size="large">
+            <Space wrap={false}>
+              <Button shape="round" type="link" extraType="btntag">
                 <Link to="/login">Đăng nhập</Link>
               </Button>
-              <Button type="primary" shape="round" size="large">
+              <Button type="primary" shape="round">
                 <Link to="/register">Đăng kí</Link>
               </Button>
             </Space>
           )}
+
+          <Space wrap={false} size={16}>
+            <Link to="/store">
+              <FaStore size={30} />
+            </Link>
+            <Badge count={1}>
+              <Link to="/cart">
+                <FaShoppingCart size={28} />
+              </Link>
+            </Badge>
+          </Space>
+
+          <ThemeButton type="dropdown" btntype={"text"} iconColor={"#595959"} />
         </Space>
       </div>
     </HeaderWrapper>

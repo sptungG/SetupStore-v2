@@ -1,6 +1,5 @@
 import { Avatar, Button, Dropdown, Menu, Space, Typography } from "antd";
 import { auth } from "src/common/firebase-config";
-import { useUserStorage } from "src/common/useUserStorage";
 import { signOut } from "firebase/auth";
 import React from "react";
 import { FaAlignRight, FaRegUserCircle } from "react-icons/fa";
@@ -8,6 +7,8 @@ import { FiLogOut } from "react-icons/fi";
 import { RiHistoryFill } from "react-icons/ri";
 import { Link, useNavigate } from "react-router-dom";
 import styled from "styled-components";
+import { useDispatch, useSelector } from "react-redux";
+import { setAuthtokenCredential, setUserCredential } from "src/stores/auth/auth.reducer";
 
 const AvatarWrapper = styled.div`
   height: 100%;
@@ -31,12 +32,13 @@ const dropdownTextStyle = {
 };
 
 const LogoutItem = () => {
-  const { credential, setCredential } = useUserStorage();
+  const dispatch = useDispatch();
   let navigate = useNavigate();
   const logout = async () => {
     try {
       await signOut(auth);
-      setCredential(null, null);
+      dispatch(setUserCredential(null));
+      dispatch(setAuthtokenCredential(null));
       navigate("/");
     } catch (error) {
       console.log("handleLogout ~ error", error);
@@ -50,7 +52,7 @@ const LogoutItem = () => {
 };
 
 const ProfileDropdownMenu = () => {
-  const { credential } = useUserStorage();
+  const credential = useSelector((state) => state.auth);
   const { user } = credential;
 
   const items = [

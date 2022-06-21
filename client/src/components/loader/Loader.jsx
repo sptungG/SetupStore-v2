@@ -1,5 +1,6 @@
 import React from "react";
 import styled from "styled-components";
+import LogoCube from "../nav/LogoCube";
 import WaterfallLoader from "./WaterfallLoader";
 
 const ModalWrapper = styled.div`
@@ -14,11 +15,15 @@ const ModalWrapper = styled.div`
   justify-content: center;
   align-items: center;
   .modal-container {
-    width: 100vw;
-    height: 100vh;
+    width: 500px;
+    height: 500px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
   }
   .modal-container .text-redirect {
-    margin-top: 30vh;
+    margin-top: 36px;
     text-align: center;
     color: rgba(0, 0, 0, 0.65);
   }
@@ -31,12 +36,11 @@ const Loader = ({ children }) => {
   return (
     <ModalWrapper>
       <div className="modal-container">
-        <WaterfallLoader />
+        <LogoCube loading size={120} />
         {children}
       </div>
     </ModalWrapper>
   );
 };
-
 
 export default Loader;

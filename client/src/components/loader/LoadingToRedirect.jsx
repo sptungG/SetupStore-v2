@@ -21,7 +21,7 @@ function LoadingToRedirect() {
       <div className="modal-container">
         <Loader>
           <h1 className="text-redirect">
-            Redirecting you in <b className="text-counter">{count}</b> seconds
+            Loading... <b className="text-counter">{count}</b>s
           </h1>
         </Loader>
       </div>

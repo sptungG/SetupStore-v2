@@ -25,7 +25,7 @@ const DropdownWrapper = styled.div`
   }
 `;
 
-const ThemeButton = ({ type = "icon" }) => {
+const ThemeButton = ({ type = "icon", btntype, iconSize = 24, iconColor = "#595959", ...rest }) => {
   const { themeProvider, changeThemeProvider } = useChangeThemeProvider();
   const [visible, setVisible] = useState(false);
   if (type === "icon")
@@ -77,8 +77,8 @@ const ThemeButton = ({ type = "icon" }) => {
         </DropdownWrapper>
       }
     >
-      <Button type="dashed" shape="circle" size="large">
-        <FaMagic size={24} />
+      <Button type={btntype} {...rest}>
+        <FaMagic size={iconSize} color={iconColor} />
       </Button>
     </Dropdown>
   );

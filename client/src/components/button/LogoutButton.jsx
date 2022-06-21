@@ -3,17 +3,19 @@ import Button from "./Button";
 import { FiLogOut } from "react-icons/fi";
 import { signOut } from "firebase/auth";
 import { auth } from "common/firebase-config";
-import { useUserStorage } from "common/useUserStorage";
 import { useNavigate } from "react-router-dom";
+import { useDispatch } from "react-redux";
+import { setAuthtokenCredential, setUserCredential } from "src/stores/auth/auth.reducer";
 
 const LogoutButton = ({ iconSize = 24, btnType = "text", children }) => {
-  const { setCredential } = useUserStorage();
+  const dispatch = useDispatch();
   let navigate = useNavigate();
 
   const handleLogout = async () => {
     try {
       await signOut(auth);
-      setCredential(null, null);
+      dispatch(setUserCredential(null));
+      dispatch(setAuthtokenCredential(null));
       navigate("/");
     } catch (error) {
       console.log("handleLogout ~ error", error);

@@ -12,7 +12,8 @@ const { NOT_FOUND_IMG } = require("../../common/constants");
 
 exports.getAllCategory = async (req, res) => {
   try {
-    const { sort } = req.query;
+    const { sort, keyword } = req.query;
+    let filter = {};
     let sortCondition = {};
 
     if (sort) {
@@ -22,8 +23,29 @@ exports.getAllCategory = async (req, res) => {
       }
     }
 
-    const categoryList = await Category.find({}).sort(sort ? sortCondition : { createdAt: -1 });
-    res.status(200).json({ success: true, data: categoryList });
+    if (keyword) {
+      const regex = new RegExp(`${keyword}`, "i");
+      const regexCond = { $regex: regex };
+      console.log(regexCond);
+      filter.name = regexCond;
+    }
+
+    const categoryList = await Category.find(filter).sort(sort ? sortCondition : { createdAt: -1 });
+    const categoryListWithCount = await Promise.all(
+      categoryList.map((c) => Product.countDocuments({ category: c._id }))
+    );
+    const categoryListRes = categoryList.map((c, i) => {
+      return {
+        _id: c._id,
+        name: c.name,
+        image: c.image,
+        status: c.status,
+        createdAt: c.createdAt,
+        updatedAt: c.updatedAt,
+        products_count: categoryListWithCount[i],
+      };
+    });
+    res.status(200).json({ success: true, data: categoryListRes });
   } catch (err) {
     res.status(400).send({ success: false, err: "Get categories failed" });
   }
@@ -114,7 +136,9 @@ exports.deleteCategory = async (req, res) => {
 
     const deletedProducts = await Product.deleteMany({ category: categoryId });
     await Category.findOneAndRemove({ _id: categoryId });
-    res.status(200).json({ success: true, data: category, extra: [...promisesRes, deletedProducts] });
+    res
+      .status(200)
+      .json({ success: true, data: category, extra: [...promisesRes, deletedProducts] });
   } catch (err) {
     res.status(err?.status || 400).json({ success: false, err: err.message });
   }

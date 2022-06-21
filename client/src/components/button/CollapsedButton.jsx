@@ -1,17 +1,19 @@
 import Button from "./Button";
-import { useChangeHeaderState } from "src/common/useChangeHeaderState";
-import { FaIndent, FaOutdent, FaEllipsisH } from "react-icons/fa";
+import { useDispatch, useSelector } from "react-redux";
 import React from "react";
+import { setSidebarCollapsed } from "src/stores/header/header.reducer";
+import { BsList } from "react-icons/bs";
 
 const CollapsedButton = () => {
-  const { headerState, changeHeaderState } = useChangeHeaderState();
+  const dispatch = useDispatch();
+  const headerState = useSelector((state) => state.headerState);
   return (
     <Button
       className="btn-collapsed"
       type="text"
-      onClick={() => changeHeaderState({ headerState: !headerState.collapsed })}
+      onClick={() => dispatch(setSidebarCollapsed(!headerState.sidevisible))}
     >
-      <FaEllipsisH size={20} />
+      <BsList size={24} />
     </Button>
   );
 };
