@@ -4,7 +4,11 @@ import MasonryLayout from "./MasonryLayout";
 import { useGetGalleryPhotosQuery } from "src/stores/unsplash/gallery.query";
 
 const Gallery = ({ count = 9, column = 3 }) => {
-  const { data: photos, isFetching, isSuccess } = useGetGalleryPhotosQuery(count);
+  const {
+    data: photos,
+    isFetching,
+    isSuccess,
+  } = useGetGalleryPhotosQuery(count, { skip: process.env.REACT_APP_ENV !== "PRODUCTION" });
 
   return (
     <>
