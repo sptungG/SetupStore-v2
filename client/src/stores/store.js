@@ -11,6 +11,7 @@ import { authApi } from "./auth/auth.query";
 import { productsApi } from "./product/products.query";
 import { categoriesApi } from "./category/categories.query";
 import { combosApi } from "./combo/combos.query";
+import { galleryApi } from "./unsplash/gallery.query";
 
 const persistConfig = {
   key: "root",
@@ -26,6 +27,7 @@ const reducers = combineReducers({
   [productsApi.reducerPath]: productsApi.reducer,
   [categoriesApi.reducerPath]: categoriesApi.reducer,
   [combosApi.reducerPath]: combosApi.reducer,
+  [galleryApi.reducerPath]: galleryApi.reducer,
 });
 
 const persistedReducer = persistReducer(persistConfig, reducers);
@@ -43,6 +45,7 @@ export const store = configureStore({
       productsApi.middleware,
       categoriesApi.middleware,
       combosApi.middleware,
+      galleryApi.middleware,
     ]),
 });
 
