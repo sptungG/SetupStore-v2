@@ -4,15 +4,15 @@ import ReactDOM from "react-dom";
 import { Provider } from "react-redux";
 import { store } from "src/stores/store";
 import App from "./App";
-// import "./index.css";
+import "./index.css";
 
 ReactDOM.render(
   // <React.StrictMode>
-    <Provider store={store}>
-      <BrowserRouter>
-        <App />
-      </BrowserRouter>
-    </Provider>,
+  <Provider store={store}>
+    <BrowserRouter>
+      <App />
+    </BrowserRouter>
+  </Provider>,
   // </React.StrictMode>,
   document.getElementById("root")
 );

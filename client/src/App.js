@@ -1,5 +1,8 @@
 import { ConfigProvider } from "antd";
 import "antd/dist/antd.variable.min.css";
+import "swiper/css";
+import "swiper/css/navigation";
+import "swiper/css/thumbs";
 import { getRedirectResult, onAuthStateChanged } from "firebase/auth";
 import { lazy, Suspense, useEffect } from "react";
 import { auth } from "src/common/firebase-config";

@@ -19,6 +19,8 @@ const HeaderWrapper = styled.header`
   display: flex;
   align-items: center;
   padding: 24px;
+  gap: 24px;
+  flex-wrap: nowrap;
   .header-left {
   }
   .header-center {

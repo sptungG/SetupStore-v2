@@ -76,6 +76,11 @@ exports.getFilteredProducts = async (req, res) => {
         .populate("images", "_id public_id url modelId onModel")
         .populate("wishlist", "_id name picture")
         .populate("variants", "_id color_label color_hex_code image")
+        .populate({
+          path: "combos",
+          select: "_id name",
+          populate: { path: "image", select: "_id public_id url modelId onModel" },
+        })
         .skip((currentPage - 1) * limitNumber)
         .limit(limitNumber)
         .sort(sort ? sortCondition : { createdAt: -1 }),
@@ -145,6 +150,11 @@ exports.getAdminProducts = async (req, res) => {
       .populate("images", "_id public_id url modelId onModel")
       .populate("wishlist", "_id name picture")
       .populate("variants", "_id color_label color_hex_code image")
+      .populate({
+        path: "combos",
+        select: "_id name",
+        populate: { path: "image", select: "_id public_id url modelId onModel" },
+      })
       .sort(sort ? sortCondition : { createdAt: -1 });
 
     res.status(200).json({
@@ -164,7 +174,12 @@ exports.getSingleProduct = async (req, res) => {
       .populate("category", "_id name")
       .populate("images", "_id public_id url modelId onModel")
       .populate("wishlist", "_id name picture")
-      .populate("variants", "_id color_label color_hex_code image");
+      .populate("variants", "_id color_label color_hex_code image")
+      .populate({
+        path: "combos",
+        select: "_id name",
+        populate: { path: "image", select: "_id public_id url modelId onModel" },
+      });
 
     if (!foundProduct) throw { status: 404, message: `${productId} not found!` };
 
@@ -193,7 +208,12 @@ exports.updateProduct = async (req, res) => {
       .populate("category", "_id name")
       .populate("images", "_id public_id url modelId onModel")
       .populate("wishlist", "_id name picture")
-      .populate("variants", "_id color_label color_hex_code image");
+      .populate("variants", "_id color_label color_hex_code image")
+      .populate({
+        path: "combos",
+        select: "_id name",
+        populate: { path: "image", select: "_id public_id url modelId onModel" },
+      });
 
     res.status(200).json({ success: true, data: updatedProduct });
   } catch (err) {

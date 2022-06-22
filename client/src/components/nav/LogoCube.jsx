@@ -1,5 +1,5 @@
 import React from "react";
-import styled, { keyframes, rgba } from "styled-components";
+import styled, { keyframes } from "styled-components";
 
 const cube = keyframes`
   0% {

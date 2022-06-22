@@ -25,6 +25,7 @@ const Button = ({
   size = "middle",
   extraType = "",
   onClick = () => null,
+  ...rest
 }) => {
   const { themeProvider } = useChangeThemeProvider();
 
@@ -54,6 +55,7 @@ const Button = ({
       ghost={ghost}
       size={size}
       style={style}
+      {...rest}
     >
       {children}
     </AntdButton>

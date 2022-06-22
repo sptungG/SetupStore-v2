@@ -8,6 +8,8 @@ import SideBar from "src/components/nav/SideBar";
 const MainWrapper = styled.main`
   position: relative;
   overflow: hidden;
+  width: 100%;
+  max-width: 100vw;
   min-height: 100vh;
 `;
 

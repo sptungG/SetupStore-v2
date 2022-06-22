@@ -1,6 +1,6 @@
 import { Col, Drawer, Row, Space, Avatar, Typography } from "antd";
 import React from "react";
-import { BsBoxSeam, BsCollection, BsHouseDoor, BsLayoutWtf, BsPeople } from "react-icons/bs";
+import { BsBoxSeam, BsChatLeftText, BsCollection, BsHouseDoor, BsLayoutWtf, BsPeople } from "react-icons/bs";
 import { FaStore } from "react-icons/fa";
 import { FcAbout, FcLike, FcServices, FcShop, FcSms, FcViewDetails } from "react-icons/fc";
 import { RiQuestionAnswerLine } from "react-icons/ri";
@@ -31,6 +31,9 @@ const SideMenuWrapper = styled.div`
       flex: 0 0 32px;
       font-size: 20px;
       color: ${(props) => props.theme.generatedColors[5]};
+      display:flex;
+      justify-content:center;
+      flex-direction:column;
     }
     & .side-content {
       flex: 1 1 auto;
@@ -93,6 +96,7 @@ const SideBar = () => {
                 ellipsis
                 style={{ marginBottom: 2, cursor: "pointer" }}
                 onClick={() => navigate("/profile")}
+                title="Go to your profile"
               >
                 {user.name}
               </Typography.Title>
@@ -126,10 +130,10 @@ const SideBar = () => {
         <NavItem icon={<BsCollection />} linkto={"/categories"}>
           Danh mục
         </NavItem>
-        <NavItem icon={<FcAbout />} linkto={"/about-us"}>
+        <NavItem icon={<BsPeople />} linkto={"/about-us"}>
           Về chúng tôi
         </NavItem>
-        <NavItem icon={<FcSms />} linkto={"/faq"}>
+        <NavItem icon={<BsChatLeftText />} linkto={"/faq"}>
           FAQ
         </NavItem>
         {isSignedIn && (

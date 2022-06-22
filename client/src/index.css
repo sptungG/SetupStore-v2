@@ -1,1 +1,15 @@
-@import '~antd/dist/antd.css';
+.hidden {
+  display: none;
+  opacity: 0;
+  visibility: hidden;
+}
+.ant-tooltip-inner{
+  width: fit-content;
+  height: fit-content;
+}
+
+body{
+  width: 100%;
+  max-width: 100vw;
+  overflow-x: hidden;
+}
