@@ -10,7 +10,7 @@ const { convertToNumber, getTotalPage } = require("../../common/utils");
 exports.getFilteredCombos = async (req, res) => {
   try {
     const { keyword, page, limit, sort } = req.query;
-    const currentPage = page || 1;
+    const currentPage = convertToNumber(page) || 1;
     const limitNumber = convertToNumber(limit) || 4;
 
     let filter = { status: "active" };

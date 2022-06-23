@@ -13,7 +13,7 @@ const Combo = require("../combo/model.combo");
 exports.getFilteredProducts = async (req, res) => {
   try {
     const { status, rating, price, color, category, keyword, page, limit, sort } = req.query;
-    const currentPage = page || 1;
+    const currentPage = convertToNumber(page) || 1;
 
     const limitNumber = convertToNumber(limit) || 4;
 

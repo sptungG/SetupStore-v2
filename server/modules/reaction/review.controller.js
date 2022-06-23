@@ -48,7 +48,7 @@ exports.getAllReviews = async (req, res) => {
 exports.getFilteredReviews = async (req, res) => {
   try {
     const { page, limit, sort, rating, onModel } = req.query;
-    const currentPage = page || 1;
+    const currentPage = convertToNumber(page) || 1;
 
     const limitNumber = convertToNumber(limit) || 4;
 
@@ -103,7 +103,7 @@ exports.getFilteredProductReviews = async (req, res) => {
   try {
     const { productId } = req.params;
     const { rating, page, limit, sort } = req.query;
-    const currentPage = page || 1;
+    const currentPage = convertToNumber(page) || 1;
     const limitNumber = convertToNumber(limit) || 4;
 
     let filter = { modelId: productId, onModel: "Product" };
@@ -159,7 +159,7 @@ exports.getFilteredComboReviews = async (req, res) => {
   try {
     const { comboId } = req.params;
     const { rating, page, limit, sort } = req.query;
-    const currentPage = page || 1;
+    const currentPage = convertToNumber(page) || 1;
     const limitNumber = convertToNumber(limit) || 4;
 
     let filter = { modelId: comboId, onModel: "Combo" };
