@@ -497,6 +497,8 @@ const AutocompleteSearch = ({ width = 480 }) => {
           prefix={<BsSearch size={16} />}
           onChange={onChangeInput}
           onPressEnter={onPressEnter}
+          onClick={() => setVisible(true)}
+          onFocus={() => setVisible(true)}
           size="middle"
         />
       </Dropdown>
