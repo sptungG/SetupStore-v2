@@ -1,5 +1,5 @@
 const cloudinary = require("cloudinary").v2;
-const { convertToNumber } = require("../../common/utils");
+const { convertToNumber, getTotalPage } = require("../../common/utils");
 const Product = require("./model.product");
 const Variant = require("./model.variant");
 const User = require("../user/model.user");
@@ -90,7 +90,12 @@ exports.getFilteredProducts = async (req, res) => {
     res.status(200).json({
       success: true,
       data: products,
-      pagination: { page: currentPage, limit: limitNumber, total: totalProduct },
+      pagination: {
+        page: currentPage,
+        limit: limitNumber,
+        total: totalProduct,
+        totalPage: getTotalPage(totalProduct, limitNumber),
+      },
     });
   } catch (err) {
     res.status(400).json({ success: false, err: err.message });

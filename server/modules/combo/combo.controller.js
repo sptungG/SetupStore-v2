@@ -43,7 +43,12 @@ exports.getFilteredCombos = async (req, res) => {
     res.status(200).json({
       success: true,
       data: combos,
-      pagination: { page: currentPage, limit: limitNumber, total: totalCombos },
+      pagination: {
+        page: currentPage,
+        limit: limitNumber,
+        total: totalCombos,
+        totalPage: getTotalPage(totalCombos, limitNumber),
+      },
     });
   } catch (err) {
     res.status(400).send({ success: false, err: "Get combos failed" });

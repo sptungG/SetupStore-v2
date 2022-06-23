@@ -84,7 +84,12 @@ exports.getFilteredReviews = async (req, res) => {
     res.status(200).json({
       success: true,
       data: reviews,
-      pagination: { page: currentPage, limit: limitNumber, total: totalReview },
+      pagination: {
+        page: currentPage,
+        limit: limitNumber,
+        total: totalReview,
+        totalPage: getTotalPage(totalReview, limitNumber),
+      },
     });
   } catch (err) {
     res.status(400).json({
@@ -135,7 +140,12 @@ exports.getFilteredProductReviews = async (req, res) => {
       success: true,
       reviewers: reviewers.map((r) => r.createdBy),
       data: reviews,
-      pagination: { page: currentPage, limit: limitNumber, total: totalReview },
+      pagination: {
+        page: currentPage,
+        limit: limitNumber,
+        total: totalReview,
+        totalPage: getTotalPage(totalReview, limitNumber),
+      },
     });
   } catch (err) {
     res.status(400).json({
@@ -186,7 +196,12 @@ exports.getFilteredComboReviews = async (req, res) => {
       success: true,
       reviewers: reviewers.map((r) => r.createdBy),
       data: reviews,
-      pagination: { page: currentPage, limit: limitNumber, total: totalReview },
+      pagination: {
+        page: currentPage,
+        limit: limitNumber,
+        total: totalReview,
+        totalPage: getTotalPage(totalReview, limitNumber),
+      },
     });
   } catch (err) {
     res.status(400).json({

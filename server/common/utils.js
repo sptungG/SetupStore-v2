@@ -1,5 +1,12 @@
 exports.convertToNumber = (value) => (Number.isNaN(Number(value)) ? 0 : Number(value));
 
+exports.getTotalPage = (total, limit) => {
+  let totalPage =
+    total % limit === 0 ? (total - (total % limit)) / limit : (total - (total % limit)) / limit + 1;
+  totalPage = convertToNumber(totalPage);
+  return totalPage === 0 ? 1 : totalPage;
+};
+
 exports.isValidURL = (string) => {
   const res = string.match(
     /(http(s)?:\/\/.)?(www\.)?[-a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_\+.~#?&//=]*)/g
