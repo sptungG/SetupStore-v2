@@ -6,13 +6,13 @@ import { useGetGalleryPhotosQuery } from "src/stores/unsplash/gallery.query";
 const Gallery = ({ count = 9, column = 3 }) => {
   const {
     data: photos,
-    isFetching,
+    isUninitialized,
     isSuccess,
   } = useGetGalleryPhotosQuery(count, { skip: process.env.REACT_APP_ENV !== "PRODUCTION" });
 
   return (
     <>
-      {isFetching && (
+      {isUninitialized && (
         <MasonryLayout id="gallery" columns={column}>
           {Array(count)
             .fill(null)

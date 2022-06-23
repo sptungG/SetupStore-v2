@@ -71,6 +71,7 @@ const Header = () => {
                 type="link"
                 extraType="btntag"
                 disabled={headerState.dataRedirectStatus === "loading"}
+                loading={headerState.dataRedirectStatus === "loading"}
               >
                 <Link to="/login">Đăng nhập</Link>
               </Button>

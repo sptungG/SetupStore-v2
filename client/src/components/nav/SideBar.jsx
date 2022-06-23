@@ -1,6 +1,13 @@
 import { Col, Drawer, Row, Space, Avatar, Typography } from "antd";
 import React from "react";
-import { BsBoxSeam, BsChatLeftText, BsCollection, BsHouseDoor, BsLayoutWtf, BsPeople } from "react-icons/bs";
+import {
+  BsBoxSeam,
+  BsChatLeftText,
+  BsCollection,
+  BsHouseDoor,
+  BsLayoutWtf,
+  BsPeople,
+} from "react-icons/bs";
 import { FaStore } from "react-icons/fa";
 import { FcAbout, FcLike, FcServices, FcShop, FcSms, FcViewDetails } from "react-icons/fc";
 import { RiQuestionAnswerLine } from "react-icons/ri";
@@ -31,9 +38,9 @@ const SideMenuWrapper = styled.div`
       flex: 0 0 32px;
       font-size: 20px;
       color: ${(props) => props.theme.generatedColors[5]};
-      display:flex;
-      justify-content:center;
-      flex-direction:column;
+      display: flex;
+      justify-content: center;
+      flex-direction: column;
     }
     & .side-content {
       flex: 1 1 auto;
@@ -64,7 +71,8 @@ const SideBar = () => {
   const dispatch = useDispatch();
   const headerState = useSelector((state) => state.headerState);
   const credential = useSelector((state) => state.auth);
-  const isSignedIn = credential.user != null && credential.authtoken != null;
+  const isSignedIn =
+    credential.user != null && credential.authtoken != null && credential.refreshToken != null;
   const { user } = credential;
   let navigate = useNavigate();
 
@@ -107,12 +115,24 @@ const SideBar = () => {
           </Row>
         ) : (
           <Space wrap={false} className="side-auth-action">
-            <Button shape="round" type="link" extraType="btntag">
-              <Link to="/login">Đăng nhập</Link>
-            </Button>
-            <Button type="primary" shape="round">
-              <Link to="/register">Đăng kí</Link>
-            </Button>
+            <Space wrap={false}>
+              <Button
+                shape="round"
+                type="link"
+                extraType="btntag"
+                disabled={headerState.dataRedirectStatus === "loading"}
+                loading={headerState.dataRedirectStatus === "loading"}
+              >
+                <Link to="/login">Đăng nhập</Link>
+              </Button>
+              <Button
+                type="primary"
+                shape="round"
+                disabled={headerState.dataRedirectStatus === "loading"}
+              >
+                <Link to="/register">Đăng kí</Link>
+              </Button>
+            </Space>
           </Space>
         )
       }
