@@ -163,11 +163,22 @@ const AutocompleteSearch = ({ width = 480 }) => {
     useGetAllCategoriesFilteredQuery(categoriesFilterValue);
 
   useEffect(() => {
+    const totalProductsPage = getTotalPage(
+      productsFilteredQuery?.pagination.total || 0,
+      productsFilterValue.limit
+    );
+    const totalCombosPage = getTotalPage(
+      combosFilteredQuery?.pagination.total || 0,
+      combosFilterValue.limit
+    );
     switch (activeKey) {
       case "product": {
         if (productsFilterValue.page === 1) {
           setProductsFiltered(productsFilteredQuery?.data || []);
-        } else if (productsFiltered.length < productsFilteredQuery?.pagination.total) {
+        } else if (
+          productsFiltered.length < productsFilteredQuery?.pagination.total &&
+          productsFilterValue.page <= totalProductsPage
+        ) {
           setProductsFiltered(
             lodash.uniqBy([...productsFiltered, ...(productsFilteredQuery?.data || [])], "_id")
           );
@@ -177,7 +188,10 @@ const AutocompleteSearch = ({ width = 480 }) => {
       case "combo": {
         if (combosFilterValue.page === 1) {
           setCombosFiltered(combosFilteredQuery?.data || []);
-        } else if (combosFiltered.length < combosFilteredQuery?.pagination.total) {
+        } else if (
+          combosFiltered.length < combosFilteredQuery?.pagination.total &&
+          combosFilterValue.page <= totalCombosPage
+        ) {
           setCombosFiltered(
             lodash.uniqBy([...combosFiltered, ...(combosFilteredQuery?.data || [])], "_id")
           );
