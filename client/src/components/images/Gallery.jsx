@@ -12,7 +12,7 @@ const Gallery = ({ count = 9, column = 3 }) => {
 
   return (
     <>
-      {isUninitialized && (
+      {!isSuccess && (
         <MasonryLayout id="gallery" columns={column}>
           {Array(count)
             .fill(null)

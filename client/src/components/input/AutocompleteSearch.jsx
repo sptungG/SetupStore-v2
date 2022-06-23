@@ -405,7 +405,7 @@ const AutocompleteSearch = ({ width = 480 }) => {
               )}
               {getCombosSuccess && (
                 <div id="scrollableDivCombos">
-                  {combosFilterValue.length > 0 ? (
+                  {combosFiltered.length > 0 ? (
                     <InfiniteScroll
                       dataLength={combosFilteredQuery?.pagination.total}
                       next={() =>
