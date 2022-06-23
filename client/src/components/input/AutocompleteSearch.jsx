@@ -134,6 +134,12 @@ const DropdownWrapper = styled.div`
   }
 `;
 
+const getTotalPage = (total, limit) => {
+  let totalPage =
+    total % limit === 0 ? (total - (total % limit)) / limit : (total - (total % limit)) / limit + 1;
+  return totalPage === 0 ? 1 : totalPage;
+};
+
 const AutocompleteSearch = ({ width = 480 }) => {
   const inputRef = useRef(null);
   const dropdownRef = useRef(null);
@@ -165,8 +171,6 @@ const AutocompleteSearch = ({ width = 480 }) => {
           setProductsFiltered(
             lodash.uniqBy([...productsFiltered, ...(productsFilteredQuery?.data || [])], "_id")
           );
-        } else {
-          setProductsFiltered(productsFiltered);
         }
         break;
       }
@@ -177,8 +181,6 @@ const AutocompleteSearch = ({ width = 480 }) => {
           setCombosFiltered(
             lodash.uniqBy([...combosFiltered, ...(combosFilteredQuery?.data || [])], "_id")
           );
-        } else {
-          setCombosFiltered(combosFiltered);
         }
         break;
       }
