@@ -2,7 +2,7 @@ const Review = require("./model.review");
 const Product = require("../product/model.product");
 const User = require("../user/model.user");
 const Combo = require("../combo/model.combo");
-const { convertToNumber } = require("../../common/utils");
+const { convertToNumber, getTotalPage } = require("../../common/utils");
 
 // getAllReviews (non-pagination)
 exports.getAllReviews = async (req, res) => {

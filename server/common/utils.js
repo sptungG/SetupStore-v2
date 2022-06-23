@@ -3,7 +3,7 @@ exports.convertToNumber = (value) => (Number.isNaN(Number(value)) ? 0 : Number(v
 exports.getTotalPage = (total, limit) => {
   let totalPage =
     total % limit === 0 ? (total - (total % limit)) / limit : (total - (total % limit)) / limit + 1;
-  totalPage = convertToNumber(totalPage);
+  totalPage = Number.isNaN(Number(totalPage)) ? 0 : Number(totalPage);
   return totalPage === 0 ? 1 : totalPage;
 };
 

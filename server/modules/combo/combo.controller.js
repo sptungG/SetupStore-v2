@@ -5,7 +5,7 @@ const User = require("../user/model.user");
 const Wishlist = require("../reaction/model.wishlist");
 const Review = require("../reaction/model.review");
 const { NOT_FOUND_IMG } = require("../../common/constants");
-const { convertToNumber } = require("../../common/utils");
+const { convertToNumber, getTotalPage } = require("../../common/utils");
 
 exports.getFilteredCombos = async (req, res) => {
   try {
