@@ -27,6 +27,7 @@ import {
 import InfiniteScroll from "react-infinite-scroll-component";
 import { Link } from "react-router-dom";
 import { useDebounce } from "src/common/useDebounce";
+import { useMediaQuery } from "src/common/useMediaQuery";
 import { useOnClickOutside } from "src/common/useOnClickOutside";
 import { useGetAllCategoriesFilteredQuery } from "src/stores/category/categories.query";
 import { useGetCombosFilteredQuery } from "src/stores/combo/combos.query";
@@ -147,6 +148,7 @@ const DropdownWrapper = styled.div`
 `;
 
 const AutocompleteSearch = ({ width = 480 }) => {
+  const tabletmatches = useMediaQuery("(max-width: 1023px)");
   const inputRef = useRef(null);
   const dropdownRef = useRef(null);
   const [text, setText] = useState("");
@@ -162,41 +164,35 @@ const AutocompleteSearch = ({ width = 480 }) => {
   const [combosFiltered, setCombosFiltered] = useState([]);
   const [categoriesFiltered, setCategoriesFiltered] = useState([]);
   const { data: productsFilteredQuery, isSuccess: getProductsSuccess } =
-    useGetProductsFilteredQuery(productsFilterValue);
-  const { data: combosFilteredQuery, isSuccess: getCombosSuccess } =
-    useGetCombosFilteredQuery(combosFilterValue);
+    useGetProductsFilteredQuery(productsFilterValue, {
+      refetchOnMountOrArgChange: true,
+    });
+  const { data: combosFilteredQuery, isSuccess: getCombosSuccess } = useGetCombosFilteredQuery(
+    combosFilterValue,
+    { refetchOnMountOrArgChange: true }
+  );
   const { data: categoriesFilteredQuery, isSuccess: getCategoriesSuccess } =
-    useGetAllCategoriesFilteredQuery(categoriesFilterValue);
+    useGetAllCategoriesFilteredQuery(categoriesFilterValue, { refetchOnMountOrArgChange: true });
 
   useEffect(() => {
     switch (activeKey) {
       case "product": {
         if (productsFilterValue.page === 1) {
           setProductsFiltered(productsFilteredQuery?.data || []);
-        } else if (
-          productsFilteredQuery?.data.length > 0 &&
-          productsFiltered.length < productsFilteredQuery?.pagination.total
-        ) {
+        } else if (productsFilterValue.page <= productsFilteredQuery?.pagination.totalPage) {
           setProductsFiltered(
             lodash.uniqBy([...productsFiltered, ...(productsFilteredQuery?.data || [])], "_id")
           );
-        } else {
-          setProductsFiltered(productsFiltered);
         }
         break;
       }
       case "combo": {
         if (combosFilterValue.page === 1) {
           setCombosFiltered(combosFilteredQuery?.data || []);
-        } else if (
-          combosFilteredQuery?.data.length > 0 &&
-          combosFiltered.length < combosFilteredQuery?.pagination.total
-        ) {
+        } else if (combosFilterValue.page <= combosFilteredQuery?.pagination.totalPage) {
           setCombosFiltered(
             lodash.uniqBy([...combosFiltered, ...(combosFilteredQuery?.data || [])], "_id")
           );
-        } else {
-          setCombosFiltered(combosFiltered);
         }
         break;
       }
@@ -213,10 +209,10 @@ const AutocompleteSearch = ({ width = 480 }) => {
     activeKey,
     productsFilterValue.page,
     productsFilteredQuery?.data,
-    productsFilteredQuery?.pagination.total,
+    productsFilteredQuery?.pagination.totalPage,
     combosFilterValue.page,
     combosFilteredQuery?.data,
-    combosFilteredQuery?.pagination.total,
+    combosFilteredQuery?.pagination.totalPage,
     categoriesFilteredQuery?.data,
   ]);
 
@@ -281,7 +277,6 @@ const AutocompleteSearch = ({ width = 480 }) => {
       <Dropdown
         visible={visible}
         trigger={["click"]}
-        onVisibleChange={(v) => setVisible(v)}
         overlay={
           <DropdownWrapper width={width}>
             <Tabs
@@ -289,7 +284,21 @@ const AutocompleteSearch = ({ width = 480 }) => {
               activeKey={activeKey}
               onChange={(key) => {
                 setActiveKey(key);
+                if (!tabletmatches)
+                  inputRef.current.focus({
+                    cursor: "end",
+                  });
               }}
+              tabBarExtraContent={
+                <Space size={4} wrap={false}>
+                  <Button
+                    icon={<BsXLg size={15} />}
+                    shape={"circle"}
+                    type="dashed"
+                    onClick={() => setVisible(false)}
+                  ></Button>
+                </Space>
+              }
             >
               <Tabs.TabPane tab="Sản phẩm" key="product"></Tabs.TabPane>
               <Tabs.TabPane tab="Danh mục" key="category"></Tabs.TabPane>
@@ -308,18 +317,20 @@ const AutocompleteSearch = ({ width = 480 }) => {
                     <InfiniteScroll
                       dataLength={productsFilteredQuery?.pagination.total}
                       next={() =>
-                        setProductsFilterValue({
-                          ...productsFilterValue,
-                          page: productsFilterValue.page + 1,
-                        })
+                        setProductsFilterValue((prev) => ({
+                          ...prev,
+                          page: prev.page + 1,
+                        }))
                       }
-                      hasMore={productsFiltered.length < productsFilteredQuery?.pagination.total}
+                      hasMore={
+                        productsFilterValue.page < productsFilteredQuery?.pagination.totalPage
+                      }
                       loader={
                         <div className="dropdown-item-loading">
                           <Skeleton avatar paragraph={{ rows: 1 }} active />
                         </div>
                       }
-                      scrollThreshold="1px"
+                      scrollThreshold="10px"
                       scrollableTarget="scrollableDivProducts"
                     >
                       {productsFiltered.map((p) => (
@@ -409,18 +420,18 @@ const AutocompleteSearch = ({ width = 480 }) => {
                     <InfiniteScroll
                       dataLength={combosFilteredQuery?.pagination.total}
                       next={() =>
-                        setCombosFilterValue({
-                          ...combosFilterValue,
-                          page: combosFilterValue.page + 1,
-                        })
+                        setCombosFilterValue((prev) => ({
+                          ...prev,
+                          page: prev.page + 1,
+                        }))
                       }
-                      hasMore={combosFiltered.length < combosFilteredQuery?.pagination.total}
+                      hasMore={combosFilterValue.page < combosFilteredQuery?.pagination.totalPage}
                       loader={
                         <div className="dropdown-item-loading">
                           <Skeleton avatar paragraph={{ rows: 1 }} active />
                         </div>
                       }
-                      scrollThreshold="1px"
+                      scrollThreshold="10px"
                       scrollableTarget="scrollableDivCombos"
                     >
                       {combosFiltered.map((c) => (

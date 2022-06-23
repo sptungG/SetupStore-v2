@@ -12,6 +12,7 @@ import { FaShoppingCart, FaStore } from "react-icons/fa";
 import ThemeButton from "../button/ThemeButton";
 import { useContainerDimensions } from "src/common/useContainerDimensions";
 import { useRef } from "react";
+import { useMediaQuery } from "src/common/useMediaQuery";
 
 const HeaderWrapper = styled.header`
   height: 64px;
@@ -29,7 +30,7 @@ const HeaderWrapper = styled.header`
     flex: 1 0 auto;
   }
   .header-right {
-    
+
   }
 `;
 
