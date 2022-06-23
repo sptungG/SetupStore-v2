@@ -36,7 +36,9 @@ const Header = () => {
   const ref = useRef(null);
   const [width, setWidth] = useState(0);
   const credential = useSelector((state) => state.auth);
-  const isSignedIn = credential.user != null && credential.authtoken != null;
+  const isSignedIn =
+    credential.user != null && credential.authtoken != null && credential.refreshToken != null;
+  const headerState = useSelector((state) => state.headerState);
 
   useEffect(() => {
     function handleResize() {
@@ -64,10 +66,19 @@ const Header = () => {
             <ProfileDropdownMenu />
           ) : (
             <Space wrap={false}>
-              <Button shape="round" type="link" extraType="btntag">
+              <Button
+                shape="round"
+                type="link"
+                extraType="btntag"
+                disabled={headerState.dataRedirectStatus === "loading"}
+              >
                 <Link to="/login">Đăng nhập</Link>
               </Button>
-              <Button type="primary" shape="round">
+              <Button
+                type="primary"
+                shape="round"
+                disabled={headerState.dataRedirectStatus === "loading"}
+              >
                 <Link to="/register">Đăng kí</Link>
               </Button>
             </Space>

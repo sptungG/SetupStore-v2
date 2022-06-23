@@ -1,9 +1,5 @@
 import { Col, Divider, Form, Input, notification, Row, Typography } from "antd";
-import {
-  signInWithEmailAndPassword,
-  signInWithPopup,
-  signInWithRedirect
-} from "firebase/auth";
+import { signInWithEmailAndPassword, signInWithPopup, signInWithRedirect } from "firebase/auth";
 import { useEffect, useState } from "react";
 import { BsInstagram } from "react-icons/bs";
 import { FaFacebookSquare } from "react-icons/fa";
@@ -18,7 +14,12 @@ import CarouselGallery from "src/components/images/CarouselGallery";
 import LogoAndText from "src/components/nav/LogoAndText";
 import GalleryBgLayout from "src/layout/GalleryBgLayout";
 import { useCreateOrUpdateUserMutation } from "src/stores/auth/auth.query";
-import { setAuthtokenCredential, setRefreshToken, setUserCredential } from "src/stores/auth/auth.reducer";
+import {
+  setAuthtokenCredential,
+  setRefreshToken,
+  setUserCredential,
+} from "src/stores/auth/auth.reducer";
+import { setDataRedirectStatus } from "src/stores/header/header.reducer";
 import styled from "styled-components";
 
 const FormWrapperStyles = styled.div`
@@ -105,7 +106,7 @@ const LoginPage = (props) => {
           >
             <Row justify="space-between">
               <Typography.Title>Welcome back</Typography.Title>
-              <ThemeButton type="dropdown" btntype="dashed" shape="circle" size="large"/>
+              <ThemeButton type="dropdown" btntype="dashed" shape="circle" size="large" />
             </Row>
             <Typography.Title level={5} type="secondary">
               Đăng nhập nhanh <LogoAndText fontSize={16} /> với:
@@ -115,7 +116,7 @@ const LoginPage = (props) => {
                 <Button
                   onClick={() => {
                     signInWithRedirect(auth, googleAuthProvider);
-                    window.history.replaceState({}, "", "/");
+                    window.history.replaceState(null, "", "/");
                   }}
                   size="large"
                   block

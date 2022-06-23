@@ -4,13 +4,13 @@ import "swiper/css";
 import "swiper/css/navigation";
 import "swiper/css/thumbs";
 import { getRedirectResult, onAuthStateChanged } from "firebase/auth";
-import { lazy, Suspense, useEffect } from "react";
+import { lazy, Suspense, useEffect, useLayoutEffect } from "react";
 import { auth } from "src/common/firebase-config";
 import { ThemeProvider } from "styled-components";
 import { useChangeThemeProvider } from "./common/useChangeThemeProvider";
 
 import { useDispatch, useSelector } from "react-redux";
-import { Navigate, Route, Routes } from "react-router-dom";
+import { Navigate, Route, Routes, useNavigate } from "react-router-dom";
 import { PersistGate } from "redux-persist/integration/react";
 import Loader from "src/components/loader/Loader";
 import ErrorResult from "src/components/nav/ErrorResult";
@@ -22,6 +22,7 @@ import {
   setUserCredential,
 } from "./stores/auth/auth.reducer";
 import { persistor } from "./stores/store";
+import { setDataRedirectStatus } from "./stores/header/header.reducer";
 
 const HomePage = lazy(() => import("src/pages/home/HomePage"));
 const LoginPage = lazy(() => import("src/pages/auth/LoginPage"));
@@ -30,6 +31,7 @@ const ForgotPasswordPage = lazy(() => import("src/pages/auth/ForgotPasswordPage"
 const VerificationPage = lazy(() => import("src/pages/auth/VerificationPage"));
 
 function App() {
+  let navigate = useNavigate();
   const credential = useSelector((state) => state.auth);
   const [
     currentUser,
@@ -39,20 +41,24 @@ function App() {
   const { themeProvider } = useChangeThemeProvider();
   const dispatch = useDispatch();
 
-  useEffect(() => {
-    if (credential.authtoken == null) {
+  useLayoutEffect(() => {
+    if (credential.authtoken == null && credential.refreshToken == null) {
+      dispatch(setDataRedirectStatus("loading"));
       getRedirectResult(auth)
         .then(async (result) => {
-          if (!result) return;
+          if (!result) return dispatch(setDataRedirectStatus("noLoading"));
           const { user } = result;
           const idTokenResult = await user.getIdTokenResult();
           const res = await createOrUpdateUser(idTokenResult.token).unwrap();
           dispatch(setRefreshToken(user.refreshToken));
           dispatch(setAuthtokenCredential(idTokenResult.token));
           dispatch(setUserCredential(res));
+          dispatch(setDataRedirectStatus("noLoading"));
         })
         .catch((err) => {
           console.log("signInWithRedirect", err);
+          dispatch(setDataRedirectStatus("noLoading"));
+          navigate("/", { replace: true });
         });
     }
   }, []);
