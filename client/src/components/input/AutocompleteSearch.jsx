@@ -1,4 +1,16 @@
-import { Avatar, Col, Dropdown, Input, Row, Skeleton, Space, Tabs, Tag, Typography } from "antd";
+import {
+  Avatar,
+  Col,
+  Dropdown,
+  Empty,
+  Input,
+  Row,
+  Skeleton,
+  Space,
+  Tabs,
+  Tag,
+  Typography,
+} from "antd";
 import lodash from "lodash";
 import { useEffect, useRef, useState } from "react";
 import {
@@ -134,12 +146,6 @@ const DropdownWrapper = styled.div`
   }
 `;
 
-const getTotalPage = (total, limit) => {
-  let totalPage =
-    total % limit === 0 ? (total - (total % limit)) / limit : (total - (total % limit)) / limit + 1;
-  return totalPage === 0 ? 1 : totalPage;
-};
-
 const AutocompleteSearch = ({ width = 480 }) => {
   const inputRef = useRef(null);
   const dropdownRef = useRef(null);
@@ -163,25 +169,19 @@ const AutocompleteSearch = ({ width = 480 }) => {
     useGetAllCategoriesFilteredQuery(categoriesFilterValue);
 
   useEffect(() => {
-    const totalProductsPage = getTotalPage(
-      productsFilteredQuery?.pagination.total || 0,
-      productsFilterValue.limit
-    );
-    const totalCombosPage = getTotalPage(
-      combosFilteredQuery?.pagination.total || 0,
-      combosFilterValue.limit
-    );
     switch (activeKey) {
       case "product": {
         if (productsFilterValue.page === 1) {
           setProductsFiltered(productsFilteredQuery?.data || []);
         } else if (
-          productsFiltered.length < productsFilteredQuery?.pagination.total &&
-          productsFilterValue.page <= totalProductsPage
+          productsFilteredQuery?.data.length > 0 &&
+          productsFiltered.length < productsFilteredQuery?.pagination.total
         ) {
           setProductsFiltered(
             lodash.uniqBy([...productsFiltered, ...(productsFilteredQuery?.data || [])], "_id")
           );
+        } else {
+          setProductsFiltered(productsFiltered);
         }
         break;
       }
@@ -189,12 +189,14 @@ const AutocompleteSearch = ({ width = 480 }) => {
         if (combosFilterValue.page === 1) {
           setCombosFiltered(combosFilteredQuery?.data || []);
         } else if (
-          combosFiltered.length < combosFilteredQuery?.pagination.total &&
-          combosFilterValue.page <= totalCombosPage
+          combosFilteredQuery?.data.length > 0 &&
+          combosFiltered.length < combosFilteredQuery?.pagination.total
         ) {
           setCombosFiltered(
             lodash.uniqBy([...combosFiltered, ...(combosFilteredQuery?.data || [])], "_id")
           );
+        } else {
+          setCombosFiltered(combosFiltered);
         }
         break;
       }
@@ -300,55 +302,54 @@ const AutocompleteSearch = ({ width = 480 }) => {
                   {productsFilterValue.keyword}"
                 </div>
               )}
-              {/* {getProductsLoading && (
-                <div className="dropdown-item-loading">
-                  <Skeleton avatar paragraph={{ rows: 1 }} active />
-                </div>
-              )} */}
               {getProductsSuccess && (
                 <div id="scrollableDivProducts">
-                  <InfiniteScroll
-                    dataLength={productsFilteredQuery?.pagination.total}
-                    next={() =>
-                      setProductsFilterValue({
-                        ...productsFilterValue,
-                        page: productsFilterValue.page + 1,
-                      })
-                    }
-                    hasMore={productsFiltered.length < productsFilteredQuery?.pagination.total}
-                    loader={
-                      <div className="dropdown-item-loading">
-                        <Skeleton avatar paragraph={{ rows: 1 }} active />
-                      </div>
-                    }
-                    scrollThreshold="1px"
-                    scrollableTarget="scrollableDivProducts"
-                  >
-                    {productsFiltered.map((p) => (
-                      <Row gutter={16} key={p._id} className="dropdown-item" wrap={false}>
-                        <Col flex="none" className="image">
-                          <Avatar size="large" src={p.images[0].url}>
-                            {p.name[0]}
-                          </Avatar>
-                        </Col>
-                        <Col flex="auto" className="content">
-                          <Typography.Title level={5} ellipsis className="title">
-                            {p.name}
-                          </Typography.Title>
-                          <Typography.Paragraph type="secondary" ellipsis className="paragraph">
-                            {p.brand}
-                          </Typography.Paragraph>
-                        </Col>
-                        <Col flex="none" className="action">
-                          <Button type="link">
-                            <Link to={`/products/${p._id}`}>
-                              <BsArrowUpRight />
-                            </Link>
-                          </Button>
-                        </Col>
-                      </Row>
-                    ))}
-                  </InfiniteScroll>
+                  {productsFiltered.length > 0 ? (
+                    <InfiniteScroll
+                      dataLength={productsFilteredQuery?.pagination.total}
+                      next={() =>
+                        setProductsFilterValue({
+                          ...productsFilterValue,
+                          page: productsFilterValue.page + 1,
+                        })
+                      }
+                      hasMore={productsFiltered.length < productsFilteredQuery?.pagination.total}
+                      loader={
+                        <div className="dropdown-item-loading">
+                          <Skeleton avatar paragraph={{ rows: 1 }} active />
+                        </div>
+                      }
+                      scrollThreshold="1px"
+                      scrollableTarget="scrollableDivProducts"
+                    >
+                      {productsFiltered.map((p) => (
+                        <Row gutter={16} key={p._id} className="dropdown-item" wrap={false}>
+                          <Col flex="none" className="image">
+                            <Avatar size="large" src={p.images[0].url}>
+                              {p.name[0]}
+                            </Avatar>
+                          </Col>
+                          <Col flex="auto" className="content">
+                            <Typography.Title level={5} ellipsis className="title">
+                              {p.name}
+                            </Typography.Title>
+                            <Typography.Paragraph type="secondary" ellipsis className="paragraph">
+                              {p.brand}
+                            </Typography.Paragraph>
+                          </Col>
+                          <Col flex="none" className="action">
+                            <Button type="link">
+                              <Link to={`/products/${p._id}`}>
+                                <BsArrowUpRight />
+                              </Link>
+                            </Button>
+                          </Col>
+                        </Row>
+                      ))}
+                    </InfiniteScroll>
+                  ) : (
+                    <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} />
+                  )}
                 </div>
               )}
             </div>
@@ -359,40 +360,39 @@ const AutocompleteSearch = ({ width = 480 }) => {
                   {categoriesFilterValue.keyword}"
                 </div>
               )}
-              {/* {getCategoriesLoading && (
-                <div className="dropdown-item-loading">
-                  <Skeleton avatar paragraph={{ rows: 1 }} active />
-                </div>
-              )} */}
               {getCategoriesSuccess && (
                 <div id="scrollableDivCategories">
-                  {categoriesFiltered.map((c) => (
-                    <Row key={c._id} className="dropdown-item" wrap={false} gutter={16}>
-                      <Col flex="none" className="image">
-                        <Avatar size="large" src={c.image}>
-                          {c.name[0]}
-                        </Avatar>
-                      </Col>
-                      <Col flex="auto" className="content">
-                        <Typography.Title level={5} ellipsis className="title">
-                          {c.name}
-                        </Typography.Title>
-                        <Space className="reaction-container">
-                          <span>Sản phẩm: </span>
-                          <Tag className="reaction-tag" color="default" icon={<BsBoxSeam />}>
-                            {c.products_count}
-                          </Tag>
-                        </Space>
-                      </Col>
-                      <Col flex="none" className="action">
-                        <Button type="link">
-                          <Link to={`/categories/${c._id}`}>
-                            <BsArrowUpRight />
-                          </Link>
-                        </Button>
-                      </Col>
-                    </Row>
-                  ))}
+                  {categoriesFiltered.length > 0 ? (
+                    categoriesFiltered.map((c) => (
+                      <Row key={c._id} className="dropdown-item" wrap={false} gutter={16}>
+                        <Col flex="none" className="image">
+                          <Avatar size="large" src={c.image}>
+                            {c.name[0]}
+                          </Avatar>
+                        </Col>
+                        <Col flex="auto" className="content">
+                          <Typography.Title level={5} ellipsis className="title">
+                            {c.name}
+                          </Typography.Title>
+                          <Space className="reaction-container">
+                            <span>Sản phẩm: </span>
+                            <Tag className="reaction-tag" color="default" icon={<BsBoxSeam />}>
+                              {c.products_count}
+                            </Tag>
+                          </Space>
+                        </Col>
+                        <Col flex="none" className="action">
+                          <Button type="link">
+                            <Link to={`/categories/${c._id}`}>
+                              <BsArrowUpRight />
+                            </Link>
+                          </Button>
+                        </Col>
+                      </Row>
+                    ))
+                  ) : (
+                    <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} />
+                  )}
                 </div>
               )}
             </div>
@@ -403,86 +403,85 @@ const AutocompleteSearch = ({ width = 480 }) => {
                   {combosFilterValue.keyword}"
                 </div>
               )}
-              {/* {getCombosLoading && (
-                <div className="dropdown-item-loading">
-                  <Skeleton avatar paragraph={{ rows: 1 }} active />
-                </div>
-              )} */}
               {getCombosSuccess && (
                 <div id="scrollableDivCombos">
-                  <InfiniteScroll
-                    dataLength={combosFilteredQuery?.pagination.total}
-                    next={() =>
-                      setCombosFilterValue({
-                        ...combosFilterValue,
-                        page: combosFilterValue.page + 1,
-                      })
-                    }
-                    hasMore={combosFiltered.length < combosFilteredQuery?.pagination.total}
-                    loader={
-                      <div className="dropdown-item-loading">
-                        <Skeleton avatar paragraph={{ rows: 1 }} active />
-                      </div>
-                    }
-                    scrollThreshold="1px"
-                    scrollableTarget="scrollableDivCombos"
-                  >
-                    {combosFiltered.map((c) => (
-                      <Row wrap={false} key={c._id} className="dropdown-item" gutter={16}>
-                        <Col flex="none" className="image">
-                          <Avatar size="large" src={c.image.url}>
-                            {c.name[0]}
-                          </Avatar>
-                        </Col>
-                        <Col flex="auto" className="content">
-                          <Typography.Title level={5} ellipsis className="title">
-                            {c.name}
-                          </Typography.Title>
+                  {combosFilterValue.length > 0 ? (
+                    <InfiniteScroll
+                      dataLength={combosFilteredQuery?.pagination.total}
+                      next={() =>
+                        setCombosFilterValue({
+                          ...combosFilterValue,
+                          page: combosFilterValue.page + 1,
+                        })
+                      }
+                      hasMore={combosFiltered.length < combosFilteredQuery?.pagination.total}
+                      loader={
+                        <div className="dropdown-item-loading">
+                          <Skeleton avatar paragraph={{ rows: 1 }} active />
+                        </div>
+                      }
+                      scrollThreshold="1px"
+                      scrollableTarget="scrollableDivCombos"
+                    >
+                      {combosFiltered.map((c) => (
+                        <Row wrap={false} key={c._id} className="dropdown-item" gutter={16}>
+                          <Col flex="none" className="image">
+                            <Avatar size="large" src={c.image.url}>
+                              {c.name[0]}
+                            </Avatar>
+                          </Col>
+                          <Col flex="auto" className="content">
+                            <Typography.Title level={5} ellipsis className="title">
+                              {c.name}
+                            </Typography.Title>
 
-                          <Typography.Paragraph type="secondary" ellipsis className="paragraph">
-                            {c.desc}
-                          </Typography.Paragraph>
+                            <Typography.Paragraph type="secondary" ellipsis className="paragraph">
+                              {c.desc}
+                            </Typography.Paragraph>
 
-                          <Space className="reaction-container" size={6}>
-                            <Tag
-                              className="reaction-tag"
-                              color="default"
-                              icon={<BsEye size={14} />}
-                            >
-                              {c.numOfViews}
-                            </Tag>
-                            <Tag
-                              className="reaction-tag"
-                              color="default"
-                              icon={<BsChatLeftText size={14} />}
-                            >
-                              {c.numOfReviews}
-                            </Tag>
-                            <Tag
-                              className="reaction-tag"
-                              color="default"
-                              icon={<BsStar size={14} />}
-                            >
-                              {c.avgRating}
-                            </Tag>
-                            <Tag className="reaction-tag" color="default" icon={<BsHeart />}>
-                              {c.wishlist.length}
-                            </Tag>
-                            <Tag className="reaction-tag" color="default" icon={<BsBoxSeam />}>
-                              {c.products.length}
-                            </Tag>
-                          </Space>
-                        </Col>
-                        <Col flex="none" className="action">
-                          <Button type="link">
-                            <Link to={`/combos/${c._id}`}>
-                              <BsArrowUpRight />
-                            </Link>
-                          </Button>
-                        </Col>
-                      </Row>
-                    ))}
-                  </InfiniteScroll>
+                            <Space className="reaction-container" size={6}>
+                              <Tag
+                                className="reaction-tag"
+                                color="default"
+                                icon={<BsEye size={14} />}
+                              >
+                                {c.numOfViews}
+                              </Tag>
+                              <Tag
+                                className="reaction-tag"
+                                color="default"
+                                icon={<BsChatLeftText size={14} />}
+                              >
+                                {c.numOfReviews}
+                              </Tag>
+                              <Tag
+                                className="reaction-tag"
+                                color="default"
+                                icon={<BsStar size={14} />}
+                              >
+                                {c.avgRating}
+                              </Tag>
+                              <Tag className="reaction-tag" color="default" icon={<BsHeart />}>
+                                {c.wishlist.length}
+                              </Tag>
+                              <Tag className="reaction-tag" color="default" icon={<BsBoxSeam />}>
+                                {c.products.length}
+                              </Tag>
+                            </Space>
+                          </Col>
+                          <Col flex="none" className="action">
+                            <Button type="link">
+                              <Link to={`/combos/${c._id}`}>
+                                <BsArrowUpRight />
+                              </Link>
+                            </Button>
+                          </Col>
+                        </Row>
+                      ))}
+                    </InfiniteScroll>
+                  ) : (
+                    <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} />
+                  )}
                 </div>
               )}
             </div>

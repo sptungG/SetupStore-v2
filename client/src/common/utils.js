@@ -4,3 +4,9 @@ export const bindParamsFilter = (filter) => {
     .map((key) => `${key}=${filter[key]}`);
   return params.join("&");
 };
+
+export const getTotalPage = (total, limit) => {
+  let totalPage =
+    total % limit === 0 ? (total - (total % limit)) / limit : (total - (total % limit)) / limit + 1;
+  return totalPage === 0 ? 1 : totalPage;
+};
