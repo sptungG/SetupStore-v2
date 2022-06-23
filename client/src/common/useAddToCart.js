@@ -4,7 +4,7 @@ import { setThemeProvider } from "src/stores/theme/theme.reducer";
 
 export function useAddToCart() {
   const [cart, setCart] = useState([]);
-  console.log("useAddToCart ~ cart", cart);
+  // console.log("useAddToCart ~ cart", cart);
 
   return {
     cart: cart,

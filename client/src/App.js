@@ -22,7 +22,6 @@ import {
   setUserCredential,
 } from "./stores/auth/auth.reducer";
 import { persistor } from "./stores/store";
-import { useRefreshState } from "./common/useRefreshState";
 
 const HomePage = lazy(() => import("src/pages/home/HomePage"));
 const LoginPage = lazy(() => import("src/pages/auth/LoginPage"));
@@ -31,7 +30,6 @@ const ForgotPasswordPage = lazy(() => import("src/pages/auth/ForgotPasswordPage"
 const VerificationPage = lazy(() => import("src/pages/auth/VerificationPage"));
 
 function App() {
-  const { exchangeToken } = useRefreshState();
   const credential = useSelector((state) => state.auth);
   const [
     currentUser,
@@ -54,31 +52,27 @@ function App() {
           dispatch(setUserCredential(res));
         })
         .catch((err) => {
-          console.log("signInWithRedirect ~ err", err);
+          console.log("signInWithRedirect", err);
         });
     }
   }, []);
 
   useEffect(() => {
-    if (credential.authtoken) {
-      const unsubscribe = onAuthStateChanged(auth, async (user) => {
-        if (user) {
-          try {
-            const idTokenResult = await user.getIdTokenResult();
-            const res = await currentUser(idTokenResult.token).unwrap();
-            dispatch(setAuthtokenCredential(idTokenResult.token));
-            dispatch(setUserCredential(res));
-            return;
-          } catch (err) {
-            const res = await exchangeToken(user.refreshToken);
-            dispatch(setRefreshToken(res.data.refresh_token));
-            dispatch(setAuthtokenCredential(res.data.id_token));
-          }
+    const unsubscribe = onAuthStateChanged(auth, async (user) => {
+      if (user) {
+        try {
+          const idTokenResult = await user.getIdTokenResult();
+          const res = await currentUser(idTokenResult.token).unwrap();
+          dispatch(setAuthtokenCredential(idTokenResult.token));
+          dispatch(setUserCredential(res));
+          return;
+        } catch (err) {
+          console.log("currentUser", err);
         }
-      });
-      return () => unsubscribe();
-    }
-  }, [credential.authtoken]);
+      }
+    });
+    return () => unsubscribe();
+  }, []);
 
   useEffect(() => {
     ConfigProvider.config({

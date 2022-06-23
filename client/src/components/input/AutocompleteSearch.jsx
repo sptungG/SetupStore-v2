@@ -15,6 +15,7 @@ import {
 import InfiniteScroll from "react-infinite-scroll-component";
 import { Link } from "react-router-dom";
 import { useDebounce } from "src/common/useDebounce";
+import { useOnClickOutside } from "src/common/useOnClickOutside";
 import { useGetAllCategoriesFilteredQuery } from "src/stores/category/categories.query";
 import { useGetCombosFilteredQuery } from "src/stores/combo/combos.query";
 import { useGetProductsFilteredQuery } from "src/stores/product/products.query";
@@ -135,34 +136,25 @@ const DropdownWrapper = styled.div`
 
 const AutocompleteSearch = ({ width = 480 }) => {
   const inputRef = useRef(null);
+  const dropdownRef = useRef(null);
   const [text, setText] = useState("");
   const [placeholder, setPlaceholder] = useState("Tìm kiếm sản phẩm, danh mục, bộ sưu tập");
   const [visible, setVisible] = useState(false);
-  const [activeKey, setActiveKey] = useState("defaultKey");
+  const [activeKey, setActiveKey] = useState("product");
+
   const [productsFilterValue, setProductsFilterValue] = useState({ page: 1, limit: 6 });
   const [combosFilterValue, setCombosFilterValue] = useState({ page: 1, limit: 4 });
   const [categoriesFilterValue, setCategoriesFilterValue] = useState({ sort: "", keyword: "" });
+
   const [productsFiltered, setProductsFiltered] = useState([]);
   const [combosFiltered, setCombosFiltered] = useState([]);
   const [categoriesFiltered, setCategoriesFiltered] = useState([]);
-  const {
-    data: productsFilteredQuery,
-    isFetching: getProductsLoading,
-    isSuccess: getProductsSuccess,
-    refetch: getProductsRefetch,
-  } = useGetProductsFilteredQuery(productsFilterValue);
-  const {
-    data: combosFilteredQuery,
-    isFetching: getCombosLoading,
-    isSuccess: getCombosSuccess,
-    refetch: getCombosRefetch,
-  } = useGetCombosFilteredQuery(combosFilterValue);
-  const {
-    data: categoriesFilteredQuery,
-    isFetching: getCategoriesLoading,
-    isSuccess: getCategoriesSuccess,
-    refetch: getCategoriesRefetch,
-  } = useGetAllCategoriesFilteredQuery(categoriesFilterValue);
+  const { data: productsFilteredQuery, isSuccess: getProductsSuccess } =
+    useGetProductsFilteredQuery(productsFilterValue);
+  const { data: combosFilteredQuery, isSuccess: getCombosSuccess } =
+    useGetCombosFilteredQuery(combosFilterValue);
+  const { data: categoriesFilteredQuery, isSuccess: getCategoriesSuccess } =
+    useGetAllCategoriesFilteredQuery(categoriesFilterValue);
 
   useEffect(() => {
     switch (activeKey) {
@@ -211,25 +203,30 @@ const AutocompleteSearch = ({ width = 480 }) => {
   ]);
 
   useEffect(() => {
-    switch (activeKey) {
-      case "product": {
-        setText(productsFilterValue.keyword);
-        setPlaceholder("Tìm kiếm sản phẩm");
-        break;
+    if (visible) {
+      switch (activeKey) {
+        case "product": {
+          setText(productsFilterValue.keyword);
+          setPlaceholder("Tìm kiếm sản phẩm");
+          break;
+        }
+        case "combo": {
+          setText(combosFilterValue.keyword);
+          setPlaceholder("Tìm kiếm bộ sưu tập");
+          break;
+        }
+        case "category": {
+          setText(categoriesFilterValue.keyword);
+          setPlaceholder("Tìm kiếm danh mục");
+          break;
+        }
+        default: {
+          break;
+        }
       }
-      case "combo": {
-        setText(combosFilterValue.keyword);
-        setPlaceholder("Tìm kiếm bộ sưu tập");
-        break;
-      }
-      case "category": {
-        setText(categoriesFilterValue.keyword);
-        setPlaceholder("Tìm kiếm danh mục");
-        break;
-      }
-      default: {
-        break;
-      }
+    } else {
+      setActiveKey("product");
+      setPlaceholder("Tìm kiếm sản phẩm, danh mục, bộ sưu tập");
     }
   }, [
     visible,
@@ -239,19 +236,16 @@ const AutocompleteSearch = ({ width = 480 }) => {
     productsFilterValue.keyword,
   ]);
 
-  const search = useDebounce(text, 300);
-
-  useEffect(() => {
-    if (activeKey === "product")
-      setProductsFilterValue({ ...productsFilterValue, page: 1, keyword: search });
-    if (activeKey === "combo")
-      setCombosFilterValue({ ...combosFilterValue, page: 1, keyword: search });
-    if (activeKey === "category")
-      setCategoriesFilterValue({ ...categoriesFilterValue, keyword: search });
-  }, [search, activeKey]);
-
   const onChangeInput = (e) => {
     setText(e.target.value);
+    setTimeout(() => {
+      if (activeKey === "product")
+        setProductsFilterValue({ ...productsFilterValue, page: 1, keyword: e.target.value });
+      if (activeKey === "combo")
+        setCombosFilterValue({ ...combosFilterValue, page: 1, keyword: e.target.value });
+      if (activeKey === "category")
+        setCategoriesFilterValue({ ...categoriesFilterValue, keyword: e.target.value });
+    }, 300);
   };
 
   const onPressEnter = (e) => {
@@ -263,31 +257,6 @@ const AutocompleteSearch = ({ width = 480 }) => {
     if (activeKey === "category")
       setCategoriesFilterValue({ ...categoriesFilterValue, keyword: e.target.value });
   };
-
-  useEffect(() => {
-    if (visible) {
-      setActiveKey("product");
-    } else {
-      setText("");
-      setActiveKey("defaultKey");
-      setPlaceholder("Tìm kiếm sản phẩm, danh mục, bộ sưu tập");
-      setProductsFilterValue({ ...productsFilterValue, page: 1, keyword: "" });
-      setCombosFilterValue({ ...combosFilterValue, page: 1, keyword: "" });
-      setCategoriesFilterValue({ ...categoriesFilterValue, keyword: "" });
-    }
-  }, [visible]);
-
-  const onRefresh = () => {
-    setText("");
-    setProductsFilterValue({ ...productsFilterValue, page: 1, keyword: "" });
-    setCombosFilterValue({ ...combosFilterValue, page: 1, keyword: "" });
-    setCategoriesFilterValue({ ...categoriesFilterValue, keyword: "" });
-    if (activeKey === "product") getProductsRefetch();
-    if (activeKey === "combo") getCombosRefetch();
-    if (activeKey === "category") getCategoriesRefetch();
-  };
-
-  console.log(activeKey);
 
   return (
     <SearchWrapper visible={visible}>
@@ -302,26 +271,7 @@ const AutocompleteSearch = ({ width = 480 }) => {
               activeKey={activeKey}
               onChange={(key) => {
                 setActiveKey(key);
-                inputRef.current.focus({
-                  cursor: "end",
-                });
               }}
-              tabBarExtraContent={
-                <Space>
-                  <Button
-                    type="dashed"
-                    shape="circle"
-                    icon={<BsArrowClockwise size={18} />}
-                    onClick={onRefresh}
-                  ></Button>
-                  {/* <Button
-                    type="dashed"
-                    shape="circle"
-                    icon={<BsXLg size={15} />}
-                    onClick={onClose}
-                  ></Button> */}
-                </Space>
-              }
             >
               <Tabs.TabPane tab="Sản phẩm" key="product"></Tabs.TabPane>
               <Tabs.TabPane tab="Danh mục" key="category"></Tabs.TabPane>
@@ -334,12 +284,12 @@ const AutocompleteSearch = ({ width = 480 }) => {
                   {productsFilterValue.keyword}"
                 </div>
               )}
-              {getProductsLoading && (
+              {/* {getProductsLoading && (
                 <div className="dropdown-item-loading">
                   <Skeleton avatar paragraph={{ rows: 1 }} active />
                 </div>
-              )}
-              {!getProductsLoading && getProductsSuccess && (
+              )} */}
+              {getProductsSuccess && (
                 <div id="scrollableDivProducts">
                   <InfiniteScroll
                     dataLength={productsFilteredQuery?.pagination.total}
@@ -393,12 +343,12 @@ const AutocompleteSearch = ({ width = 480 }) => {
                   {categoriesFilterValue.keyword}"
                 </div>
               )}
-              {getCategoriesLoading && (
+              {/* {getCategoriesLoading && (
                 <div className="dropdown-item-loading">
                   <Skeleton avatar paragraph={{ rows: 1 }} active />
                 </div>
-              )}
-              {!getCategoriesLoading && getCategoriesSuccess && (
+              )} */}
+              {getCategoriesSuccess && (
                 <div id="scrollableDivCategories">
                   {categoriesFiltered.map((c) => (
                     <Row key={c._id} className="dropdown-item" wrap={false} gutter={16}>
@@ -437,12 +387,12 @@ const AutocompleteSearch = ({ width = 480 }) => {
                   {combosFilterValue.keyword}"
                 </div>
               )}
-              {getCombosLoading && (
+              {/* {getCombosLoading && (
                 <div className="dropdown-item-loading">
                   <Skeleton avatar paragraph={{ rows: 1 }} active />
                 </div>
-              )}
-              {!getCombosLoading && getCombosSuccess && (
+              )} */}
+              {getCombosSuccess && (
                 <div id="scrollableDivCombos">
                   <InfiniteScroll
                     dataLength={combosFilteredQuery?.pagination.total}

@@ -11,11 +11,13 @@ export const galleryApi = createApi({
   reducerPath: "galleryApi",
   baseQuery: baseQueryWithRetry,
   tagTypes: ["Gallery"],
+  keepUnusedDataFor: 3600,
   endpoints: (builder) => ({
     getGalleryPhotos: builder.query({
       query: (count) =>
         `/random?client_id=${process.env.REACT_APP_UNSPLASH_KEY}&orientation=landscape&query=setup%20desk&count=${count}`,
       providesTags: ["Gallery"],
+      keepUnusedDataFor: 3600,
     }),
   }),
 });

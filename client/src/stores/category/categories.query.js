@@ -1,23 +1,12 @@
 import { createApi, fetchBaseQuery, retry } from "@reduxjs/toolkit/query/react";
 import { bindParamsFilter } from "src/common/utils";
+import { baseQueryWithReauth } from "../auth/auth.query";
 
-const baseQuery = fetchBaseQuery({
-  baseUrl: process.env.REACT_APP_API,
-  prepareHeaders: (headers, { getState }) => {
-    //  By default, if we have a token in the store, let's use that for authenticated requests
-    const authtoken = getState().auth.authtoken;
-    if (authtoken) {
-      headers.set("authtoken", authtoken);
-    }
-    return headers;
-  },
-});
-
-const baseQueryWithRetry = retry(baseQuery, { maxRetries: 0 });
+// const baseQueryWithRetry = retry(baseQueryWithReauth, { maxRetries: 0 });
 
 export const categoriesApi = createApi({
   reducerPath: "categoriesApi",
-  baseQuery: baseQueryWithRetry,
+  baseQuery: baseQueryWithReauth,
   tagTypes: ["Categories"],
   endpoints: (builder) => ({
     getAllCategoriesFiltered: builder.query({

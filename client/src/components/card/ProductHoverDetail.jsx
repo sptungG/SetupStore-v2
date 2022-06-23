@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import styled from "styled-components";
+import styled, { keyframes } from "styled-components";
 import { Navigation, Thumbs } from "swiper";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Carousel, Col, InputNumber, Rate, Row, Skeleton, Space, Tag, Typography } from "antd";
@@ -9,7 +9,6 @@ import { Link } from "react-router-dom";
 import { rgba } from "polished";
 
 const ProductHoverDetail = ({ product }) => {
-  console.log("ProductHoverDetail ~ product", product.images);
   const [initQuantity, setInitQuantity] = useState(1);
 
   const [activeThumb, setActiveThumb] = useState();
@@ -125,7 +124,7 @@ const ProductHoverDetail = ({ product }) => {
           </div> */}
 
           <div className="side-content-actions">
-            <button className="btn-wishlist">
+            <button className="btn-wishlist hearts">
               <BsHeart />
             </button>
             <Button
@@ -144,6 +143,21 @@ const ProductHoverDetail = ({ product }) => {
   );
 };
 
+const hearts = keyframes`
+  0% {
+     opacity: 0;
+     transform:translate(0, 0%) rotate(45deg);
+  }
+  20% { //show and hint at moving
+     opacity: 0.8;
+     transform:translate(0, -20%) rotate(45deg);
+  }
+  100% {
+     opacity: 0;
+     transform:translate(0, -1000%) rotate(45deg); //Big hearts move faster
+  }
+`;
+
 const ProductHoverDetailWrapper = styled.div`
   width: 100%;
   height: 100%;
@@ -151,7 +165,7 @@ const ProductHoverDetailWrapper = styled.div`
   max-height: 360px;
   overflow: hidden;
   position: relative;
-  padding: 2px 0;
+  padding: 4px 0;
   & .side-images {
     flex-shrink: 0;
     position: relative;
@@ -178,10 +192,38 @@ const ProductHoverDetailWrapper = styled.div`
         justify-content: center;
         padding: 12px;
         border-radius: 2px;
-        color: #f62682;
-        background-color: ${rgba("#f62682", 0.2)};
-        border: 1px solid ${rgba("#f62682", 0.1)};
         cursor: pointer;
+        border: 1px solid transparent;
+        &:hover {
+          color: #f62682;
+          background-color: ${rgba("#f62682", 0.2)};
+          border: 1px solid ${rgba("#f62682", 0.1)};
+        }
+        &.hearts {
+          > .particle {
+            opacity: 0;
+            position: absolute;
+            background-color: rgba(204, 42, 93, 1);
+            animation: ${hearts} 3s ease-in infinite;
+            &:before,
+            &:after {
+              position: absolute;
+              content: "";
+              border-radius: 100px;
+              top: 0px;
+              left: 0px;
+              width: 100%;
+              height: 100%;
+              background-color: rgba(204, 42, 93, 1);
+            }
+            &:before {
+              transform: translateX(-50%);
+            }
+            &:after {
+              transform: translateY(-50%);
+            }
+          }
+        }
       }
       & .btn-cart {
         border: 1px solid ${(props) => props.theme.generatedColors[1]};

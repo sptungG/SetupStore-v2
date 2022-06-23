@@ -44,7 +44,7 @@ const ProductCard = ({ product }) => {
             {product.combos.length > 0 ? (
               <Avatar.Group maxCount={1}>
                 {product.combos.map((c) => (
-                  <Link to={`combos/${c._id}`}>
+                  <Link to={`combos/${c._id}`} key={`ProductCombos_${c._id}`}>
                   <Avatar
                     size={40}
                     shape={"square"}

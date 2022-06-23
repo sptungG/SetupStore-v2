@@ -8,7 +8,11 @@ import { RiHistoryFill } from "react-icons/ri";
 import { Link, useNavigate } from "react-router-dom";
 import styled from "styled-components";
 import { useDispatch, useSelector } from "react-redux";
-import { setAuthtokenCredential, setUserCredential } from "src/stores/auth/auth.reducer";
+import {
+  setAuthtokenCredential,
+  setRefreshToken,
+  setUserCredential,
+} from "src/stores/auth/auth.reducer";
 
 const AvatarWrapper = styled.div`
   height: 100%;
@@ -39,6 +43,7 @@ const LogoutItem = () => {
       await signOut(auth);
       dispatch(setUserCredential(null));
       dispatch(setAuthtokenCredential(null));
+      dispatch(setRefreshToken(null));
       navigate("/");
     } catch (error) {
       console.log("handleLogout ~ error", error);

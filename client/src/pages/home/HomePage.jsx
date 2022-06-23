@@ -34,10 +34,10 @@ const HomePage = () => {
         {productsFilteredFetching &&
           Array(4)
             .fill(null)
-            .map((i) => <ProductCardLoading />)}
+            .map((i, index) => <ProductCardLoading key={`ProductCardLoading_${index}`} />)}
         {productsFilteredSuccess &&
           productsFilteredQuery?.data.map((p) => (
-            <ProductCard key={p._id} product={p}></ProductCard>
+            <ProductCard key={`ProductCard_${p._id}`} product={p}></ProductCard>
           ))}
       </ProductsWrapper>
     </MainLayout>

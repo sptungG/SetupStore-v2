@@ -1,5 +1,5 @@
-import { combineReducers, configureStore } from "@reduxjs/toolkit";
-import { loadingBarMiddleware } from "react-redux-loading-bar";
+import { combineReducers, configureStore, isRejectedWithValue } from "@reduxjs/toolkit";
+// import { loadingBarMiddleware } from "react-redux-loading-bar";
 import { persistReducer, persistStore } from "redux-persist";
 import storage from "redux-persist/lib/storage";
 
@@ -31,6 +31,13 @@ const reducers = combineReducers({
 });
 
 const persistedReducer = persistReducer(persistConfig, reducers);
+export const rtkQueryErrorLogger = (api) => (next) => (action) => {
+  if (isRejectedWithValue(action)) {
+    console.warn(action.payload);
+  }
+
+  return next(action);
+};
 
 export const store = configureStore({
   reducer: persistedReducer,
@@ -38,9 +45,10 @@ export const store = configureStore({
     getDefaultMiddleware({
       serializableCheck: false,
     }).concat([
-      loadingBarMiddleware({
-        promiseTypeSuffixes: ["pending", "fulfilled", "rejected"],
-      }),
+      rtkQueryErrorLogger,
+      // loadingBarMiddleware({
+      //   promiseTypeSuffixes: ["pending", "fulfilled", "rejected"],
+      // }),
       authApi.middleware,
       productsApi.middleware,
       categoriesApi.middleware,

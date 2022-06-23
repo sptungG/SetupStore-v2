@@ -33,7 +33,7 @@ const ErrorResult = ({ status = "500", title, subTitle, extra, children }) => {
         subTitle={subTitle || getStatusInfo(status).subTitle}
         extra={
           extra || (
-            <Link to="/">
+            <Link to="/" style={{ margin: "0 auto", display: "inline-block" }}>
               <Button size="large" type="primary">
                 Back Home
               </Button>
