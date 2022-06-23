@@ -22,7 +22,6 @@
     "firebase-admin": "^10.0.0",
     "mongoose": "^6.0.14",
     "mongoose-slug-updater": "^3.3.0",
-    "morgan": "^1.10.0",
     "nodemon": "^2.0.15",
     "slugify": "^1.6.3",
     "stripe": "^8.195.0",

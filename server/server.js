@@ -3,7 +3,6 @@ const express = require("express");
 const mongoose = require("mongoose");
 const cors = require("cors");
 const compression = require("compression");
-const morgan = require("morgan");
 const { readdirSync } = require("fs");
 const cloudinary = require("cloudinary").v2;
 const fileupload = require("express-fileupload");
@@ -26,7 +25,6 @@ mongoose
   .catch((err) => console.log("DB CONNECTION ERR", err));
 
 // middleware
-app.use(morgan("dev"));
 app.use(fileupload({ useTempFiles: true }));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
