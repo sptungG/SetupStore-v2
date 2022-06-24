@@ -25,20 +25,22 @@ const Button = ({
   size = "middle",
   extraType = "",
   onClick = () => null,
+  style = {},
   ...rest
 }) => {
   const { themeProvider } = useChangeThemeProvider();
 
-  let style = {
+  let btnstyle = {
     display: "flex",
     alignItems: "center",
     justifyContent: "center",
     flexWrap: "nowrap",
     gap: 4,
+    ...style,
   };
 
   if (extraType === "btntag" && type === "link") {
-    style.backgroundColor = themeProvider.generatedColors[0];
+    btnstyle.backgroundColor = themeProvider.generatedColors[0];
   }
 
   return (
@@ -54,7 +56,7 @@ const Button = ({
       icon={icon}
       ghost={ghost}
       size={size}
-      style={style}
+      style={btnstyle}
       {...rest}
     >
       {children}

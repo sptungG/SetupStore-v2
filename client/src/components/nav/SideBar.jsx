@@ -19,6 +19,7 @@ import styled from "styled-components";
 import Button from "../button/Button";
 import ThemeButton from "../button/ThemeButton";
 import LogoAndText from "./LogoAndText";
+import { useMediaQuery } from "react-responsive";
 
 const SideMenuWrapper = styled.div`
   display: flex;
@@ -69,18 +70,19 @@ const AvatarWrapper = styled.div`
 
 const SideBar = () => {
   const dispatch = useDispatch();
+  let navigate = useNavigate();
+  const mediaBelow768 = useMediaQuery({ maxWidth: 768 });
   const headerState = useSelector((state) => state.headerState);
   const credential = useSelector((state) => state.auth);
   const isSignedIn =
     credential.user != null && credential.authtoken != null && credential.refreshToken != null;
   const { user } = credential;
-  let navigate = useNavigate();
 
   return (
     <Drawer
       closeIcon={null}
       title={null}
-      placement="left"
+      placement={mediaBelow768 ? "right" : "left"}
       onClose={() => dispatch(setSidebarCollapsed(false))}
       visible={headerState.sidevisible}
       width={240}

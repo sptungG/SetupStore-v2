@@ -54,6 +54,7 @@ function App() {
           dispatch(setAuthtokenCredential(idTokenResult.token));
           dispatch(setUserCredential(res));
           dispatch(setDataRedirectStatus("noLoading"));
+          navigate("/", { replace: true });
         })
         .catch((err) => {
           console.log("signInWithRedirect", err);
