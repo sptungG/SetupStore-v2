@@ -137,8 +137,10 @@ const Header = () => {
             )}
 
             {!isSignedIn && !mediaAbove1280 && (
-              <Dropdown trigger={["click"]} overlay={menu} placement="bottomRight">
+              <Dropdown trigger={["click"]} overlay={menu} placement="bottomRight" overlayStyle={{top: 54}}>
                 <Button
+                  disabled={headerState.dataRedirectStatus === "loading"}
+                  loading={headerState.dataRedirectStatus === "loading"}
                   icon={<BsPersonFill size={28} />}
                   shape="circle"
                   style={{ padding: 2 }}
