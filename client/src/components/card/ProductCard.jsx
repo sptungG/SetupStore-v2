@@ -7,6 +7,7 @@ import { Link, useNavigate } from "react-router-dom";
 import ProductHoverDetail from "./ProductHoverDetail";
 import Button from "../button/Button";
 import { useAddToCart } from "src/common/useAddToCart";
+import { useMediaQuery } from "react-responsive";
 
 export const ProductCardLoading = () => {
   return (
@@ -28,7 +29,7 @@ export const ProductCardLoading = () => {
 const ProductCard = ({ product }) => {
   const { setCart } = useAddToCart();
   let navigate = useNavigate();
-  const [visible, setVisible] = useState(false);
+  const mediaAbove1024 = useMediaQuery({ minWidth: 1024 });
 
   return (
     <CardWrapper>
@@ -45,29 +46,42 @@ const ProductCard = ({ product }) => {
               <Avatar.Group maxCount={1}>
                 {product.combos.map((c) => (
                   <Link to={`combos/${c._id}`} key={`ProductCombos_${c._id}`}>
-                  <Avatar
-                    size={40}
-                    shape={"square"}
-                    src={c.image.url}
-                    icon={<BsLayoutWtf />}
-                    title="Đi đến Bộ sưu tập"
-                  ></Avatar>
+                    <Avatar
+                      size={40}
+                      shape={"square"}
+                      src={c.image.url}
+                      icon={<BsLayoutWtf />}
+                      title="Đi đến Bộ sưu tập"
+                    ></Avatar>
                   </Link>
                 ))}
               </Avatar.Group>
             ) : (
               <Avatar size={40} shape={"square"} icon={<BsLayoutWtf />} title="Bộ sưu tập"></Avatar>
             )}
-
-            <Popover 
-              content={<ProductHoverDetail product={product} />}
-              placement="topRight"
-              destroyTooltipOnHide
-              autoAdjustOverflow
-              color={"#f8f9fa"}
-              overlayInnerStyle={{ borderRadius: 10 }}
-            >
-              <div className="card-content-info">
+            {mediaAbove1024 ? (
+              <Popover
+                content={<ProductHoverDetail product={product} />}
+                placement="topRight"
+                destroyTooltipOnHide
+                autoAdjustOverflow
+                color={"#f8f9fa"}
+                overlayInnerStyle={{ borderRadius: 10 }}
+              >
+                <div className="card-content-info">
+                  <Typography.Title level={5} ellipsis className="name">
+                    {product.name}
+                  </Typography.Title>
+                  <Typography.Paragraph ellipsis className="desc">
+                    {product.desc}
+                  </Typography.Paragraph>
+                </div>
+              </Popover>
+            ) : (
+              <div
+                className="card-content-info"
+                // onClick={() => navigate(`products/${product._id}`)}
+              >
                 <Typography.Title level={5} ellipsis className="name">
                   {product.name}
                 </Typography.Title>
@@ -75,7 +89,7 @@ const ProductCard = ({ product }) => {
                   {product.desc}
                 </Typography.Paragraph>
               </div>
-            </Popover>
+            )}
           </div>
           <Space className="card-content-action">
             <Button
@@ -138,6 +152,7 @@ const CardWrapper = styled.div`
   position: relative;
   transition: all 0.3s;
   pointer-events: ${(props) => (props.status === "loading" ? "none" : "auto")};
+
   &::before {
     content: "";
     border-radius: 10px;
@@ -336,6 +351,13 @@ const CardWrapper = styled.div`
       transition: all 0.4s;
       animation: ${card_option} 0.4s;
     }
+  }
+  @media screen and (max-width: 1023.98px) {
+    /* pointer-events: none;
+    .reaction {
+      opacity: 1;
+      transform: translateY(0px);
+    } */
   }
 `;
 

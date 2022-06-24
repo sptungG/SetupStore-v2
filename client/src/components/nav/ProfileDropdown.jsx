@@ -24,8 +24,19 @@ const AvatarWrapper = styled.div`
   position: relative;
 `;
 
-const iconSize = 22;
-const dropdownItemStyle = { borderRadius: 8 };
+const MenuItemWrapper = styled.div`
+  padding: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-weight: 600;
+  gap: 16px;
+  color: #595959;
+  a {
+    color: #595959;
+  }
+`;
+
 const dropdownTextStyle = {
   padding: 10,
   display: "flex",
@@ -51,7 +62,7 @@ const LogoutItem = () => {
   };
   return (
     <div style={dropdownTextStyle} onClick={logout}>
-      <span style={{ fontWeight: "normal" }}>Logout</span> <FiLogOut size={iconSize} />
+      <span style={{ fontWeight: "normal" }}>Logout</span> <FiLogOut size={22} />
     </div>
   );
 };
@@ -70,7 +81,7 @@ const ProfileDropdownMenu = () => {
               {user.name}
             </Typography.Text>
           </Space>
-          <FaRegUserCircle size={iconSize} />
+          <FaRegUserCircle size={22} />
         </Link>
       ),
       key: "profile",
@@ -78,7 +89,7 @@ const ProfileDropdownMenu = () => {
     {
       label: (
         <Link to="/history" style={dropdownTextStyle}>
-          Đơn hàng <RiHistoryFill size={iconSize} />
+          Đơn hàng <RiHistoryFill size={22} />
         </Link>
       ),
       key: "history",

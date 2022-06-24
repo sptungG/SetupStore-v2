@@ -32,7 +32,7 @@ const PageStyles = styled.div`
     z-index: 0;
     flex-shrink: 0;
   }
-  .modal-overlay #gallery #skeleton {
+  .modal-overlay #gallery .gallery-skeleton {
     height: 300px;
   }
   .header .logo-wrapper {

@@ -27,128 +27,16 @@ import {
 import InfiniteScroll from "react-infinite-scroll-component";
 import { Link } from "react-router-dom";
 import { useDebounce } from "src/common/useDebounce";
-import { useMediaQuery } from "src/common/useMediaQuery";
 import { useOnClickOutside } from "src/common/useOnClickOutside";
 import { useGetAllCategoriesFilteredQuery } from "src/stores/category/categories.query";
 import { useGetCombosFilteredQuery } from "src/stores/combo/combos.query";
 import { useGetProductsFilteredQuery } from "src/stores/product/products.query";
 import styled from "styled-components";
 import Button from "../button/Button";
+import { useMediaQuery } from "react-responsive";
 
-const SearchWrapper = styled.div`
-  border-radius: ${(props) => (props.visible ? "10px 10px 0 0" : "")};
-  overflow: ${(props) => (props.visible ? "hidden" : "")};
-  .ant-input-clear-icon {
-    font-size: 16px;
-  }
-  .ant-select-auto-complete {
-    width: 100%;
-  }
-  .ant-input-affix-wrapper {
-    padding-right: 10px;
-    border-radius: 1000px;
-  }
-  .ant-input-affix-wrapper.ant-dropdown-open {
-    border-radius: 10px 10px 0 0;
-  }
-  input {
-    margin-left: 10px;
-    width: 100%;
-  }
-`;
-const DropdownWrapper = styled.div`
-  background: #fff;
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-  box-shadow: 0 2px 8px #f0f1f2;
-  border-radius: 0 0 10px 10px;
-  max-width: calc(${(props) => props.width + "px"});
-  width: 100%;
-  .ant-tabs {
-    max-width: 100%;
-  }
-  .dropdown-item-loading {
-    padding: 8px;
-    display: flex;
-    align-items: center;
-    width: 100%;
-    gap: 16px;
-    & .ant-skeleton-title {
-      margin-top: 10px;
-    }
-    & .ant-skeleton-paragraph {
-      margin-top: 10px !important;
-    }
-    & .ant-skeleton-header {
-      vertical-align: middle;
-    }
-  }
-  .dropdown-item {
-    padding: 8px;
-    width: 100%;
-    margin: 0 !important;
-    & .title {
-      margin-bottom: 2px;
-    }
-    & .paragraph {
-      margin-bottom: 0;
-    }
-    & .reaction-container {
-      margin-top: 6px;
-    }
-    & .reaction-tag {
-      padding: 2px 10px;
-      border: 0;
-      border-radius: 1000px;
-      display: flex;
-      align-items: center;
-      gap: 4px;
-      & span {
-        font-size: 14px;
-      }
-    }
-  }
-  .dropdown-item:hover {
-    background-color: ${(props) => props.theme.generatedColors[0]};
-  }
-  .dropdown-item:not(:last-child) {
-    border-bottom: 1px solid #eee;
-  }
-  .dropdown-item:last-child {
-    border-radius: 0 0 10px 10px;
-  }
-  .dropdown-searchresult {
-    padding: 4px 8px;
-    color: #adb5bd;
-  }
-  #scrollableDivProducts,
-  #scrollableDivCombos,
-  #scrollableDivCategories {
-    max-width: 100%;
-    max-height: 320px;
-    overflow-y: scroll;
-    &::-webkit-scrollbar {
-      width: 8px;
-    }
-
-    &::-webkit-scrollbar-track {
-      background-color: transparent;
-    }
-
-    &::-webkit-scrollbar-thumb {
-      background-color: #999;
-      border-radius: 10px;
-    }
-  }
-  .ant-tabs-nav {
-    margin-bottom: 2px;
-    padding: 0 8px;
-  }
-`;
-
-const AutocompleteSearch = ({ width = 480 }) => {
-  const tabletmatches = useMediaQuery("(max-width: 1023px)");
+const AutocompleteSearch = ({ width = 480}) => {
+  const mediaAbove1280 = useMediaQuery({ minWidth: 1280 });
   const inputRef = useRef(null);
   const dropdownRef = useRef(null);
   const [text, setText] = useState("");
@@ -276,7 +164,6 @@ const AutocompleteSearch = ({ width = 480 }) => {
     <SearchWrapper visible={visible}>
       <Dropdown
         visible={visible}
-        trigger={["click"]}
         overlay={
           <DropdownWrapper width={width}>
             <Tabs
@@ -284,7 +171,7 @@ const AutocompleteSearch = ({ width = 480 }) => {
               activeKey={activeKey}
               onChange={(key) => {
                 setActiveKey(key);
-                if (!tabletmatches)
+                if (mediaAbove1280)
                   inputRef.current.focus({
                     cursor: "end",
                   });
@@ -516,5 +403,117 @@ const AutocompleteSearch = ({ width = 480 }) => {
     </SearchWrapper>
   );
 };
+
+const SearchWrapper = styled.div`
+  border-radius: ${(props) => (props.visible ? "10px 10px 0 0" : "")};
+  overflow: ${(props) => (props.visible ? "hidden" : "")};
+  .ant-input-clear-icon {
+    font-size: 16px;
+  }
+  .ant-select-auto-complete {
+    width: 100%;
+  }
+  .ant-input-affix-wrapper {
+    padding-right: 10px;
+    border-radius: 1000px;
+  }
+  .ant-input-affix-wrapper.ant-dropdown-open {
+    border-radius: 10px 10px 0 0;
+  }
+  input {
+    margin-left: 10px;
+    width: 100%;
+  }
+`;
+const DropdownWrapper = styled.div`
+  background: #fff;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  box-shadow: 0 2px 8px #f0f1f2;
+  border-radius: 0 0 10px 10px;
+  max-width: calc(${(props) => props.width + "px"});
+  width: 100%;
+  .ant-tabs {
+    max-width: 100%;
+  }
+  .dropdown-item-loading {
+    padding: 8px;
+    display: flex;
+    align-items: center;
+    width: 100%;
+    gap: 16px;
+    & .ant-skeleton-title {
+      margin-top: 10px;
+    }
+    & .ant-skeleton-paragraph {
+      margin-top: 10px !important;
+    }
+    & .ant-skeleton-header {
+      vertical-align: middle;
+    }
+  }
+  .dropdown-item {
+    padding: 8px;
+    width: 100%;
+    margin: 0 !important;
+    & .title {
+      margin-bottom: 2px;
+    }
+    & .paragraph {
+      margin-bottom: 0;
+    }
+    & .reaction-container {
+      margin-top: 6px;
+    }
+    & .reaction-tag {
+      padding: 2px 10px;
+      border: 0;
+      border-radius: 1000px;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      & span {
+        font-size: 14px;
+      }
+    }
+  }
+  .dropdown-item:hover {
+    background-color: ${(props) => props.theme.generatedColors[0]};
+  }
+  .dropdown-item:not(:last-child) {
+    border-bottom: 1px solid #eee;
+  }
+  .dropdown-item:last-child {
+    border-radius: 0 0 10px 10px;
+  }
+  .dropdown-searchresult {
+    padding: 4px 8px;
+    color: #adb5bd;
+  }
+  #scrollableDivProducts,
+  #scrollableDivCombos,
+  #scrollableDivCategories {
+    max-width: 100%;
+    max-height: 320px;
+    overflow-y: scroll;
+    &::-webkit-scrollbar {
+      width: 8px;
+    }
+
+    &::-webkit-scrollbar-track {
+      background-color: transparent;
+    }
+
+    &::-webkit-scrollbar-thumb {
+      background-color: #999;
+      border-radius: 10px;
+    }
+  }
+  .ant-tabs-nav {
+    margin-bottom: 2px;
+    padding: 0 8px;
+  }
+`;
 
 export default AutocompleteSearch;
