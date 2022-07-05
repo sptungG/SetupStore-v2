@@ -28,21 +28,24 @@ import InfiniteScroll from "react-infinite-scroll-component";
 import { Link } from "react-router-dom";
 import { useDebounce } from "src/common/useDebounce";
 import { useOnClickOutside } from "src/common/useOnClickOutside";
-import { useGetAllCategoriesFilteredQuery } from "src/stores/category/categories.query";
-import { useGetCombosFilteredQuery } from "src/stores/combo/combos.query";
-import { useGetProductsFilteredQuery } from "src/stores/product/products.query";
+import { useGetAllCategoriesFilteredQuery } from "src/stores/category/category.query";
+import { useGetCombosFilteredQuery } from "src/stores/combo/combo.query";
+import { useGetProductsFilteredQuery } from "src/stores/product/product.query";
 import styled from "styled-components";
 import Button from "../button/Button";
 import { useMediaQuery } from "react-responsive";
+import { useDispatch, useSelector } from "react-redux";
+import { setSearchVisible } from "src/stores/header/header.reducer";
 
-const AutocompleteSearch = ({ width = 480}) => {
+const AutocompleteSearch = ({ width = 480 }) => {
   const mediaAbove1280 = useMediaQuery({ minWidth: 1280 });
+  const dispatch = useDispatch();
   const inputRef = useRef(null);
   const dropdownRef = useRef(null);
   const [text, setText] = useState("");
   const [placeholder, setPlaceholder] = useState("Tìm kiếm sản phẩm, danh mục, bộ sưu tập");
-  const [visible, setVisible] = useState(false);
   const [activeKey, setActiveKey] = useState("product");
+  const headerState = useSelector((state) => state.headerState);
 
   const [productsFilterValue, setProductsFilterValue] = useState({ page: 1, limit: 6 });
   const [combosFilterValue, setCombosFilterValue] = useState({ page: 1, limit: 4 });
@@ -93,7 +96,7 @@ const AutocompleteSearch = ({ width = 480}) => {
       }
     }
   }, [
-    visible,
+    headerState.searchvisible,
     activeKey,
     productsFilterValue.page,
     productsFilteredQuery?.data,
@@ -105,7 +108,7 @@ const AutocompleteSearch = ({ width = 480}) => {
   ]);
 
   useEffect(() => {
-    if (visible) {
+    if (headerState.searchvisible) {
       switch (activeKey) {
         case "product": {
           setText(productsFilterValue.keyword);
@@ -131,7 +134,7 @@ const AutocompleteSearch = ({ width = 480}) => {
       setPlaceholder("Tìm kiếm sản phẩm, danh mục, bộ sưu tập");
     }
   }, [
-    visible,
+    headerState.searchvisible,
     activeKey,
     categoriesFilterValue.keyword,
     combosFilterValue.keyword,
@@ -160,10 +163,18 @@ const AutocompleteSearch = ({ width = 480}) => {
       setCategoriesFilterValue({ ...categoriesFilterValue, keyword: e.target.value });
   };
 
+  const onClose = () => {
+    dispatch(setSearchVisible(false));
+  };
+
+  const onVisible = () => {
+    dispatch(setSearchVisible(true));
+  };
+
   return (
-    <SearchWrapper visible={visible}>
+    <SearchWrapper visible={headerState.searchvisible}>
       <Dropdown
-        visible={visible}
+        visible={headerState.searchvisible}
         overlay={
           <DropdownWrapper width={width}>
             <Tabs
@@ -182,7 +193,7 @@ const AutocompleteSearch = ({ width = 480}) => {
                     icon={<BsXLg size={15} />}
                     shape={"circle"}
                     type="dashed"
-                    onClick={() => setVisible(false)}
+                    onClick={onClose}
                   ></Button>
                 </Space>
               }
@@ -395,8 +406,8 @@ const AutocompleteSearch = ({ width = 480}) => {
           prefix={<BsSearch size={16} />}
           onChange={onChangeInput}
           onPressEnter={onPressEnter}
-          onClick={() => setVisible(true)}
-          onFocus={() => setVisible(true)}
+          onClick={onVisible}
+          onFocus={onVisible}
           size="middle"
         />
       </Dropdown>

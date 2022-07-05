@@ -5,7 +5,8 @@ import { signOut } from "firebase/auth";
 import { auth } from "common/firebase-config";
 import { useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
-import { setAuthtokenCredential, setUserCredential } from "src/stores/auth/auth.reducer";
+import { setAuthtokenCredential } from "src/stores/auth/auth.reducer";
+import { setUser } from "src/stores/user/user.reducer";
 
 const LogoutButton = ({ iconSize = 24, btnType = "text", children }) => {
   const dispatch = useDispatch();
@@ -14,7 +15,7 @@ const LogoutButton = ({ iconSize = 24, btnType = "text", children }) => {
   const handleLogout = async () => {
     try {
       await signOut(auth);
-      dispatch(setUserCredential(null));
+      dispatch(setUser(null));
       dispatch(setAuthtokenCredential(null));
       navigate("/");
     } catch (error) {

@@ -3,6 +3,7 @@ const Product = require("../product/model.product");
 const Variant = require("../product/model.variant");
 const User = require("../user/model.user");
 const { convertToNumber } = require("../../common/utils");
+const lodash = require("lodash");
 
 exports.addProductToCart = async (req, res) => {
   try {
@@ -13,39 +14,42 @@ exports.addProductToCart = async (req, res) => {
     const foundVariant = await Variant.findById(variantId);
     if (!foundProduct) throw { status: 404, message: `Product:${productId} not found!` };
     if (!foundVariant) throw { status: 404, message: `Variant:${variantId} not found!` };
-    if (foundVariant.product.toString() !== foundProduct._id.toString())
+    if (!foundProduct.variants.find((v) => v.toString() === variantId))
       throw { status: 400, message: `Variant:${variantId} not in Product:${productId}!` };
-    if (foundProduct.quantity < quantityNumber)
+    if (foundVariant.quantity < quantityNumber)
       throw {
         status: 400,
-        message: `Exceed maximum quantity ${foundProduct.quantity} of Product:${productId}!`,
+        message: `Exceed maximum quantity ${foundVariant.quantity} of Variant:${variantId}!`,
       };
 
     let newCart = null;
     const foundCart = await Cart.findOne({ createdBy: userId });
     if (!foundCart) {
+      // ko tìm thấy cart -> tạo cart mới,gán vào user
       newCart = await new Cart({
         products: [
           {
             product: productId,
             variant: variantId,
             count: quantityNumber,
-            price: foundProduct.price,
+            price: foundVariant.price,
           },
         ],
-        cartTotal: foundProduct.price * quantityNumber,
+        cartTotal: foundVariant.price * quantityNumber,
         createdBy: userId,
       }).save();
     } else {
+      // tìm thấy cart -> kiểm tra trùng product, variant trong cart
       const foundProductInCart = foundCart.products.find(
         (p) => p.product.toString() === productId && p.variant.toString() === variantId
       );
       if (!foundProductInCart) {
+        // nếu ko trùng -> thêm product vào cart
         const newProduct = {
           product: productId,
           variant: variantId,
           count: quantityNumber,
-          price: foundProduct.price,
+          price: foundVariant.price,
         };
         newCart = await Cart.findByIdAndUpdate(
           foundCart._id,
@@ -56,6 +60,7 @@ exports.addProductToCart = async (req, res) => {
           { new: true }
         );
       } else {
+        // nếu trùng -> cập nhật giá trị(count) của product đó trong cart
         const newProducts = foundCart.products.map((p) => {
           if (p.product.toString() === productId && p.variant.toString() === variantId) {
             return { ...p, count: (p.count += quantityNumber) };
@@ -66,7 +71,7 @@ exports.addProductToCart = async (req, res) => {
           foundCart._id,
           {
             $set: { products: newProducts },
-            $inc: { cartTotal: foundProduct.price * quantityNumber },
+            $inc: { cartTotal: foundVariant.price * quantityNumber },
           },
           { new: true }
         );
@@ -74,8 +79,8 @@ exports.addProductToCart = async (req, res) => {
     }
     if (newCart == null) throw { status: 400, message: `Failed to add Product:${productId}!` };
 
-    const updatedProduct = await Product.findByIdAndUpdate(
-      productId,
+    const updatedVariantProduct = await Variant.findByIdAndUpdate(
+      variantId,
       { $inc: { quantity: -quantityNumber } },
       { new: true }
     );
@@ -100,10 +105,9 @@ exports.getUserCart = async (req, res) => {
               { path: "category", select: "_id name" },
               { path: "images", select: "_id public_id url modelId onModel" },
               { path: "wishlist", select: "_id name picture" },
-              { path: "variants", select: "_id color_label color_hex_code image" },
             ],
           },
-          { path: "variant", select: "_id color_label color_hex_code image" },
+          { path: "variant", select: "_id price quantity options image sold status" },
         ],
       },
     ]);
@@ -142,8 +146,8 @@ exports.removeProductFromCart = async (req, res) => {
         },
         { new: true }
       );
-      const updatedProduct = await Product.findByIdAndUpdate(
-        foundProductInCart.product,
+      const updatedVariantProduct = await Variant.findByIdAndUpdate(
+        foundProductInCart.variant,
         { $inc: { quantity: foundProductInCart.count } },
         { new: true }
       );

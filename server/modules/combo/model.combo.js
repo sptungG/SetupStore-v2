@@ -13,14 +13,6 @@ const ComboSchema = new mongoose.Schema(
       type: Number,
       default: 0,
     },
-    avgRating: {
-      type: Number,
-      default: 0,
-    },
-    numOfReviews: {
-      type: Number,
-      default: 0,
-    },
     wishlist: [{ type: ObjectId, ref: "User" }],
     image: { type: ObjectId, ref: "Image" },
     products: [
@@ -29,6 +21,15 @@ const ComboSchema = new mongoose.Schema(
         position: { type: String, trim: true, default: "50%,50%" },
       },
     ],
+    comments: [
+      {
+        createdBy: { type: ObjectId, ref: "User" },
+        content: { type: String, required: true, trim: true },
+        createdAt: { type: Date, default: Date.now() },
+      },
+    ],
+    content: { type: ObjectId, ref: "Content" },
+    createdBy: { type: ObjectId, ref: "User" },
     status: { type: String, enum: ["active", "inactive", "deleted"], default: "active" },
   },
   { timestamps: true }

@@ -8,6 +8,7 @@ const Review = require("../reaction/model.review");
 const Category = require("../category/model.category");
 const Image = require("../cloudinary/model.image");
 const Combo = require("../combo/model.combo");
+const Content = require("../content/model.content");
 
 // getFilteredProducts (pagination, sort, search)
 exports.getFilteredProducts = async (req, res) => {
@@ -59,7 +60,7 @@ exports.getFilteredProducts = async (req, res) => {
       const regex = new RegExp(`${color.toLowerCase()}`, "i");
       const regexCond = { $regex: regex };
       const foundVariants = await Variant.find({
-        $or: [{ color_label: regexCond }, { color_hex_code: regexCond }],
+        options: { value: regexCond },
       });
       const variantIds = foundVariants.map((v) => v._id);
       filter.variants = { $in: variantIds };
@@ -75,7 +76,7 @@ exports.getFilteredProducts = async (req, res) => {
         .populate("category", "_id name")
         .populate("images", "_id public_id url modelId onModel")
         .populate("wishlist", "_id name picture")
-        .populate("variants", "_id color_label color_hex_code image")
+        .populate("variants", "_id price quantity options image sold status")
         .populate({
           path: "combos",
           select: "_id name",
@@ -154,7 +155,7 @@ exports.getAdminProducts = async (req, res) => {
       .populate("category", "_id name")
       .populate("images", "_id public_id url modelId onModel")
       .populate("wishlist", "_id name picture")
-      .populate("variants", "_id color_label color_hex_code image")
+      .populate("variants", "_id price quantity options image sold status")
       .populate({
         path: "combos",
         select: "_id name",
@@ -179,7 +180,7 @@ exports.getSingleProduct = async (req, res) => {
       .populate("category", "_id name")
       .populate("images", "_id public_id url modelId onModel")
       .populate("wishlist", "_id name picture")
-      .populate("variants", "_id color_label color_hex_code image")
+      .populate("variants", "_id price quantity options image sold status")
       .populate({
         path: "combos",
         select: "_id name",
@@ -213,7 +214,7 @@ exports.updateProduct = async (req, res) => {
       .populate("category", "_id name")
       .populate("images", "_id public_id url modelId onModel")
       .populate("wishlist", "_id name picture")
-      .populate("variants", "_id color_label color_hex_code image")
+      .populate("variants", "_id price quantity options image sold status")
       .populate({
         path: "combos",
         select: "_id name",
@@ -247,6 +248,7 @@ exports.deleteProduct = async (req, res) => {
       Variant.deleteMany({ product: productId }),
       Wishlist.deleteMany({ modelId: productId }),
       Review.deleteMany({ modelId: productId }),
+      Content.deleteMany({ modelId: productId }),
     ]);
 
     const deletedProduct = await Product.findByIdAndRemove(productId);

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { Fragment, useState } from "react";
 import styled, { keyframes } from "styled-components";
 import { Navigation, Thumbs } from "swiper";
 import { Swiper, SwiperSlide } from "swiper/react";
@@ -7,6 +7,10 @@ import { BsCartPlus, BsChatLeftText, BsEye, BsHeart, BsHeartFill, BsStar } from 
 import Button from "../button/Button";
 import { Link } from "react-router-dom";
 import { rgba } from "polished";
+import lodash from "lodash";
+import { checkValidColor, vietnameseSlug } from "src/common/utils";
+
+const generatedVariants = (variants) => Object.entries(lodash.groupBy(variants, "option_label"));
 
 const ProductHoverDetail = ({ product }) => {
   const [initQuantity, setInitQuantity] = useState(1);
@@ -91,25 +95,39 @@ const ProductHoverDetail = ({ product }) => {
             {product.desc}
           </Typography.Paragraph>
 
-          <div className="variant-colors">
-            <span className="variant-colors-label">Màu sắc:</span>
-            {product.variants.length > 0 ? (
-              <Space className="variant-colors-tags" size={1} align="baseline">
-                {product.variants.map((v) => (
-                  <Tag
-                    color={`#${v.color_hex_code}`}
-                    key={v._id}
-                    className="tag"
-                    title={v.color_label}
-                  >
-                    <div></div>
-                  </Tag>
-                ))}
-              </Space>
-            ) : (
-              <Tag color="default">Ngẫu nhiên</Tag>
-            )}
-          </div>
+          {generatedVariants(product.variants).map(([option_label, items]) => (
+            <div className="variants" key={vietnameseSlug(option_label, "_")}>
+              <span className="variants-label">{option_label}: </span>
+              {items.length > 0 ? (
+                <Space className="variants-tags" size={1} align="baseline">
+                  {items.map((v) => {
+                    if (checkValidColor(v.option_value))
+                      return (
+                        <Tag
+                          color={v.option_value || "default"}
+                          key={v._id}
+                          className={"tag-color"}
+                          title={v.option_name}
+                        >
+                          <div></div>
+                        </Tag>
+                      );
+                    return (
+                      <Tag color={"default"} key={v._id} className={"tag"} title={v.option_name}>
+                        {v.option_value}
+                      </Tag>
+                    );
+                  })}
+                </Space>
+              ) : (
+                <Tag color="default">Ngẫu nhiên</Tag>
+              )}
+            </div>
+          ))}
+          {console.log(
+            "ProductHoverDetail ~ generatedVariants(product.variants)",
+            generatedVariants(product.variants)
+          )}
 
           {/* <div className="action-quantity">
             <span className="action-quantity-label">Số lượng:</span>
@@ -258,7 +276,7 @@ const ProductHoverDetailWrapper = styled.div`
     text-decoration: underline;
   }
 
-  & .variant-colors {
+  & .variants {
     display: flex;
     align-items: center;
     gap: 8px;
@@ -268,16 +286,16 @@ const ProductHoverDetailWrapper = styled.div`
     &-label {
       color: #000;
     }
-    & .tag {
+    & .tag-color {
       padding: 0;
       border-radius: 50%;
     }
-    & .tag > div {
+    & .tag-color > div {
       width: 24px;
       height: 24px;
       border-radius: 50%;
     }
-    & .tag.selected > div {
+    & .tag-color.selected > div {
       background-color: #fff;
     }
   }

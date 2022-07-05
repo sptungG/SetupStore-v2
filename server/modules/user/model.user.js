@@ -15,13 +15,9 @@ const UserSchema = mongoose.Schema(
       type: String,
       default: "user",
     },
-    area: {
-      type: String,
-      default: "",
-    },
-    address: {
-      type: String,
-      default: "",
+    defaultAddress: {
+      type: ObjectId,
+      ref: "Address",
     },
     emailVerified: { type: Boolean, default: false },
     cart: { type: ObjectId, ref: "Cart" },

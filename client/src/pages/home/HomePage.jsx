@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { ProductsFilter } from "src/common/constant";
 import ProductCard, { ProductCardLoading } from "src/components/card/ProductCard";
 import MainLayout from "src/layout/MainLayout";
-import { useGetProductsFilteredQuery } from "src/stores/product/products.query";
+import { useGetProductsFilteredQuery } from "src/stores/product/product.query";
 import styled from "styled-components";
 
 const ProductsWrapper = styled.div`

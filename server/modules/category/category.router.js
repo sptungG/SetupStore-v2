@@ -13,10 +13,10 @@ const {
   getCategoryById,
 } = require("./category.controller");
 // routes
-router.post("/category", authCheck, adminCheck, createCategory);
+router.post("/admin/category", authCheck, adminCheck, createCategory);
 router.get("/categories", getAllCategory);
 router.get("/category/:categoryId", getCategoryById);
-router.put("/category/:categoryId", authCheck, adminCheck, updateCategory);
-router.delete("/category/:categoryId", authCheck, adminCheck, deleteCategory);
+router.put("/admin/category/:categoryId", authCheck, adminCheck, updateCategory);
+router.delete("/admin/category/:categoryId", authCheck, adminCheck, deleteCategory);
 
 module.exports = router;

@@ -16,7 +16,7 @@ exports.getWishlistByUserId = async (req, res) => {
           { path: "category", select: "_id name" },
           { path: "images", select: "_id public_id url modelId onModel" },
           { path: "wishlist", select: "_id name picture" },
-          { path: "variants", select: "_id color_label color_hex_code image" },
+          { path: "variants", select: "_id option_label option_name option_value image" },
         ],
       })
       .sort({ createdAt: -1 });
@@ -40,7 +40,7 @@ exports.getWishlistByUserId = async (req, res) => {
                 { path: "category", select: "_id name" },
                 { path: "images", select: "_id public_id url modelId onModel" },
                 { path: "wishlist", select: "_id name picture" },
-                { path: "variants", select: "_id color_label color_hex_code image" },
+                { path: "variants", select: "_id option_label option_name option_value image" },
               ],
             },
           },

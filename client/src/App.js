@@ -16,13 +16,10 @@ import Loader from "src/components/loader/Loader";
 import ErrorResult from "src/components/nav/ErrorResult";
 import GuestRoute from "./routes/GuestRoute";
 import { useCreateOrUpdateUserMutation, useCurrentUserMutation } from "./stores/auth/auth.query";
-import {
-  setAuthtokenCredential,
-  setRefreshToken,
-  setUserCredential,
-} from "./stores/auth/auth.reducer";
+import { setAuthtokenCredential, setRefreshToken } from "./stores/auth/auth.reducer";
 import { persistor } from "./stores/store";
 import { setDataRedirectStatus } from "./stores/header/header.reducer";
+import { setUser } from "./stores/user/user.reducer";
 
 const HomePage = lazy(() => import("src/pages/home/HomePage"));
 const LoginPage = lazy(() => import("src/pages/auth/LoginPage"));
@@ -33,6 +30,7 @@ const VerificationPage = lazy(() => import("src/pages/auth/VerificationPage"));
 function App() {
   let navigate = useNavigate();
   const credential = useSelector((state) => state.auth);
+  const { data: user } = useSelector((state) => state.user);
   const [
     currentUser,
     { isError: currentUserError, isSuccess: currentUserSuccess, isLoading: currentUserLoading },
@@ -42,7 +40,7 @@ function App() {
   const dispatch = useDispatch();
 
   useLayoutEffect(() => {
-    if (credential.authtoken == null && credential.refreshToken == null) {
+    if (user == null && credential.authtoken == null && credential.refreshToken == null) {
       dispatch(setDataRedirectStatus("loading"));
       getRedirectResult(auth)
         .then(async (result) => {
@@ -52,7 +50,7 @@ function App() {
           const res = await createOrUpdateUser(idTokenResult.token).unwrap();
           dispatch(setRefreshToken(user.refreshToken));
           dispatch(setAuthtokenCredential(idTokenResult.token));
-          dispatch(setUserCredential(res));
+          dispatch(setUser(res));
           dispatch(setDataRedirectStatus("noLoading"));
           navigate("/", { replace: true });
         })
@@ -68,13 +66,14 @@ function App() {
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
       if (user) {
         try {
+          if (!user.emailVerified) throw new Error(`${user.email} hasn't verified yet!`);
           const idTokenResult = await user.getIdTokenResult();
           const res = await currentUser(idTokenResult.token).unwrap();
           dispatch(setAuthtokenCredential(idTokenResult.token));
-          dispatch(setUserCredential(res));
-          return;
+          dispatch(setRefreshToken(user.refreshToken));
+          dispatch(setUser(res));
         } catch (err) {
-          console.log("currentUser", err);
+
         }
       }
     });
@@ -97,7 +96,7 @@ function App() {
         generatedColors: themeProvider.generatedColors,
       }}
     >
-      <PersistGate loading={null} persistor={persistor}>
+      <PersistGate loading={<Loader />} persistor={persistor}>
         {/* <LoadingBarContainer
           maxProgress={85}
           updateTime={100}

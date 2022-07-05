@@ -4,7 +4,7 @@ const Variant = require("./model.variant");
 exports.createVariant = async (req, res) => {
   try {
     const { productId } = req.query;
-    let { color_label, color_hex_code, image } = req.body;
+    let { price, sold, quantity, image, options } = req.body;
     const foundProduct = await Product.findOne({ _id: productId });
     if (!foundProduct) throw { status: 404, message: `Product:${productId} not found!` };
 
@@ -12,9 +12,11 @@ exports.createVariant = async (req, res) => {
     // console.log(req.body);
     const newVariant = await new Variant({
       product: productId,
-      color_label,
-      color_hex_code: color_hex_code.replace(/[^\w\s]/g, ""),
+      price,
+      sold,
+      quantity,
       image,
+      options,
     }).save();
     await Product.findByIdAndUpdate(
       productId,
@@ -34,14 +36,14 @@ exports.createVariant = async (req, res) => {
 exports.updateVariant = async (req, res) => {
   try {
     const { variantId } = req.query;
-    const { color_label, color_hex_code, image } = req.body;
+    const {  price, sold, quantity, image, options } = req.body;
     // console.log(req.body);
     let updatedVariant = await Variant.findOne({ _id: variantId });
     if (!updatedVariant) throw { status: 404, message: `${variantId} not found!` };
 
     updatedVariant = await Variant.findOneAndUpdate(
       { _id: variantId },
-      { color_label, color_hex_code: color_hex_code.replace(/[^\w\s]/g, ""), image },
+      {  price, sold, quantity, image, options },
       { new: true }
     );
 

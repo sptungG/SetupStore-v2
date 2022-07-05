@@ -13,31 +13,56 @@ export const productApi = createApi({
       query: (filter) => `/products?${bindParamsFilter(filter)}`,
       providesTags: ["Products"],
     }),
-    // currentUser: builder.mutation({
-    //   query: (authtoken) => ({
-    //     url: "/current-user",
-    //     method: "POST",
-    //     headers: {
-    //       authtoken,
-    //     },
-    //   }),
-    //   invalidatesTags: ["Products"],
-    // }),
-    // updateTask: builder.mutation({
-    //   query: ({ id, ...rest }) => ({
-    //     url: `/tasks/${id}`,
-    //     method: "PUT",
-    //     body: rest,
-    //   }),
-    //   invalidatesTags: ["Products"],
-    // }),
-    // deleteTask: builder.mutation({
-    //   query: (id) => ({
-    //     url: `/tasks/${id}`,
-    //     method: "DELETE",
-    //   }),
-    //   invalidatesTags: ["Products"],
-    // }),
+    getProduct: builder.query({
+      query: (productId) => `/product/${productId}`,
+      providesTags: ["Products"],
+    }),
+    productViewInc: builder.mutation({
+      query: (productId) => ({
+        url: `/product/${productId}/view`,
+        method: "PUT",
+      }),
+      invalidatesTags: ["Products"],
+    }),
+    // ADMIN
+    getAllProductsFiltered: builder.query({
+      query: (filter) => `/admin/products?${bindParamsFilter(filter)}`,
+      providesTags: ["Products"],
+    }),
+    // ADMIN
+    createProduct: builder.mutation({
+      query: (initdata) => ({
+        url: `/admin/product`,
+        method: "POST",
+        body: initdata,
+      }),
+      invalidatesTags: ["Products"],
+    }),
+    // ADMIN
+    updateProduct: builder.mutation({
+      query: (productId, initdata) => ({
+        url: `/admin/product?productId=${productId}`,
+        method: "PUT",
+        body: initdata,
+      }),
+      invalidatesTags: ["Products"],
+    }),
+    // ADMIN
+    deleteProduct: builder.mutation({
+      query: (productId) => ({
+        url: `/admin/product?productId=${productId}`,
+        method: "DELETE",
+      }),
+      invalidatesTags: ["Products"],
+    }),
   }),
 });
-export const { useGetProductsFilteredQuery } = productApi;
+export const {
+  useGetProductsFilteredQuery,
+  useCreateProductMutation,
+  useDeleteProductMutation,
+  useGetAllProductsFilteredQuery,
+  useGetProductQuery,
+  useProductViewIncMutation,
+  useUpdateProductMutation,
+} = productApi;

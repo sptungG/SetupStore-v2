@@ -2,6 +2,7 @@ require("dotenv").config();
 const express = require("express");
 const mongoose = require("mongoose");
 const cors = require("cors");
+const morgan = require("morgan");
 const compression = require("compression");
 const { readdirSync } = require("fs");
 const cloudinary = require("cloudinary").v2;
@@ -9,7 +10,10 @@ const fileupload = require("express-fileupload");
 // app
 const app = express();
 app.use(compression({ level: 6, threshold: 100 * 1000 }));
+app.use(morgan("tiny"));
 const http = require("http").createServer(app);
+// const io = require("socket.io")(http);
+// global._io  =  io;
 
 // config
 cloudinary.config({
