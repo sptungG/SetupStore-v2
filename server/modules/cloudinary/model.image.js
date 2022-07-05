@@ -15,8 +15,9 @@ const Image = new mongoose.Schema(
     onModel: {
       type: String,
       required: true,
-      enum: ["Combo", "Product", "User"],
+      enum: ["Combo", "Product", "User", "Content"],
     },
+    status: { type: String, enum: ["active", "inactive", "deleted"], default: "active" },
   },
   { timestamps: true }
 );

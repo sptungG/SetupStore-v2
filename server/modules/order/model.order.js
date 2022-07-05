@@ -4,6 +4,7 @@ const { ObjectId } = mongoose.Schema;
 const OrderSchema = new mongoose.Schema(
   {
     shippingInfo: {
+      name: { type: String, required: true },
       phoneNo: {
         type: String,
         required: true,
@@ -51,7 +52,6 @@ const OrderSchema = new mongoose.Schema(
         saved_variant: {
           type: String,
           required: true,
-          default: "white,#fff",
         },
         product: {
           type: ObjectId,
@@ -78,27 +78,25 @@ const OrderSchema = new mongoose.Schema(
     },
     itemsPrice: {
       type: Number,
-      required: true,
       default: 0,
     },
     shippingPrice: {
       type: Number,
-      required: true,
       default: 0,
     },
     totalPrice: {
       type: Number,
-      required: true,
       default: 0,
     },
     deliveredAt: {
       type: Date,
     },
     orderStatus: {
-      type: String,
-      required: true,
-      default: "Processing",
+      value: { type: String, default: "Processing" },
+      name: { type: String, required: true },
     },
+    orderLog: [{ createdAt: Date, createdBy: { type: ObjectId, ref: "User" }, content: String }],
+    orderNote: { type: String, default: "" },
     createdBy: { type: ObjectId, ref: "User" },
   },
   { timestamps: true }

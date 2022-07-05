@@ -44,15 +44,3 @@ const LogoAndText = ({ logoSize = 0, fontSize = 0, fontWeight = 500 }) => {
 };
 
 export default LogoAndText;
-
-export const Logo = ({ logoSize = 0, fontSize = 0, fontWeight = 500 }) => {
-  return (
-    <span role="img" aria-label="desktop" className="anticon anticon-desktop ant-menu-item-icon">
-      <Link to="/" className="logo-wrapper">
-        <LogoWrapper fontSize={fontSize} fontWeight={fontWeight}>
-          {logoSize > 0 && <LogoCube size={logoSize} />}
-        </LogoWrapper>
-      </Link>
-    </span>
-  );
-};

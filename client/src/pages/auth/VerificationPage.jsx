@@ -8,12 +8,9 @@ import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import styled from "styled-components";
 import { useDispatch } from "react-redux";
-import {
-  setAuthtokenCredential,
-  setEmailVerifiedValue,
-  setUserCredential,
-} from "src/stores/auth/auth.reducer";
+import { setAuthtokenCredential, setEmailVerifiedValue } from "src/stores/auth/auth.reducer";
 import { useCreateOrUpdateUserMutation } from "src/stores/auth/auth.query";
+import { setUser } from "src/stores/user/user.reducer";
 
 const WrapperStyles = styled.div`
   display: flex;
@@ -59,7 +56,7 @@ const VerificationPage = () => {
       const idTokenResult = await auth.currentUser.getIdTokenResult();
       dispatch(setAuthtokenCredential(idTokenResult.token));
       let res = await createOrUpdateUser(idTokenResult.token).unwrap();
-      dispatch(setUserCredential(res));
+      dispatch(setUser(res));
       dispatch(setEmailVerifiedValue(auth.currentUser.email));
       setStatus("success");
       setTimeout(() => {

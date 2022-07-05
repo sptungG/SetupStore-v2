@@ -7,18 +7,30 @@ const User = require("../user/model.user");
 // req.files.file.path
 exports.userUpload = async (req, res) => {
   try {
+    const { onModel } = req.query;
     const { imageUrl, image } = req.body;
     const public_id_v4 = uuidv4();
+    let modelCond = {
+      folderName: "users",
+      onModel: "User",
+      status: "active",
+    };
+
+    if (onModel === "Combo") {
+      modelCond.folderName = "combos";
+      modelCond.onModel = "Combo";
+      modelCond.status = "inactive";
+    }
 
     let result = null;
     if (!imageUrl) {
       result = await cloudinary.uploader.upload(image, {
         public_id: public_id_v4,
         resource_type: "auto", // jpeg, png
-        folder: "users",
+        folder: modelCond.folderName,
       });
     } else {
-      const foundImageUrl = await Image.findOne({ url: imageUrl }).exec();
+      const foundImageUrl = await Image.findOne({ url: String(imageUrl) }).exec();
       if (foundImageUrl) throw { status: 400, message: `${imageUrl} has been uploaded!` };
     }
 
@@ -26,7 +38,8 @@ exports.userUpload = async (req, res) => {
       public_id: result?.public_id || public_id_v4,
       url: imageUrl || result?.secure_url || NOT_FOUND_IMG,
       modelId: foundUser._id,
-      onModel: "User",
+      onModel: modelCond.onModel,
+      status: modelCond.status,
     }).save();
     res.status(200).json({
       success: true,
@@ -48,6 +61,14 @@ exports.adminUpload = async (req, res) => {
     if (onModel === "Combo") {
       modelCond.folderName = "combos";
       modelCond.onModel = "Combo";
+    }
+    if (onModel === "Content") {
+      modelCond.folderName = "contents";
+      modelCond.onModel = "Content";
+    }
+    if (onModel === "User") {
+      modelCond.folderName = "users";
+      modelCond.onModel = "User";
     }
     let result = null;
     if (!imageUrl) {

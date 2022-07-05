@@ -3,6 +3,7 @@ const { v4: uuidv4 } = require("uuid");
 const dayjs = require("dayjs");
 const Product = require("../product/model.product");
 const Image = require("../cloudinary/model.image");
+const Address = require("./model.address");
 const { isValidURL } = require("../../common/utils");
 
 // getAllUsers (non-pagination)
@@ -49,17 +50,21 @@ exports.getUser = async (req, res) => {
     res.status(400).json({ success: false, err: err.message });
   }
 };
+
 // updateUsers
 exports.updateMyInfo = async (req, res) => {
   try {
     const { _id: userId } = req.user;
-    const { picture, name, area, address } = req.body;
-    if (!picture || !name || !area || !address)
+    const { picture, name, area, defaultAddress } = req.body;
+    if (!picture || !name || !area || !defaultAddress)
       throw { status: 400, message: `Invalid info updating` };
+    const foundAddress = await Address.findById(defaultAddress);
+    if (!foundAddress) throw { status: 404, message: `Not found address: ${defaultAddress}` };
     if (!isValidURL(picture)) throw { status: 400, message: `Invalid picture image ${picture}` };
+
     const updatedUser = await User.findByIdAndUpdate(
       userId,
-      { picture, name, area, address },
+      { picture, name, area, defaultAddress },
       { new: true }
     );
     res.status(200).json({
@@ -67,7 +72,7 @@ exports.updateMyInfo = async (req, res) => {
       data: updatedUser,
     });
   } catch (err) {
-    res.status(400).json({ success: false, err: err.message });
+    res.status(err?.status || 400).json({ success: false, err: err.message });
   }
 };
 // updateUsers
@@ -112,6 +117,7 @@ exports.removeUser = async (req, res) => {
       Variant.deleteMany({ product: userId }),
       Wishlist.deleteMany({ modelId: userId }),
       Review.deleteMany({ modelId: userId }),
+      Address.deleteMany({ createdBy: userId }),
     ]);
 
     const deletedUser = await User.findByIdAndRemove(userId);

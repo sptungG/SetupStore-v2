@@ -4,7 +4,9 @@ import { useSelector } from "react-redux";
 
 export default function PrivateRoute() {
   const credential = useSelector((state) => state.auth);
-  if (credential.user == null) return <LoadingToRedirect />;
+  const { data: user } = useSelector((state) => state.user);
+
+  if (user == null) return <LoadingToRedirect />;
 
   return <Outlet />;
 }

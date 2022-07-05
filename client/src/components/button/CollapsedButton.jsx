@@ -8,7 +8,7 @@ const CollapsedButton = () => {
   const dispatch = useDispatch();
   const headerState = useSelector((state) => state.headerState);
   const handleClick = () => {
-    // if (headerState.searchvisible) dispatch(setSearchVisible(false));
+    if (headerState.searchvisible) dispatch(setSearchVisible(false));
     dispatch(setSidebarCollapsed(!headerState.sidevisible));
   };
 

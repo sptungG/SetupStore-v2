@@ -61,9 +61,10 @@ const Header = () => {
   const ref = useRef(null);
   const [width, setWidth] = useState(0);
   const credential = useSelector((state) => state.auth);
-  const isSignedIn =
-    credential.user != null && credential.authtoken != null && credential.refreshToken != null;
+  const { data: user } = useSelector((state) => state.user);
   const headerState = useSelector((state) => state.headerState);
+  const isSignedIn =
+    user != null && credential.authtoken != null && credential.refreshToken != null;
 
   useEffect(() => {
     function handleResize() {
@@ -137,7 +138,12 @@ const Header = () => {
             )}
 
             {!isSignedIn && !mediaAbove1280 && (
-              <Dropdown trigger={["click"]} overlay={menu} placement="bottomRight" overlayStyle={{top: 54}}>
+              <Dropdown
+                trigger={["click"]}
+                overlay={menu}
+                placement="bottomRight"
+                overlayStyle={{ top: 54 }}
+              >
                 <Button
                   disabled={headerState.dataRedirectStatus === "loading"}
                   loading={headerState.dataRedirectStatus === "loading"}

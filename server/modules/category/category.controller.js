@@ -62,7 +62,7 @@ exports.getCategoryById = async (req, res) => {
       .populate("category", "_id name")
       .populate("images", "_id public_id url modelId onModel")
       .populate("wishlist", "_id name picture")
-      .populate("variants", "_id color_label color_hex_code image")
+      .populate("variants", "_id option_label option_name option_value image")
       .exec();
     res.status(200).json({
       success: true,

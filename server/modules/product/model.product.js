@@ -11,24 +11,19 @@ const ProductSchema = new mongoose.Schema(
       index: true,
     },
     desc: { type: String, trim: true },
+    category: {
+      type: ObjectId,
+      ref: "Category",
+    },
     price: {
       type: Number,
       required: true,
       default: 0,
     },
-    category: {
-      type: ObjectId,
-      ref: "Category",
-    },
-    quantity: { type: Number, required: [true, "Please enter product quantity"] },
-    sold: {
-      type: Number,
-      default: 0,
-    },
     images: [{ type: ObjectId, ref: "Image" }],
     shipping: {
-      type: String,
-      default: "yes",
+      type: Boolean,
+      default: true,
     },
     brand: {
       type: String,
@@ -46,9 +41,10 @@ const ProductSchema = new mongoose.Schema(
       type: Number,
       default: 0,
     },
-    variants: [{ type: ObjectId, ref: "Variant" }],
+    content: { type: ObjectId, ref: "Content" },
     combos: [{ type: ObjectId, ref: "Combo" }],
     wishlist: [{ type: ObjectId, ref: "User" }],
+    variants: [{ type: ObjectId, ref: "Variant" }],
     status: { type: String, enum: ["active", "inactive", "deleted"], default: "active" },
   },
   { timestamps: true }

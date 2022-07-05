@@ -2,7 +2,8 @@ import { createApi, fetchBaseQuery, retry } from "@reduxjs/toolkit/query/react";
 import { Mutex } from "async-mutex";
 import { signOut } from "firebase/auth";
 import { auth } from "src/common/firebase-config";
-import { setAuthtokenCredential, setRefreshToken, setUserCredential } from "./auth.reducer";
+import { setUser } from "../user/user.reducer";
+import { setAuthtokenCredential, setRefreshToken } from "./auth.reducer";
 
 const baseQuery = fetchBaseQuery({
   baseUrl: process.env.REACT_APP_API,
@@ -57,7 +58,7 @@ export const baseQueryWithReauth = async (args, api, extraOptions) => {
           );
         } else {
           await signOut(auth);
-          api.dispatch(setUserCredential(null));
+          api.dispatch(setUser(null));
           api.dispatch(setAuthtokenCredential(null));
           api.dispatch(setRefreshToken(null));
           window.history.replaceState({}, "", "/");

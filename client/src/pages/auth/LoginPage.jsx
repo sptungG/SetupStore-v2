@@ -1,10 +1,11 @@
-import { Col, Divider, Form, Input, notification, Row, Typography } from "antd";
+import { Col, Divider, Form, Input, notification, Row, Space, Typography } from "antd";
 import { signInWithEmailAndPassword, signInWithPopup, signInWithRedirect } from "firebase/auth";
 import { useEffect, useState } from "react";
 import { BsInstagram } from "react-icons/bs";
 import { FaFacebookSquare } from "react-icons/fa";
 import { FcGoogle } from "react-icons/fc";
 import { HiOutlineLockClosed, HiOutlineMail } from "react-icons/hi";
+import { MdOutlineMarkEmailUnread } from "react-icons/md";
 import { useDispatch, useSelector } from "react-redux";
 import { Link, useNavigate } from "react-router-dom";
 import { auth, googleAuthProvider } from "src/common/firebase-config";
@@ -16,10 +17,11 @@ import GalleryBgLayout from "src/layout/GalleryBgLayout";
 import { useCreateOrUpdateUserMutation } from "src/stores/auth/auth.query";
 import {
   setAuthtokenCredential,
+  setEmailVerifiedValue,
   setRefreshToken,
-  setUserCredential,
 } from "src/stores/auth/auth.reducer";
 import { setDataRedirectStatus } from "src/stores/header/header.reducer";
+import { setUser } from "src/stores/user/user.reducer";
 import styled from "styled-components";
 
 const FormWrapperStyles = styled.div`
@@ -59,15 +61,34 @@ const LoginPage = (props) => {
     setLoading(true);
     try {
       const { user } = await signInWithEmailAndPassword(auth, email, password);
+      if (!user.emailVerified) throw new Error(`${user.email} hasn't verified yet!`);
       const idTokenResult = await user.getIdTokenResult();
       const res = await createOrUpdateUser(idTokenResult.token).unwrap();
       dispatch(setRefreshToken(user.refreshToken));
       dispatch(setAuthtokenCredential(idTokenResult.token));
-      dispatch(setUserCredential(res));
+      dispatch(setUser(res));
+      dispatch(setEmailVerifiedValue(""));
       setLoading(false);
       navigate("/");
     } catch (error) {
-      notification.error({ message: error.message });
+      notification.error({
+        message: error.message,
+        btn: (
+          <span
+            onClick={() => {
+              navigate("/login");
+            }}
+          >
+            <a
+              target="_blank"
+              rel="noopener noreferrer"
+              href={"https://mail.google.com/mail/u/0/#inbox"}
+            >
+              Go to mailbox
+            </a>
+          </span>
+        ),
+      });
       setLoading(false);
     }
   };
@@ -80,7 +101,7 @@ const LoginPage = (props) => {
         const idTokenResult = await user.getIdTokenResult();
         const res = await createOrUpdateUser(idTokenResult.token).unwrap();
         dispatch(setAuthtokenCredential(idTokenResult.token));
-        dispatch(setUserCredential(res));
+        dispatch(setUser(res));
         setLoading(false);
       })
       .catch((err) => {

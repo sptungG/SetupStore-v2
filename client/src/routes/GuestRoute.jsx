@@ -3,9 +3,9 @@ import { Navigate, Outlet } from "react-router-dom";
 
 export default function GuestRoute() {
   const credential = useSelector((state) => state.auth);
+  const { data: user } = useSelector((state) => state.user);
 
-  if (credential.user != null)
-    return <Navigate to="/" replace />;
+  if (user != null) return <Navigate to="/" replace />;
 
   return <Outlet />;
 }

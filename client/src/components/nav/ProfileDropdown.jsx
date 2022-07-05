@@ -8,11 +8,8 @@ import { RiHistoryFill } from "react-icons/ri";
 import { Link, useNavigate } from "react-router-dom";
 import styled from "styled-components";
 import { useDispatch, useSelector } from "react-redux";
-import {
-  setAuthtokenCredential,
-  setRefreshToken,
-  setUserCredential,
-} from "src/stores/auth/auth.reducer";
+import { setAuthtokenCredential, setRefreshToken } from "src/stores/auth/auth.reducer";
+import { setUser } from "src/stores/user/user.reducer";
 
 const AvatarWrapper = styled.div`
   height: 100%;
@@ -52,7 +49,7 @@ const LogoutItem = () => {
   const logout = async () => {
     try {
       await signOut(auth);
-      dispatch(setUserCredential(null));
+      dispatch(setUser(null));
       dispatch(setAuthtokenCredential(null));
       dispatch(setRefreshToken(null));
       navigate("/");
@@ -68,8 +65,7 @@ const LogoutItem = () => {
 };
 
 const ProfileDropdownMenu = () => {
-  const credential = useSelector((state) => state.auth);
-  const { user } = credential;
+  const { data: user } = useSelector((state) => state.user);
 
   const items = [
     {

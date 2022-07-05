@@ -74,9 +74,9 @@ const SideBar = () => {
   const mediaBelow768 = useMediaQuery({ maxWidth: 768 });
   const headerState = useSelector((state) => state.headerState);
   const credential = useSelector((state) => state.auth);
+  const { data: user } = useSelector((state) => state.user);
   const isSignedIn =
-    credential.user != null && credential.authtoken != null && credential.refreshToken != null;
-  const { user } = credential;
+    user != null && credential.authtoken != null && credential.refreshToken != null;
 
   return (
     <Drawer
