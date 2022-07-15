@@ -70,15 +70,25 @@ const PostersSlider = ({ images = [] }) => {
     <SliderWrapper className="posters-slider">
       <div className="swiper" ref={sliderRef}>
         <div className="swiper-wrapper">
-          {images.map((item) => (
+          {images.length > 0 ? (
+            images.map((item) => (
+              <div className="swiper-slide">
+                <img
+                  data-swiper-parallax-scale="1.1"
+                  src={item?.url || NOT_FOUND_IMG}
+                  alt={item?._id || "NOT_FOUND_IMG"}
+                />
+              </div>
+            ))
+          ) : (
             <div className="swiper-slide">
               <img
                 data-swiper-parallax-scale="1.1"
-                src={item?.url || NOT_FOUND_IMG}
-                alt={item?._id || "NOT_FOUND_IMG"}
+                src={NOT_FOUND_IMG}
+                alt="NOT_FOUND_IMG"
               />
             </div>
-          ))}
+          )}
         </div>
         <div className="swiper-button-prev" onClick={handlePrev} />
         <div className="swiper-button-next" onClick={handleNext} />
