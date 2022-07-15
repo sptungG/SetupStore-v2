@@ -32,11 +32,7 @@ const ProductDetailPage = () => {
             <div className="container-info">
               <Row wrap={false} gutter={24}>
                 <Col flex="436px">
-                  {productData.images.length > 0 ? (
-                    <PostersSlider images={productData.images} />
-                  ) : (
-                    <img src={NOT_FOUND_IMG} alt={"NOT_FOUND_IMG"} />
-                  )}
+                  <PostersSlider images={productData.images} />
                 </Col>
                 <Col flex="auto">
                   <Typography.Title>{productData.name}</Typography.Title>
