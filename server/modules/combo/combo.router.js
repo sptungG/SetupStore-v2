@@ -13,16 +13,19 @@ const {
   updateCombo,
   viewCombo,
   commentCombo,
-  requestCombo
+  requestCombo,
+  getAllCombos,
 } = require("./combo.controller");
 // routes
 router.post("/combo", authCheck, isAuthenticatedUser, requestCombo);
-router.post("/admin/combo", authCheck, adminCheck, createCombo);
 router.get("/combos", getFilteredCombos);
 router.get("/combo/:comboId", getComboById);
-router.post("/combo/:comboId/comment", authCheck, isAuthenticatedUser, commentCombo);
-router.put("/admin/combo/:comboId", authCheck, adminCheck, updateCombo);
 router.put("/combo/:comboId/view", viewCombo);
+router.post("/combo/:comboId/comment", authCheck, isAuthenticatedUser, commentCombo);
+
+router.get("/admin/combos", authCheck, adminCheck, getAllCombos);
+router.post("/admin/combo", authCheck, adminCheck, createCombo);
+router.put("/admin/combo/:comboId", authCheck, adminCheck, updateCombo);
 router.delete("/admin/combo/:comboId", authCheck, adminCheck, deleteCombo);
 
 module.exports = router;

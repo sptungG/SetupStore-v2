@@ -10,18 +10,14 @@ import headerReducer from "./header/header.reducer";
 
 import { addressApi } from "./address/address.query";
 import { authApi } from "./auth/auth.query";
-import { cartApi } from "./cart/cart.query";
 import { categoryApi } from "./category/category.query";
 import { comboApi } from "./combo/combo.query";
 import { contentApi } from "./content/content.query";
-import { imageApi } from "./image/image.query";
 import { orderApi } from "./order/order.query";
 import { productApi } from "./product/product.query";
 import { reviewApi } from "./review/review.query";
 import { statisticApi } from "./statistic/statistic.query";
 import { userApi } from "./user/user.query";
-import { variantApi } from "./variant/variant.query";
-import { wishlistApi } from "./wishlist/wishlist.query";
 import { galleryApi } from "./unsplash/gallery.query";
 // import { notification } from "antd";
 
@@ -38,18 +34,14 @@ const reducers = combineReducers({
   user: userReducer,
   [addressApi.reducerPath]: addressApi.reducer,
   [authApi.reducerPath]: authApi.reducer,
-  [cartApi.reducerPath]: cartApi.reducer,
   [categoryApi.reducerPath]: categoryApi.reducer,
   [comboApi.reducerPath]: comboApi.reducer,
   [contentApi.reducerPath]: contentApi.reducer,
-  [imageApi.reducerPath]: imageApi.reducer,
   [orderApi.reducerPath]: orderApi.reducer,
   [productApi.reducerPath]: productApi.reducer,
   [reviewApi.reducerPath]: reviewApi.reducer,
   [statisticApi.reducerPath]: statisticApi.reducer,
   [userApi.reducerPath]: userApi.reducer,
-  [variantApi.reducerPath]: variantApi.reducer,
-  [wishlistApi.reducerPath]: wishlistApi.reducer,
   [galleryApi.reducerPath]: galleryApi.reducer,
 });
 
@@ -75,18 +67,14 @@ export const store = configureStore({
       // }),
       addressApi.middleware,
       authApi.middleware,
-      cartApi.middleware,
       categoryApi.middleware,
       comboApi.middleware,
       contentApi.middleware,
-      imageApi.middleware,
       orderApi.middleware,
       productApi.middleware,
       reviewApi.middleware,
       statisticApi.middleware,
       userApi.middleware,
-      variantApi.middleware,
-      wishlistApi.middleware,
       galleryApi.middleware,
     ]),
 });

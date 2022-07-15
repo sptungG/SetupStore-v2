@@ -35,7 +35,8 @@ import styled from "styled-components";
 import Button from "../button/Button";
 import { useMediaQuery } from "react-responsive";
 import { useDispatch, useSelector } from "react-redux";
-import { setSearchVisible } from "src/stores/header/header.reducer";
+import { setVisibleType } from "src/stores/header/header.reducer";
+import { NOT_FOUND_IMG } from "src/common/constant";
 
 const AutocompleteSearch = ({ width = 480 }) => {
   const mediaAbove1280 = useMediaQuery({ minWidth: 1280 });
@@ -96,7 +97,7 @@ const AutocompleteSearch = ({ width = 480 }) => {
       }
     }
   }, [
-    headerState.searchvisible,
+    headerState.visibletype === "searchvisible",
     activeKey,
     productsFilterValue.page,
     productsFilteredQuery?.data,
@@ -108,7 +109,7 @@ const AutocompleteSearch = ({ width = 480 }) => {
   ]);
 
   useEffect(() => {
-    if (headerState.searchvisible) {
+    if (headerState.visibletype === "searchvisible") {
       switch (activeKey) {
         case "product": {
           setText(productsFilterValue.keyword);
@@ -134,7 +135,7 @@ const AutocompleteSearch = ({ width = 480 }) => {
       setPlaceholder("Tìm kiếm sản phẩm, danh mục, bộ sưu tập");
     }
   }, [
-    headerState.searchvisible,
+    headerState.visibletype === "searchvisible",
     activeKey,
     categoriesFilterValue.keyword,
     combosFilterValue.keyword,
@@ -164,17 +165,17 @@ const AutocompleteSearch = ({ width = 480 }) => {
   };
 
   const onClose = () => {
-    dispatch(setSearchVisible(false));
+    dispatch(setVisibleType(""));
   };
 
   const onVisible = () => {
-    dispatch(setSearchVisible(true));
+    dispatch(setVisibleType("searchvisible"));
   };
 
   return (
-    <SearchWrapper visible={headerState.searchvisible}>
+    <SearchWrapper visible={headerState.visibletype === "searchvisible"}>
       <Dropdown
-        visible={headerState.searchvisible}
+        visible={headerState.visibletype === "searchvisible"}
         overlay={
           <DropdownWrapper width={width}>
             <Tabs
@@ -234,7 +235,7 @@ const AutocompleteSearch = ({ width = 480 }) => {
                       {productsFiltered.map((p) => (
                         <Row gutter={16} key={p._id} className="dropdown-item" wrap={false}>
                           <Col flex="none" className="image">
-                            <Avatar size="large" src={p.images[0].url}>
+                            <Avatar size="large" src={p.images[0]?.url || NOT_FOUND_IMG}>
                               {p.name[0]}
                             </Avatar>
                           </Col>
@@ -247,7 +248,7 @@ const AutocompleteSearch = ({ width = 480 }) => {
                             </Typography.Paragraph>
                           </Col>
                           <Col flex="none" className="action">
-                            <Button type="link">
+                            <Button type="link" onClick={onClose}>
                               <Link to={`/products/${p._id}`}>
                                 <BsArrowUpRight />
                               </Link>
@@ -291,7 +292,7 @@ const AutocompleteSearch = ({ width = 480 }) => {
                           </Space>
                         </Col>
                         <Col flex="none" className="action">
-                          <Button type="link">
+                          <Button type="link" onClick={onClose}>
                             <Link to={`/categories/${c._id}`}>
                               <BsArrowUpRight />
                             </Link>
@@ -379,7 +380,7 @@ const AutocompleteSearch = ({ width = 480 }) => {
                             </Space>
                           </Col>
                           <Col flex="none" className="action">
-                            <Button type="link">
+                            <Button type="link" onClick={onClose}>
                               <Link to={`/combos/${c._id}`}>
                                 <BsArrowUpRight />
                               </Link>

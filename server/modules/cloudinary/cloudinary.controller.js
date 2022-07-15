@@ -4,6 +4,34 @@ const { NOT_FOUND_IMG } = require("../../common/constants");
 const Image = require("./model.image");
 const User = require("../user/model.user");
 
+exports.getImageList = async (req, res) => {
+  try {
+    const { status, onModel, sort } = req.query;
+    let filter = {};
+    let sortCondition = {};
+
+    if (status) {
+      filter.status = status;
+    }
+    if (onModel) {
+      filter.onModel = onModel;
+    }
+    if (sort) {
+      const [sortField, sortDirection] = sort.split("_");
+      if (sortField && sortDirection) {
+        sortCondition[sortField] = sortDirection === "desc" ? -1 : 1;
+      }
+    }
+
+    const foundImages = await Image.find(filter).sort(sort ? sortCondition : { createdAt: -1 });
+    res.status(200).json({
+      success: true,
+      data: foundImages,
+    });
+  } catch (err) {
+    res.status(400).json({ success: false, err: err.message });
+  }
+};
 // req.files.file.path
 exports.userUpload = async (req, res) => {
   try {

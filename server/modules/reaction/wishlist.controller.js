@@ -6,7 +6,8 @@ const Product = require("../product/model.product");
 // getWishlistByUserId
 exports.getWishlistByUserId = async (req, res) => {
   try {
-    const { userId, onModel } = req.query;
+    const { _id: userId } = req.user;
+    const { onModel } = req.query;
 
     const foundProductWishlist = await Wishlist.find({ onModel: "Product", createdBy: userId })
       .populate({
@@ -63,6 +64,7 @@ exports.getWishlistByUserId = async (req, res) => {
 // toggleProductInWishlist
 exports.toggleProductInWishlist = async (req, res) => {
   try {
+    const { _id: userId } = req.user;
     const { productId } = req.query;
 
     const foundProduct = await Product.findOne({ _id: productId });
@@ -73,22 +75,18 @@ exports.toggleProductInWishlist = async (req, res) => {
     const foundProductInWishlist = await Wishlist.find({
       modelId: productId,
       onModel: "Product",
-      createdBy: foundUser._id,
+      createdBy: userId,
     });
     if (foundProductInWishlist.length === 0) {
       const newProductInWishlist = await new Wishlist({
         modelId: productId,
         onModel: "Product",
-        createdBy: foundUser._id,
+        createdBy: userId,
       }).save();
 
       await Promise.all([
-        User.findByIdAndUpdate(
-          foundUser._id,
-          { $push: { wishlist_products: productId } },
-          { new: true }
-        ),
-        Product.findByIdAndUpdate(productId, { $push: { wishlist: foundUser._id } }, { new: true }),
+        User.findByIdAndUpdate(userId, { $push: { wishlist_products: productId } }, { new: true }),
+        Product.findByIdAndUpdate(productId, { $push: { wishlist: userId } }, { new: true }),
       ]);
 
       return res.status(200).json({
@@ -99,12 +97,8 @@ exports.toggleProductInWishlist = async (req, res) => {
       const [foundWishlist] = foundProductInWishlist;
       const removedProductFromWishlist = await Wishlist.findByIdAndRemove(foundWishlist._id);
       await Promise.all([
-        User.findByIdAndUpdate(
-          foundUser._id,
-          { $pull: { wishlist_products: productId } },
-          { new: true }
-        ),
-        Product.findByIdAndUpdate(productId, { $pull: { wishlist: foundUser._id } }, { new: true }),
+        User.findByIdAndUpdate(userId, { $pull: { wishlist_products: productId } }, { new: true }),
+        Product.findByIdAndUpdate(productId, { $pull: { wishlist: userId } }, { new: true }),
       ]);
       return res.status(200).json({
         success: true,
@@ -118,6 +112,7 @@ exports.toggleProductInWishlist = async (req, res) => {
 // toggleComboInWishlist
 exports.toggleComboInWishlist = async (req, res) => {
   try {
+    const { _id: userId } = req.user;
     const { comboId } = req.query;
 
     const foundCombo = await Combo.findOne({ _id: comboId });
@@ -128,22 +123,22 @@ exports.toggleComboInWishlist = async (req, res) => {
     const foundComboInWishlist = await Wishlist.find({
       modelId: comboId,
       onModel: "Combo",
-      createdBy: foundUser._id,
+      createdBy: userId,
     });
     if (foundComboInWishlist.length === 0) {
       const newProductInWishlist = await new Wishlist({
         modelId: comboId,
         onModel: "Combo",
-        createdBy: foundUser._id,
+        createdBy: userId,
       }).save();
 
       await Promise.all([
         User.findByIdAndUpdate(
-          foundUser._id,
+          userId,
           { $push: { wishlist_combos: comboId } },
           { new: true }
         ),
-        Combo.findByIdAndUpdate(comboId, { $push: { wishlist: foundUser._id } }, { new: true }),
+        Combo.findByIdAndUpdate(comboId, { $push: { wishlist: userId } }, { new: true }),
       ]);
 
       return res.status(200).json({
@@ -155,11 +150,11 @@ exports.toggleComboInWishlist = async (req, res) => {
       const removedProductFromWishlist = await Wishlist.findByIdAndRemove(foundWishlist._id);
       await Promise.all([
         User.findByIdAndUpdate(
-          foundUser._id,
+          userId,
           { $pull: { wishlist_combos: comboId } },
           { new: true }
         ),
-        Combo.findByIdAndUpdate(comboId, { $pull: { wishlist: foundUser._id } }, { new: true }),
+        Combo.findByIdAndUpdate(comboId, { $pull: { wishlist: userId } }, { new: true }),
       ]);
       return res.status(200).json({
         success: true,

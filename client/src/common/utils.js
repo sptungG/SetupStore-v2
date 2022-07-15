@@ -1,3 +1,36 @@
+import moment from "moment";
+import { dateFormat } from "src/components/picker/RangePicker";
+
+export const formatFromNow = (date) => moment(date).fromNow();
+
+export const formatDate = (date, format = dateFormat) => moment(date).format(format);
+
+export const isSameTime = (date1, date2) => moment(date1).isSame(moment(date2));
+
+export const isBetweenDate = (date, fromDate, toDate) => moment(date).isBetween(fromDate, toDate);
+
+export const sorterByWords = (sorterKey) => (a, b) =>
+  vietnameseSlug(a[sorterKey]) > vietnameseSlug(b[sorterKey])
+    ? 1
+    : vietnameseSlug(b[sorterKey]) > vietnameseSlug(a[sorterKey])
+    ? -1
+    : 0;
+
+export const sorterByDate = (sorterKey) => (a, b) => moment(b[sorterKey]) - moment(a[sorterKey]);
+
+export const getBadgeColorByStatus = (s) => {
+  switch (s) {
+    case "active":
+      return "green";
+    case "inactive":
+      return "#8c8c8c";
+    case "deleted":
+      return "red";
+    default:
+      return "yellow";
+  }
+};
+
 export const bindParamsFilter = (filter) => {
   const params = Object.keys(filter)
     .filter((key) => filter[key] === false || filter[key] === 0 || !!filter[key])
@@ -15,9 +48,9 @@ export const getTotalPage = (total, limit) => {
 };
 
 export const checkValidColor = (value) =>
-  /^#[0-9a-f]{3}(?:[0-9a-f]{3})?$/i.test(value.replace(/\s/g, ""));
+  value ? /^#[0-9a-f]{3}(?:[0-9a-f]{3})?$/i.test(value.replace(/\s/g, "")) : false;
 
-  export const vietnameseSlug = (str, separator = "-") => {
+export const vietnameseSlug = (str, separator = "-") => {
   if (str) {
     str = str.trim();
     str = str.toLowerCase();

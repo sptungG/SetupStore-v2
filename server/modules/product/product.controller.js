@@ -178,6 +178,11 @@ exports.getSingleProduct = async (req, res) => {
     const { productId } = req.params;
     const foundProduct = await Product.findById(productId)
       .populate("category", "_id name")
+      .populate({
+        path: "content",
+        select: "_id title content onModel modelId",
+        populate: { path: "images", select: "_id public_id url modelId onModel" },
+      })
       .populate("images", "_id public_id url modelId onModel")
       .populate("wishlist", "_id name picture")
       .populate("variants", "_id price quantity options image sold status")
@@ -210,16 +215,7 @@ exports.updateProduct = async (req, res) => {
     const foundCategory = await Category.findById(dataUpdate?.category);
     if (!foundCategory) throw { status: 404, message: `${dataUpdate?.category} not found!` };
 
-    const updatedProduct = await Product.findByIdAndUpdate(productId, dataUpdate, { new: true })
-      .populate("category", "_id name")
-      .populate("images", "_id public_id url modelId onModel")
-      .populate("wishlist", "_id name picture")
-      .populate("variants", "_id price quantity options image sold status")
-      .populate({
-        path: "combos",
-        select: "_id name",
-        populate: { path: "image", select: "_id public_id url modelId onModel" },
-      });
+    const updatedProduct = await Product.findByIdAndUpdate(productId, dataUpdate, { new: true });
 
     res.status(200).json({ success: true, data: updatedProduct });
   } catch (err) {

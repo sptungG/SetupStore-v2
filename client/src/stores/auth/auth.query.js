@@ -7,8 +7,11 @@ import { setAuthtokenCredential, setRefreshToken } from "./auth.reducer";
 
 const baseQuery = fetchBaseQuery({
   baseUrl: process.env.REACT_APP_API,
+  mode: "cors",
+  maxRetries: 1,
   prepareHeaders: (headers, { getState }) => {
     //  By default, if we have a token in the store, let's use that for authenticated requests
+    headers.set("Content-Type", "application/json");
     const authtoken = getState().auth.authtoken;
     if (authtoken) {
       headers.set("authtoken", authtoken);
@@ -17,6 +20,7 @@ const baseQuery = fetchBaseQuery({
   },
 });
 
+// https://redux-toolkit.js.org/rtk-query/usage/customizing-queries#preventing-multiple-unauthorized-errors
 const mutex = new Mutex();
 
 export const baseQueryWithReauth = async (args, api, extraOptions) => {
@@ -24,6 +28,8 @@ export const baseQueryWithReauth = async (args, api, extraOptions) => {
   await mutex.waitForUnlock();
   let result = await baseQuery(args, api, extraOptions);
   if (result.error && result.error.status === 401) {
+    console.log("baseQueryWithReauth ~ result", result);
+    // checking whether the mutex is locked
     if (!mutex.isLocked()) {
       const release = await mutex.acquire();
       try {
@@ -51,11 +57,7 @@ export const baseQueryWithReauth = async (args, api, extraOptions) => {
           api.dispatch(setAuthtokenCredential(refreshResult.data.id_token));
 
           // retry the initial query
-          result = await baseQuery(
-            { ...args, headers: { authtoken: refreshResult.data.id_token } },
-            api,
-            extraOptions
-          );
+          result = await baseQuery(args, api, extraOptions);
         } else {
           await signOut(auth);
           api.dispatch(setUser(null));
@@ -73,6 +75,7 @@ export const baseQueryWithReauth = async (args, api, extraOptions) => {
       result = await baseQuery(args, api, extraOptions);
     }
   }
+  console.log("baseQueryWithReauth ~ result", result);
   return result;
 };
 

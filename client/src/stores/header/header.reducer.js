@@ -1,7 +1,6 @@
 import { createSlice } from "@reduxjs/toolkit";
 const initialHeaderState = {
-  sidevisible: false,
-  searchvisible: false,
+  visibletype: "",
   dataRedirectStatus: "noLoading",
 };
 
@@ -9,11 +8,8 @@ const headerSlice = createSlice({
   name: "header",
   initialState: initialHeaderState,
   reducers: {
-    setSidebarCollapsed(state, action) {
-      state.sidevisible = action.payload;
-    },
-    setSearchVisible(state, action) {
-      state.searchvisible = action.payload;
+    setVisibleType(state, action) {
+      state.visibletype = action.payload;
     },
     setDataRedirectStatus(state, action) {
       state.dataRedirectStatus = action.payload;
@@ -21,6 +17,7 @@ const headerSlice = createSlice({
   },
 });
 
-export const { setSidebarCollapsed, setDataRedirectStatus, setSearchVisible } = headerSlice.actions;
+export const { setDataRedirectStatus, setVisibleType } =
+  headerSlice.actions;
 
 export default headerSlice.reducer;

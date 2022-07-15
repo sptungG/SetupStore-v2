@@ -15,7 +15,7 @@ const {
   viewProduct,
 } = require("./product.controller");
 
-const { createVariant, removeVariants, updateVariant } = require("./variant.controller");
+const { createVariant, removeVariant, updateVariant } = require("./variant.controller");
 
 // routes
 router.post("/admin/product", authCheck, adminCheck, createProduct);
@@ -28,6 +28,6 @@ router.delete("/admin/product", authCheck, adminCheck, deleteProduct);
 
 router.post("/admin/variant", authCheck, adminCheck, createVariant);
 router.put("/admin/variant", authCheck, adminCheck, updateVariant);
-router.delete("/admin/variant", authCheck, adminCheck, removeVariants);
+router.delete("/admin/variant", authCheck, adminCheck, removeVariant);
 
 module.exports = router;
