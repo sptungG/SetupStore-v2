@@ -44,6 +44,7 @@ import { useMediaQuery } from "react-responsive";
 import { useDispatch, useSelector } from "react-redux";
 import { setVisibleType } from "src/stores/header/header.reducer";
 import { getBadgeColorByStatus } from "src/common/utils";
+import { NOT_FOUND_IMG } from "src/common/constant";
 
 const AutocompleteSearchAdmin = ({ width = 480, inputRounded = 1000 }) => {
   const mediaAbove1280 = useMediaQuery({ minWidth: 1280 });
@@ -183,9 +184,15 @@ const AutocompleteSearchAdmin = ({ width = 480, inputRounded = 1000 }) => {
                     productsFilteredQuery?.data.map((p) => (
                       <Row gutter={16} key={p._id} className="dropdown-item" wrap={false}>
                         <Col flex="none" className="image">
-                          <Avatar size="large" src={p.images[0].url}>
-                            {p.name[0]}
-                          </Avatar>
+                          {p.images.length > 0 ? (
+                            <Avatar size="large" src={p.images[0]?.url || NOT_FOUND_IMG}>
+                              {p.name[0]}
+                            </Avatar>
+                          ) : (
+                            <Avatar size="large" src={NOT_FOUND_IMG}>
+                              404
+                            </Avatar>
+                          )}
                         </Col>
                         <Col flex="auto" className="content">
                           <Typography.Title level={5} ellipsis className="title">

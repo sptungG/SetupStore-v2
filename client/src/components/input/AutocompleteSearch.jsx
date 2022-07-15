@@ -235,9 +235,15 @@ const AutocompleteSearch = ({ width = 480 }) => {
                       {productsFiltered.map((p) => (
                         <Row gutter={16} key={p._id} className="dropdown-item" wrap={false}>
                           <Col flex="none" className="image">
-                            <Avatar size="large" src={p.images[0]?.url || NOT_FOUND_IMG}>
-                              {p.name[0]}
-                            </Avatar>
+                            {p.images.length > 0 ? (
+                              <Avatar size="large" src={p.images[0]?.url || NOT_FOUND_IMG}>
+                                {p.name[0]}
+                              </Avatar>
+                            ) : (
+                              <Avatar size="large" src={NOT_FOUND_IMG}>
+                                404
+                              </Avatar>
+                            )}
                           </Col>
                           <Col flex="auto" className="content">
                             <Typography.Title level={5} ellipsis className="title">
@@ -276,7 +282,7 @@ const AutocompleteSearch = ({ width = 480 }) => {
                     categoriesFiltered.map((c) => (
                       <Row key={c._id} className="dropdown-item" wrap={false} gutter={16}>
                         <Col flex="none" className="image">
-                          <Avatar size="large" src={c.image}>
+                          <Avatar size="large" src={c.image || NOT_FOUND_IMG}>
                             {c.name[0]}
                           </Avatar>
                         </Col>
@@ -336,7 +342,7 @@ const AutocompleteSearch = ({ width = 480 }) => {
                       {combosFiltered.map((c) => (
                         <Row wrap={false} key={c._id} className="dropdown-item" gutter={16}>
                           <Col flex="none" className="image">
-                            <Avatar size="large" src={c.image.url}>
+                            <Avatar size="large" src={c.image?.url || NOT_FOUND_IMG}>
                               {c.name[0]}
                             </Avatar>
                           </Col>
