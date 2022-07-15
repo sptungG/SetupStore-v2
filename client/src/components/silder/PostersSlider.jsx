@@ -72,7 +72,7 @@ const PostersSlider = ({ images = [] }) => {
         <div className="swiper-wrapper">
           {images.length > 0 ? (
             images.map((item) => (
-              <div className="swiper-slide">
+              <div className="swiper-slide" key={`${item._id}_swiper`}>
                 <img
                   data-swiper-parallax-scale="1.1"
                   src={item?.url || NOT_FOUND_IMG}
@@ -82,11 +82,7 @@ const PostersSlider = ({ images = [] }) => {
             ))
           ) : (
             <div className="swiper-slide">
-              <img
-                data-swiper-parallax-scale="1.1"
-                src={NOT_FOUND_IMG}
-                alt="NOT_FOUND_IMG"
-              />
+              <img data-swiper-parallax-scale="1.1" src={NOT_FOUND_IMG} alt="NOT_FOUND_IMG" />
             </div>
           )}
         </div>

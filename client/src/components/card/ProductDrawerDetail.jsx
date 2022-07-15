@@ -54,6 +54,7 @@ import { useSelector } from "react-redux";
 import classNames from "classnames";
 import { useGetMyCartQuery } from "src/stores/user/user.query";
 import { useAddToCart } from "src/common/useAddToCart";
+import ReactionChipTags from "../chip/ReactionChipTags";
 
 const MAX_COUNT_CART = 10;
 message.config({
@@ -160,32 +161,7 @@ const ProductDrawerDetail = ({ productId = null, setSelectedProduct }) => {
       }}
       extra={
         productQuerySuccess ? (
-          <ReactionsWrapper>
-            <div className="reaction">
-              <span>
-                <BsEye size={14} />
-              </span>
-              <h4>{productQuery?.data.numOfViews || 0}</h4>
-            </div>
-            <div className="reaction">
-              <span>
-                <BsStar size={14} />
-              </span>
-              <h4>{productQuery?.data.avgRating || 0}</h4>
-            </div>
-            <div className="reaction">
-              <span>
-                <BsChatLeftText size={14} />
-              </span>
-              <h4>{productQuery?.data.numOfReviews || 0}</h4>
-            </div>
-            <div className="reaction">
-              <span>
-                <BsHeart size={14} />
-              </span>
-              <h4>{productQuery?.data.wishlist.length || 0}</h4>
-            </div>
-          </ReactionsWrapper>
+          <ReactionChipTags colorful={true} size={16} data={productQuery?.data} />
         ) : (
           <Skeleton.Input active block size="small" />
         )

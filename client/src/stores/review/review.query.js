@@ -14,7 +14,7 @@ export const reviewApi = createApi({
       providesTags: ["Reviews"],
     }),
     getReviewsByProduct: builder.query({
-      query: (productId, filter) => `/product/${productId}/reviews?${bindParamsFilter(filter)}`,
+      query: ({ productId, filter }) => `/product/${productId}/reviews?${bindParamsFilter(filter)}`,
       providesTags: ["Reviews"],
     }),
     getReviewsByCombo: builder.query({

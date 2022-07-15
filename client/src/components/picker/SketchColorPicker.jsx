@@ -14,7 +14,7 @@ const SketchColorPicker = () => {
     <TwitterPicker
       width="134px"
       triangle="hide"
-      colors={["#1890ff", "#25b864", "#772ce8"]}
+      colors={["#D4380D", "#1D39C4", "#772ce8"]}
       color={themeProvider.primaryColor}
       onChange={({ hex }) => {
         onColorChange(hex);
