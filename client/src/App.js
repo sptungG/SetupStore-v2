@@ -3,6 +3,8 @@ import "antd/dist/antd.variable.min.css";
 import "swiper/css";
 import "swiper/css/navigation";
 import "swiper/css/thumbs";
+import "swiper/css/effect-creative";
+import "swiper/css/parallax";
 import { getRedirectResult, onAuthStateChanged } from "firebase/auth";
 import { lazy, Suspense, useEffect, useLayoutEffect } from "react";
 import { auth } from "src/common/firebase-config";
@@ -15,6 +17,7 @@ import { PersistGate } from "redux-persist/integration/react";
 import Loader from "src/components/loader/Loader";
 import ErrorResult from "src/components/nav/ErrorResult";
 import GuestRoute from "./routes/GuestRoute";
+import AdminRoute from "./routes/AdminRoute";
 import { useCreateOrUpdateUserMutation, useCurrentUserMutation } from "./stores/auth/auth.query";
 import { setAuthtokenCredential, setRefreshToken } from "./stores/auth/auth.reducer";
 import { persistor } from "./stores/store";
@@ -22,10 +25,25 @@ import { setDataRedirectStatus } from "./stores/header/header.reducer";
 import { setUser } from "./stores/user/user.reducer";
 
 const HomePage = lazy(() => import("src/pages/home/HomePage"));
+const ProductDetailPage = lazy(() => import("src/pages/product/ProductDetailPage"));
+const UserCartPage = lazy(() => import("src/pages/cart/UserCartPage"));
 const LoginPage = lazy(() => import("src/pages/auth/LoginPage"));
 const RegisterPage = lazy(() => import("src/pages/auth/RegisterPage"));
 const ForgotPasswordPage = lazy(() => import("src/pages/auth/ForgotPasswordPage"));
 const VerificationPage = lazy(() => import("src/pages/auth/VerificationPage"));
+// 
+const DashboardPage = lazy(() => import("src/pagesadmin/DashboardPage"));
+const CategoryListPage = lazy(() => import("src/pagesadmin/category/CategoryListPage"));
+const ComboListPage = lazy(() => import("src/pagesadmin/combo/ComboListPage"));
+const ComboDetailPage = lazy(() => import("src/pagesadmin/combo/ComboDetailPage"));
+const OrderListPage = lazy(() => import("src/pagesadmin/order/OrderListPage"));
+const OrderDetailPage = lazy(() => import("src/pagesadmin/order/OrderDetailPage"));
+const ProductTableListPage = lazy(() => import("src/pagesadmin/product/ProductTableListPage"));
+const ProductCreateUpdateDetailPage = lazy(() => import("src/pagesadmin/product/ProductCreateUpdateDetailPage"));
+const UserListPage = lazy(() => import("src/pagesadmin/user/UserListPage"));
+const UserDetailPage = lazy(() => import("src/pagesadmin/user/UserDetailPage"));
+const ReviewProductListPage = lazy(() => import("src/pagesadmin/review/ReviewProductListPage"));
+const AdminSettingPage = lazy(() => import("src/pagesadmin/setting/AdminSettingPage"));
 
 function App() {
   let navigate = useNavigate();
@@ -72,9 +90,7 @@ function App() {
           dispatch(setAuthtokenCredential(idTokenResult.token));
           dispatch(setRefreshToken(user.refreshToken));
           dispatch(setUser(res));
-        } catch (err) {
-
-        }
+        } catch (err) {}
       }
     });
     return () => unsubscribe();
@@ -95,6 +111,7 @@ function App() {
         primaryColor: themeProvider.primaryColor,
         generatedColors: themeProvider.generatedColors,
       }}
+
     >
       <PersistGate loading={<Loader />} persistor={persistor}>
         {/* <LoadingBarContainer
@@ -106,6 +123,8 @@ function App() {
         <Suspense fallback={<Loader />}>
           <Routes>
             <Route path="/" element={<HomePage />} />
+            <Route path="/cart" element={<UserCartPage />} />
+            <Route path="/products/:productId" element={<ProductDetailPage />} />
 
             <Route element={<GuestRoute />}>
               <Route path="/login" element={<LoginPage />} />
@@ -113,6 +132,23 @@ function App() {
               <Route path="/verification/*" element={<VerificationPage />} />
               <Route path="/forgot/password" element={<ForgotPasswordPage />} />
             </Route>
+            <Route element={<AdminRoute />}>
+              <Route path="/admin/dashboard" element={<DashboardPage />} />
+              <Route path="/admin/categories" element={<CategoryListPage />} />
+              <Route path="/admin/categories/:categoryId" element={<CategoryListPage />} />
+              <Route path="/admin/combos" element={<ComboListPage />} />
+              <Route path="/admin/combos/*" element={<ComboDetailPage />} />
+              <Route path="/admin/orders" element={<OrderListPage />} />
+              <Route path="/admin/orders/*" element={<OrderDetailPage />} />
+              <Route path="/admin/products" element={<ProductTableListPage />} />
+              <Route path="/admin/products/create" element={<ProductCreateUpdateDetailPage />} />
+              <Route path="/admin/products/:productId" element={<ProductCreateUpdateDetailPage />} />
+              <Route path="/admin/users" element={<UserListPage />} />
+              <Route path="/admin/users/*" element={<UserDetailPage />} />
+              <Route path="/admin/reviews" element={<ReviewProductListPage />} />
+              <Route path="/admin/setting" element={<AdminSettingPage />} />
+            </Route>
+
             <Route path="/404" element={<ErrorResult status="404" />} />
 
             <Route path="*" element={<Navigate to="/404" replace />} />

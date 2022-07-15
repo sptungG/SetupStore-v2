@@ -8,6 +8,55 @@ const Content = require("../content/model.content");
 const { NOT_FOUND_IMG } = require("../../common/constants");
 const { convertToNumber, getTotalPage } = require("../../common/utils");
 
+exports.getAllCombos = async (req, res) => {
+  try {
+    const { keyword, sort, status } = req.query;
+
+    let filter = {};
+    let sortCondition = {};
+
+    if (status) {
+      filter.status = status;
+    }
+
+    if (keyword) {
+      const regex = new RegExp(`${keyword}`, "i");
+      const regexCond = { $regex: regex };
+      console.log(regexCond);
+      filter["$or"] = [{ name: regexCond }, { desc: regexCond }];
+    }
+
+    if (sort) {
+      const [sortField, sortDirection] = sort.split("_");
+      if (sortField && sortDirection) {
+        sortCondition[sortField] = sortDirection === "desc" ? -1 : 1;
+      }
+    }
+
+    const combos = await Combo.find(filter)
+      .populate([
+        { path: "image", select: "_id public_id url modelId onModel" },
+        { path: "wishlist", select: "_id name picture" },
+        { path: "createdBy", select: "_id name picture" },
+        {
+          path: "comments",
+          populate: {
+            path: "createdBy",
+            select: "_id name picture",
+          },
+        },
+      ])
+      .sort(sort ? sortCondition : { createdAt: -1 });
+
+    res.status(200).json({
+      success: true,
+      data: combos,
+    });
+  } catch (err) {
+    res.status(400).send({ success: false, err: "Get combos failed" });
+  }
+};
+
 exports.getFilteredCombos = async (req, res) => {
   try {
     const { keyword, page, limit, sort } = req.query;
@@ -82,6 +131,11 @@ exports.getComboById = async (req, res) => {
             path: "createdBy",
             select: "_id name picture",
           },
+        },
+        {
+          path: "content",
+          select: "_id title content onModel modelId",
+          populate: { path: "images", select: "_id public_id url modelId onModel" },
         },
         {
           path: "products",

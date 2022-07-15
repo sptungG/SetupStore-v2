@@ -13,6 +13,8 @@ import ThemeButton from "../button/ThemeButton";
 import { useMediaQuery } from "react-responsive";
 import { useRef } from "react";
 import { BsBoxArrowInRight, BsPersonFill, BsPersonPlus } from "react-icons/bs";
+import { useAddToCart } from "src/common/useAddToCart";
+import { rgba } from "polished";
 
 const MenuItemWrapper = styled.div`
   padding: 10px;
@@ -37,6 +39,10 @@ const HeaderWrapper = styled.header`
   gap: 24px;
   flex-wrap: nowrap;
   position: relative;
+  background-color: ${rgba("#fff", 0.5)};
+  backdrop-filter: blur(10px);
+  
+  z-index: 1;
   .header-center {
     max-width: 480px;
     margin: 0 auto;
@@ -58,6 +64,7 @@ const Header = () => {
   const mediaBelow768 = useMediaQuery({ maxWidth: 768 });
   const mediaAbove1280 = useMediaQuery({ minWidth: 1280 });
   const mediaAbove1350 = useMediaQuery({ minWidth: 1350 });
+  const { cart, myCartRefetch } = useAddToCart();
   const ref = useRef(null);
   const [width, setWidth] = useState(0);
   const credential = useSelector((state) => state.auth);
@@ -75,6 +82,9 @@ const Header = () => {
       window.removeEventListener("resize", handleResize);
     };
   });
+  useLayoutEffect(() => {
+    myCartRefetch();
+  }, []);
 
   const items = [
     {
@@ -158,7 +168,7 @@ const Header = () => {
               <Link to="/store">
                 <FaStore size={30} />
               </Link>
-              <Badge count={1}>
+              <Badge count={cart ? cart.products.length : 0} overflowCount={99}>
                 <Link to="/cart">
                   <FaShoppingCart size={28} />
                 </Link>

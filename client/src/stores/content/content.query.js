@@ -7,15 +7,21 @@ import { baseQueryWithReauth } from "../auth/auth.query";
 export const contentApi = createApi({
   reducerPath: "contentApi",
   baseQuery: baseQueryWithReauth,
-  tagTypes: ["Contents"],
+  tagTypes: ["Contents", "Products", "Combos"],
   endpoints: (builder) => ({
     getAllContentsFiltered: builder.query({
       query: (filter) => `/contents?${bindParamsFilter(filter)}`,
-      providesTags: ["Contents"],
+      providesTags: (result) =>
+        result
+          ? [
+              ...result.data.map(({ _id }) => ({ type: "Contents", id: _id })),
+              { type: "Contents", id: "LIST" },
+            ]
+          : [{ type: "Contents", id: "LIST" }],
     }),
     getContentByModelId: builder.query({
       query: (modelId) => `/content?modelId=${modelId}`,
-      providesTags: ["Contents"],
+      providesTags: (result, error, id) => [{ type: "Contents", id: result._id }],
     }),
     // ADMIN
     createContent: builder.mutation({
@@ -24,16 +30,24 @@ export const contentApi = createApi({
         method: "POST",
         body: initdata,
       }),
-      invalidatesTags: ["Contents"],
+      invalidatesTags: (result, error, { onModel, modelId }) => [
+        { type: "Contents", id: "LIST" },
+        onModel === "Product" && { type: "Products", id: modelId },
+        onModel === "Combo" && { type: "Combos", id: modelId },
+      ],
     }),
     // ADMIN
     updateContentById: builder.mutation({
-      query: (contentId, initdata) => ({
+      query: ({ contentId, initdata }) => ({
         url: `/admin/content?contentId=${contentId}`,
         method: "PUT",
         body: initdata,
       }),
-      invalidatesTags: ["Contents"],
+      invalidatesTags: (result, error, { contentId }) => [
+        { type: "Contents", id: contentId },
+        result?.data.onModel === "Product" && { type: "Products", id: result?.data.modelId },
+        result?.data.onModel === "Combo" && { type: "Combos", id: result?.data.modelId },
+      ],
     }),
     // ADMIN
     removeContent: builder.mutation({
@@ -41,7 +55,11 @@ export const contentApi = createApi({
         url: `/admin/content?contentId=${contentId}`,
         method: "DELETE",
       }),
-      invalidatesTags: ["Contents"],
+      invalidatesTags: (result, error, id) => [
+        { type: "Contents", id },
+        result?.data.onModel === "Product" && { type: "Products", id: result?.data.modelId },
+        result?.data.onModel === "Combo" && { type: "Combos", id: result?.data.modelId },
+      ],
     }),
   }),
 });

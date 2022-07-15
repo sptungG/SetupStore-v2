@@ -1,6 +1,7 @@
 import React from "react";
 import { Button as AntdButton } from "antd";
 import styled from "styled-components";
+import classNames from "classnames";
 import { useChangeThemeProvider } from "src/common/useChangeThemeProvider";
 
 const BtnContent = styled.div`
@@ -30,14 +31,7 @@ const Button = ({
 }) => {
   const { themeProvider } = useChangeThemeProvider();
 
-  let btnstyle = {
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "center",
-    flexWrap: "nowrap",
-    gap: 4,
-    ...style,
-  };
+  let btnstyle = style;
 
   if (extraType === "btntag" && type === "link") {
     btnstyle.backgroundColor = themeProvider.generatedColors[0];

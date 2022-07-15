@@ -36,14 +36,14 @@ exports.createVariant = async (req, res) => {
 exports.updateVariant = async (req, res) => {
   try {
     const { variantId } = req.query;
-    const {  price, sold, quantity, image, options } = req.body;
+    const { price, sold, quantity, image, options } = req.body;
     // console.log(req.body);
     let updatedVariant = await Variant.findOne({ _id: variantId });
     if (!updatedVariant) throw { status: 404, message: `${variantId} not found!` };
 
     updatedVariant = await Variant.findOneAndUpdate(
       { _id: variantId },
-      {  price, sold, quantity, image, options },
+      { price, sold, quantity, image, options },
       { new: true }
     );
 
@@ -57,20 +57,21 @@ exports.updateVariant = async (req, res) => {
   }
 };
 
-exports.removeVariants = async (req, res) => {
+exports.removeVariant = async (req, res) => {
   try {
-    const { variantIds } = req.body;
+    const { variantId } = req.query;
 
-    const removedVariantPromises = variantIds.map((id) => Variant.findOneAndRemove({ _id: id }));
+    let deletedVariant = await Variant.findById(variantId);
+    if (!deletedVariant) throw { status: 404, message: `${variantId} not found!` };
 
-    let removedVariants = await Promise.all(removedVariantPromises);
-    removedVariants = removedVariants.filter((r) => r != null);
-    let productUpdatePromises = removedVariants.map((r) =>
-      Product.findByIdAndUpdate(r.product, { $pull: { variants: r._id } }, { new: true })
+    await Product.findByIdAndUpdate(
+      deletedVariant.product,
+      { $pull: { variants: deletedVariant._id } },
+      { new: true }
     );
-    await Promise.all(productUpdatePromises);
+    deletedVariant = await Variant.findByIdAndRemove(variantId);
 
-    res.status(200).json({ success: true, data: removedVariants });
+    res.status(200).json({ success: true, data: deletedVariant });
   } catch (err) {
     // console.log(err);
     res.status(err?.status || 400).json({

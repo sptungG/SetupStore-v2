@@ -7,7 +7,7 @@ import { baseQueryWithReauth } from "../auth/auth.query";
 export const userApi = createApi({
   reducerPath: "userApi",
   baseQuery: baseQueryWithReauth,
-  tagTypes: ["Users", "User", "UserAddressList", "UserAddress"],
+  tagTypes: ["Users"],
   endpoints: (builder) => ({
     updateMyInfo: builder.mutation({
       query: (initdata) => ({
@@ -15,17 +15,25 @@ export const userApi = createApi({
         method: "PUT",
         body: initdata,
       }),
-      invalidatesTags: ["User"],
+      invalidatesTags: [{ type: "Users", id: "LIST" }],
+    }),
+    getMyWishlist: builder.query({
+      query: ({ userId, onModel }) => `/wishlist?${bindParamsFilter({ userId, onModel })}`,
+      providesTags: [{ type: "Users", id: "LIST" }],
+    }),
+    getMyCart: builder.query({
+      query: () => `/cart/products`,
+      providesTags: [{ type: "Users", id: "LIST" }],
     }),
     // ADMIN
     getFilteredUsers: builder.query({
       query: (filter) => `/admin/users?${bindParamsFilter(filter)}`,
-      providesTags: ["Users"],
+      providesTags: [{ type: "Users", id: "LIST" }],
     }),
     // ADMIN
     getUserById: builder.query({
       query: (userId) => `/admin/user/${userId})}`,
-      providesTags: ["User"],
+      providesTags: [{ type: "Users", id: "LIST" }],
     }),
     // ADMIN
     updateUser: builder.mutation({
@@ -34,7 +42,7 @@ export const userApi = createApi({
         method: "PUT",
         body: initdata,
       }),
-      invalidatesTags: ["User"],
+      invalidatesTags: [{ type: "Users", id: "LIST" }],
     }),
     // ADMIN
     removeUser: builder.mutation({
@@ -42,7 +50,7 @@ export const userApi = createApi({
         url: `/admin/user/${userId})}`,
         method: "DELETE",
       }),
-      invalidatesTags: ["User"],
+      invalidatesTags: [{ type: "Users", id: "LIST" }],
     }),
   }),
 });
@@ -52,4 +60,6 @@ export const {
   useGetUserByIdQuery,
   useUpdateUserMutation,
   useRemoveUserMutation,
+  useGetMyWishlistQuery,
+  useGetMyCartQuery,
 } = userApi;

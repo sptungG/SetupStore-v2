@@ -1,13 +1,13 @@
-import { Avatar, Popover, Skeleton, Space, Statistic, Tag, Tooltip, Typography } from "antd";
+import { Avatar, Image, Popover, Skeleton, Space, Statistic, Tag, Tooltip, Typography } from "antd";
 import React, { useState } from "react";
 import { BsCartPlus, BsChatLeftText, BsEye, BsHeart, BsLayoutWtf, BsStar } from "react-icons/bs";
 import styled, { keyframes } from "styled-components";
 import { rgba } from "polished";
 import { Link, useNavigate } from "react-router-dom";
-import ProductHoverDetail from "./ProductHoverDetail";
 import Button from "../button/Button";
 import { useAddToCart } from "src/common/useAddToCart";
 import { useMediaQuery } from "react-responsive";
+import { NOT_FOUND_IMG } from "src/common/constant";
 
 export const ProductCardLoading = () => {
   return (
@@ -26,7 +26,7 @@ export const ProductCardLoading = () => {
   );
 };
 
-const ProductCard = ({ product }) => {
+const ProductCard = ({ product, getSelectedProductId = (p) => console.log(p) }) => {
   const { setCart } = useAddToCart();
   let navigate = useNavigate();
   const mediaAbove1024 = useMediaQuery({ minWidth: 1024 });
@@ -38,7 +38,7 @@ const ProductCard = ({ product }) => {
       </Space>
       <div className="card-head">
         <Link className="card-img" title={`Xem chi tiết sản phẩm`} to={`products/${product._id}`}>
-          <img src={product.images[0].url} alt={product._id} />
+          <img src={product.images[0]?.url || NOT_FOUND_IMG} alt={product._id} />
         </Link>
         <div className="card-content">
           <div className="card-content-detail">
@@ -59,37 +59,14 @@ const ProductCard = ({ product }) => {
             ) : (
               <Avatar size={40} shape={"square"} icon={<BsLayoutWtf />} title="Bộ sưu tập"></Avatar>
             )}
-            {mediaAbove1024 ? (
-              <Popover
-                content={<ProductHoverDetail product={product} />}
-                placement="topRight"
-                destroyTooltipOnHide
-                autoAdjustOverflow
-                color={"#f8f9fa"}
-                overlayInnerStyle={{ borderRadius: 10 }}
-              >
-                <div className="card-content-info">
-                  <Typography.Title level={5} ellipsis className="name">
-                    {product.name}
-                  </Typography.Title>
-                  <Typography.Paragraph ellipsis className="desc">
-                    {product.desc}
-                  </Typography.Paragraph>
-                </div>
-              </Popover>
-            ) : (
-              <div
-                className="card-content-info"
-                // onClick={() => navigate(`products/${product._id}`)}
-              >
-                <Typography.Title level={5} ellipsis className="name">
-                  {product.name}
-                </Typography.Title>
-                <Typography.Paragraph ellipsis className="desc">
-                  {product.desc}
-                </Typography.Paragraph>
-              </div>
-            )}
+            <div className="card-content-info">
+              <Typography.Title level={5} ellipsis className="name">
+                {product.name}
+              </Typography.Title>
+              <Typography.Paragraph ellipsis className="desc">
+                {product.desc}
+              </Typography.Paragraph>
+            </div>
           </div>
           <Space className="card-content-action">
             <Button
@@ -99,11 +76,12 @@ const ProductCard = ({ product }) => {
               icon={<BsCartPlus />}
               className="btn-cart"
               title="Thêm vào giỏ hàng"
+              onClick={() => getSelectedProductId(product?._id || null)}
             ></Button>
           </Space>
         </div>
       </div>
-      <div className="card-reactions">
+      <div className="card-reactions" onClick={() => getSelectedProductId(product?._id || null)}>
         <div className="reaction">
           <span>
             <BsEye size={14} />
@@ -336,20 +314,20 @@ const CardWrapper = styled.div`
       transform: translateY(0px);
     }
     & .reaction:nth-child(1) {
-      transition: all 0.4s 0.4s;
-      animation: ${card_option} 0.4s 0.4s;
+      transition: all 0.2s 0.2s;
+      animation: ${card_option} 0.2s 0.2s;
     }
     & .reaction:nth-child(2) {
-      transition: all 0.4s 0.3s;
-      animation: ${card_option} 0.4s 0.3s;
+      transition: all 0.2s 0.15s;
+      animation: ${card_option} 0.2s 0.15s;
     }
     & .reaction:nth-child(3) {
-      transition: all 0.3s 0.2s;
-      animation: ${card_option} 0.3s 0.2s;
+      transition: all 0.15s 0.1s;
+      animation: ${card_option} 0.15s 0.1s;
     }
     & .reaction:nth-child(4) {
-      transition: all 0.4s;
-      animation: ${card_option} 0.4s;
+      transition: all 0.2s;
+      animation: ${card_option} 0.2s;
     }
   }
   @media screen and (max-width: 1023.98px) {

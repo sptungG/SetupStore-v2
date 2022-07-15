@@ -14,7 +14,7 @@ import { RiQuestionAnswerLine } from "react-icons/ri";
 import { useDispatch, useSelector } from "react-redux";
 import { Link, Navigate, useNavigate } from "react-router-dom";
 import { useChangeThemeProvider } from "src/common/useChangeThemeProvider";
-import { setSidebarCollapsed } from "src/stores/header/header.reducer";
+import { setVisibleType } from "src/stores/header/header.reducer";
 import styled from "styled-components";
 import Button from "../button/Button";
 import ThemeButton from "../button/ThemeButton";
@@ -83,8 +83,8 @@ const SideBar = () => {
       closeIcon={null}
       title={null}
       placement={mediaBelow768 ? "right" : "left"}
-      onClose={() => dispatch(setSidebarCollapsed(false))}
-      visible={headerState.sidevisible}
+      onClose={() => dispatch(setVisibleType(""))}
+      visible={headerState.visibletype === "sidenavvisible"}
       width={240}
       footer={
         isSignedIn ? (

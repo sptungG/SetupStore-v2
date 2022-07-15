@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { ProductsFilter } from "src/common/constant";
 import ProductCard, { ProductCardLoading } from "src/components/card/ProductCard";
+import ProductDrawerDetail from "src/components/card/ProductDrawerDetail";
 import MainLayout from "src/layout/MainLayout";
 import { useGetProductsFilteredQuery } from "src/stores/product/product.query";
 import styled from "styled-components";
@@ -27,6 +28,7 @@ const HomePage = () => {
     isSuccess: productsFilteredSuccess,
   } = useGetProductsFilteredQuery(productsFilterValue);
   const [productsFiltered, setProductsFiltered] = useState([]);
+  const [selectedProductId, setSelectedProductId] = useState(null);
 
   return (
     <MainLayout>
@@ -37,9 +39,19 @@ const HomePage = () => {
             .map((i, index) => <ProductCardLoading key={`ProductCardLoading_${index}`} />)}
         {productsFilteredSuccess &&
           productsFilteredQuery?.data.map((p) => (
-            <ProductCard key={`ProductCard_${p._id}`} product={p}></ProductCard>
+            <ProductCard
+              key={`ProductCard_${p._id}`}
+              product={p}
+              getSelectedProductId={(p) => setSelectedProductId(p)}
+            ></ProductCard>
           ))}
       </ProductsWrapper>
+      {productsFilteredSuccess && (
+        <ProductDrawerDetail
+          productId={selectedProductId || null}
+          setSelectedProduct={(value) => setSelectedProductId(value)}
+        />
+      )}
     </MainLayout>
   );
 };
