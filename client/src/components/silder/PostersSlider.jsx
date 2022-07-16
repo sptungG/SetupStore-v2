@@ -41,7 +41,7 @@ const PostersSlider = ({ images = [], actions = null, thumbSize = 52 }) => {
           navigation={true}
           slidesPerView={1}
           creativeEffect={{
-            limitProgress: 5,
+            limitProgress: images.length > 0 ? images.length : 1,
             perspective: true,
             shadowPerProgress: true,
             prev: {
@@ -106,9 +106,9 @@ const PostersSlider = ({ images = [], actions = null, thumbSize = 52 }) => {
 const SliderWrapper = styled.div`
   position: relative;
   width: 100%;
+  max-width: 432px;
   height: 100%;
   display: flex;
-  justify-content: space-between;
   align-items: flex-start;
   flex-wrap: wrap-reverse;
   flex-shrink: 0;
@@ -127,9 +127,13 @@ const SliderWrapper = styled.div`
 
     .swiper {
       overflow: visible;
-      width: 360px;
+      width: calc(100% - 52px);
       height: 360px;
       margin-right: 0;
+      margin-left: 52px;
+      @media screen and (max-width: 767.98px) {
+        height: 280px;
+      }
     }
     .swiper-slide {
       position: relative;

@@ -54,9 +54,10 @@ import { useSelector } from "react-redux";
 import classNames from "classnames";
 import { useGetMyCartQuery } from "src/stores/user/user.query";
 import { useAddToCart } from "src/common/useAddToCart";
-import ReactionChipTags, { isWishlisted } from "../chip/ReactionChipTags";
+import ReactionChipTags from "../chip/ReactionChipTags";
 import { useMediaQuery } from "react-responsive";
 import ThumbsSlider from "../silder/ThumbsSlider";
+import { isWishlisted, useToggleWishlist } from "src/common/useToggleWishlist";
 
 const MAX_COUNT_CART = 10;
 message.config({
@@ -81,8 +82,7 @@ const ProductDrawerDetail = ({ productId = null, setSelectedProduct }) => {
     skip: !productId,
   });
   const [productViewInc, { isLoading: productViewIncLoading }] = useProductViewIncMutation();
-  const [toggleProductWishlist, { isLoading: toggleProductWishlistLoading }] =
-    useToggleProductWishlistMutation();
+  const { handleToggleWishlist, toggleProductWishlistLoading } = useToggleWishlist();
   const variantInCart = (variantId = null) =>
     variantId ? cart?.products.find((item) => item.variant._id === variantId) || null : null;
   const variantValue = Form.useWatch("variant", form);
@@ -136,19 +136,6 @@ const ProductDrawerDetail = ({ productId = null, setSelectedProduct }) => {
     }
   };
 
-  const handleToggleWishlist = async (productId, isWishlisted) => {
-    try {
-      const productInWishlist = await toggleProductWishlist({ productId }).unwrap();
-      if (!isWishlisted) {
-        message.success("Thêm vào yêu thích thành công");
-      } else {
-        message.error("Hủy yêu thích thành công");
-      }
-    } catch (err) {
-      console.log("err", err);
-    }
-  };
-
   return (
     <Drawer
       destroyOnClose
@@ -157,6 +144,8 @@ const ProductDrawerDetail = ({ productId = null, setSelectedProduct }) => {
         setSelectedProduct(null);
       }}
       closeIcon={<BsArrowLeft size={20} />}
+      placement={mediaBelow480 ? "bottom" : "right"}
+      height={mediaBelow480 ? "94%" : "100%"}
       width={mediaBelow480 ? "100%" : 480}
       title={mediaBelow480 ? null : "Sản phẩm"}
       footerStyle={{

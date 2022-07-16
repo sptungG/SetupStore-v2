@@ -20,7 +20,7 @@ import classNames from "classnames";
 
 export const ProductCardLoading = () => {
   return (
-    <CardWrapper status={"loading"}>
+    <CardWrapper className="loading">
       <div className="card-action-top">
         <Skeleton.Input active style={{ width: "100%", borderRadius: 5 }} size="small" />
       </div>
@@ -40,10 +40,6 @@ const ProductCard = ({
   getSelectedProductId = (p) => console.log(p),
   isWishlisted = false,
 }) => {
-  const { setCart } = useAddToCart();
-  let navigate = useNavigate();
-  const mediaAbove1024 = useMediaQuery({ minWidth: 1024 });
-
   return (
     <CardWrapper>
       <Space className="card-action-top">
@@ -140,16 +136,15 @@ const CardWrapper = styled.div`
   border-radius: 10px;
   position: relative;
   transition: all 0.3s;
-  pointer-events: ${(props) => (props.status === "loading" ? "none" : "auto")};
 
   &::before {
     content: "";
     border-radius: 10px;
     position: absolute;
-    background: ${(props) => (props.status === "loading" ? "#f8f9fa" : "#eee")};
+    background: #eee;
     bottom: 0px;
     right: 0px;
-    top: ${(props) => (props.status === "loading" ? "calc(50% + 20px)" : "50%")};
+    top: 50%;
     height: calc(100% - 60px);
     width: calc(100% - 40px);
     z-index: -1;
@@ -353,8 +348,8 @@ const CardWrapper = styled.div`
 
   @media screen and (max-width: 1023.98px) {
     &::before {
-      width: 100%;
       height: 100%;
+      width: 100%;
     }
     & .card-img {
       border-radius: 10px;
@@ -376,6 +371,15 @@ const CardWrapper = styled.div`
     & .card-reactions .reaction {
       opacity: 1;
       transform: translateY(0px);
+    }
+  }
+  &.loading {
+    pointer-events: none;
+    &::before {
+      background: #f8f9fa;
+      top: calc(50% + 20px);
+      height: calc(100% - 60px);
+      width: calc(100% - 40px);
     }
   }
 `;

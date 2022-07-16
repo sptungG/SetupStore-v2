@@ -18,7 +18,7 @@ const ChipTag = ({ fontSize = 16, size = 2, split = "·", icon, children }) => {
     <ChipWrapper fontSize={fontSize}>
       <Space size={size} split={split} align="center">
         {icon}
-        <span className="content">{children}</span>
+        {fontSize > 0 && <span className="content">{children}</span>}
       </Space>
     </ChipWrapper>
   );

@@ -46,6 +46,15 @@ const findImageById = (id, images) => {
   return images.find((item) => item._id === id);
 };
 
+const getTotalInventoryQuantity = (variants = []) =>
+  variants.reduce((currentValue, nextValue) => {
+    return currentValue + (nextValue?.quantity || 0);
+  }, 0);
+const getTotalInventorySold = (variants = []) =>
+  variants.reduce((currentValue, nextValue) => {
+    return currentValue + (nextValue?.sold || 0);
+  }, 0);
+
 const ProductTableListPage = () => {
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [productsFilterValue, setProductsFilterValue] = useState({ keyword: "", sort: "" });
@@ -134,14 +143,8 @@ const ProductTableListPage = () => {
       key: "variants",
       width: 120,
       render: (text, record) => {
-        const getTotalInventoryQuantity = () =>
-          text.reduce((currentValue, nextValue) => {
-            return currentValue + (nextValue?.quantity || 0);
-          }, 0);
-        const getTotalInventorySold = () =>
-          text.reduce((currentValue, nextValue) => {
-            return currentValue + (nextValue?.sold || 0);
-          }, 0);
+        const totalQuantity = getTotalInventoryQuantity(text);
+        const totalSold = getTotalInventorySold(text);
         return (
           <Tooltip
             color={"#fafafa"}
@@ -149,10 +152,10 @@ const ProductTableListPage = () => {
             title={
               <Descriptions column={2} size="small">
                 <Descriptions.Item label="Đã bán" span={2}>
-                  {getTotalInventorySold()}
+                  {totalSold}
                 </Descriptions.Item>
                 <Descriptions.Item label="Tổng kho" span={2}>
-                  {getTotalInventoryQuantity()}
+                  {totalQuantity}
                 </Descriptions.Item>
                 <Descriptions.Item label="Phiên bản" span={2}>
                   {text.length}
@@ -161,9 +164,9 @@ const ProductTableListPage = () => {
             }
           >
             <Statistic
-              suffix={`/${getTotalInventoryQuantity()}/${text.length}`}
+              suffix={`/${totalQuantity}/${text.length}`}
               valueStyle={{ fontSize: 16 }}
-              value={getTotalInventorySold()}
+              value={totalSold}
             ></Statistic>
           </Tooltip>
         );
@@ -314,7 +317,10 @@ const ProductTableListPage = () => {
                       <h4>{selectedProduct.wishlist.length}</h4>
                     </div>
                   </div>
-                  <Typography.Title ellipsis={{ rows: 3, expandable: true, symbol: "Xem thêm" }} level={4}>
+                  <Typography.Title
+                    ellipsis={{ rows: 3, expandable: true, symbol: "Xem thêm" }}
+                    level={4}
+                  >
                     {selectedProduct.name}
                   </Typography.Title>
                   <Typography.Paragraph
