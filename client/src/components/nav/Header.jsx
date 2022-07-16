@@ -15,6 +15,7 @@ import { useRef } from "react";
 import { BsBoxArrowInRight, BsPersonFill, BsPersonPlus } from "react-icons/bs";
 import { useAddToCart } from "src/common/useAddToCart";
 import { rgba } from "polished";
+import { useAuth } from "src/common/useAuth";
 
 const MenuItemWrapper = styled.div`
   padding: 10px;
@@ -41,7 +42,7 @@ const HeaderWrapper = styled.header`
   position: relative;
   background-color: ${rgba("#fff", 0.5)};
   backdrop-filter: blur(10px);
-  
+
   z-index: 1;
   .header-center {
     max-width: 480px;
@@ -65,13 +66,10 @@ const Header = () => {
   const mediaAbove1280 = useMediaQuery({ minWidth: 1280 });
   const mediaAbove1350 = useMediaQuery({ minWidth: 1350 });
   const { cart, myCartRefetch } = useAddToCart();
+  const { isSignedIn, user, credential } = useAuth();
   const ref = useRef(null);
   const [width, setWidth] = useState(0);
-  const credential = useSelector((state) => state.auth);
-  const { data: user } = useSelector((state) => state.user);
   const headerState = useSelector((state) => state.headerState);
-  const isSignedIn =
-    user != null && credential.authtoken != null && credential.refreshToken != null;
 
   useEffect(() => {
     function handleResize() {
@@ -83,8 +81,8 @@ const Header = () => {
     };
   });
   useLayoutEffect(() => {
-    myCartRefetch();
-  }, []);
+    if (isSignedIn) myCartRefetch();
+  }, [isSignedIn]);
 
   const items = [
     {

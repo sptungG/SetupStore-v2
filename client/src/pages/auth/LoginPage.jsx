@@ -7,6 +7,7 @@ import { FcGoogle } from "react-icons/fc";
 import { HiOutlineLockClosed, HiOutlineMail } from "react-icons/hi";
 import { MdOutlineMarkEmailUnread } from "react-icons/md";
 import { useDispatch, useSelector } from "react-redux";
+import { useMediaQuery } from "react-responsive";
 import { Link, useNavigate } from "react-router-dom";
 import { auth, googleAuthProvider } from "src/common/firebase-config";
 import Button from "src/components/button/Button";
@@ -46,6 +47,7 @@ const FormWrapperStyles = styled.div`
 `;
 
 const LoginPage = (props) => {
+  const mediaBelow480 = useMediaQuery({ maxWidth: 480 });
   const credential = useSelector((state) => state.auth);
   const [createOrUpdateUser] = useCreateOrUpdateUserMutation();
   const [form] = Form.useForm();
@@ -93,22 +95,22 @@ const LoginPage = (props) => {
     }
   };
 
-  const googleLogin = () => {
-    setLoading(true);
-    signInWithPopup(auth, googleAuthProvider)
-      .then(async (result) => {
-        const { user } = result;
-        const idTokenResult = await user.getIdTokenResult();
-        const res = await createOrUpdateUser(idTokenResult.token).unwrap();
-        dispatch(setAuthtokenCredential(idTokenResult.token));
-        dispatch(setUser(res));
-        setLoading(false);
-      })
-      .catch((err) => {
-        notification.error({ message: err.message });
-        setLoading(false);
-      });
-  };
+  // const googleLogin = () => {
+  //   setLoading(true);
+  //   signInWithPopup(auth, googleAuthProvider)
+  //     .then(async (result) => {
+  //       const { user } = result;
+  //       const idTokenResult = await user.getIdTokenResult();
+  //       const res = await createOrUpdateUser(idTokenResult.token).unwrap();
+  //       dispatch(setAuthtokenCredential(idTokenResult.token));
+  //       dispatch(setUser(res));
+  //       setLoading(false);
+  //     })
+  //     .catch((err) => {
+  //       notification.error({ message: err.message });
+  //       setLoading(false);
+  //     });
+  // };
 
   return (
     <GalleryBgLayout>
@@ -124,9 +126,10 @@ const LoginPage = (props) => {
             size="large"
             layout="vertical"
             requiredMark={false}
+            autoComplete="on"
           >
-            <Row justify="space-between">
-              <Typography.Title>Welcome back</Typography.Title>
+            <Row justify="space-between" wrap={false}>
+              <Typography.Title level={mediaBelow480 ? 2 : 1}>Welcome back</Typography.Title>
               <ThemeButton type="dropdown" btntype="dashed" shape="circle" size="large" />
             </Row>
             <Typography.Title level={5} type="secondary">
@@ -165,7 +168,6 @@ const LoginPage = (props) => {
                 { required: true, message: "Trường này không được để trống." },
                 {
                   type: "email",
-                  warningOnly: true,
                   message: "Hãy nhập đúng định dạng email.",
                 },
               ]}

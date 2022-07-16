@@ -4,6 +4,7 @@ import { FaBell } from "react-icons/fa";
 import { useDispatch, useSelector } from "react-redux";
 import { useMediaQuery } from "react-responsive";
 import { Link } from "react-router-dom";
+import { useAuth } from "src/common/useAuth";
 import { setVisibleType } from "src/stores/header/header.reducer";
 import styled from "styled-components";
 import Button from "../button/Button";
@@ -48,11 +49,8 @@ const HeaderAdmin = () => {
   const dispatch = useDispatch();
   const ref = useRef(null);
   const [width, setWidth] = useState(0);
-  const credential = useSelector((state) => state.auth);
-  const { data: user } = useSelector((state) => state.user);
+  const { isSignedIn, user, credential } = useAuth();
   const headerState = useSelector((state) => state.headerState);
-  const isSignedIn =
-    user != null && credential.authtoken != null && credential.refreshToken != null;
 
   useEffect(() => {
     function handleResize() {

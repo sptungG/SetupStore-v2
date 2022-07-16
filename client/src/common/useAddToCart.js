@@ -1,13 +1,13 @@
-import { useEffect, useMemo, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
+import { useEffect } from "react";
 import {
   useAddProductToCartMutation,
   useRemoveProductFromCartMutation,
 } from "src/stores/product/product.query";
-import { setThemeProvider } from "src/stores/theme/theme.reducer";
 import { useGetMyCartQuery } from "src/stores/user/user.query";
+import { useAuth } from "./useAuth";
 
 export function useAddToCart() {
+  const { isSignedIn } = useAuth();
   const [
     addProductToCart,
     { isLoading: addProductToCartLoading, isSuccess: addProductToCartSuccess },
@@ -20,7 +20,7 @@ export function useAddToCart() {
     data: myCartQuery,
     isSuccess: myCartQuerySuccess,
     refetch: myCartRefetch,
-  } = useGetMyCartQuery();
+  } = useGetMyCartQuery({}, { skip: !isSignedIn });
   useEffect(() => {
     if (addProductToCartSuccess || removeProductFromCartSuccess) myCartRefetch();
   }, [addProductToCartSuccess, removeProductFromCartSuccess]);

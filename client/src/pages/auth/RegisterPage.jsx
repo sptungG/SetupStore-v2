@@ -11,6 +11,7 @@ import { Link, useNavigate } from "react-router-dom";
 import styled from "styled-components";
 import { useDispatch } from "react-redux";
 import { setEmailVerifiedValue } from "src/stores/auth/auth.reducer";
+import { useMediaQuery } from "react-responsive";
 
 const FormWrapperStyles = styled.div`
   display: flex;
@@ -28,6 +29,7 @@ const FormWrapperStyles = styled.div`
 `;
 
 const RegisterPage = (props) => {
+  const mediaBelow480 = useMediaQuery({ maxWidth: 480 });
   const dispatch = useDispatch();
   const [form] = Form.useForm();
   const [status, setStatus] = React.useState("");
@@ -73,10 +75,11 @@ const RegisterPage = (props) => {
             size="large"
             layout="vertical"
             requiredMark={false}
+            autoComplete="off"
           >
-            <Row justify="space-between">
-              <Typography.Title>Create new account</Typography.Title>
-              <ThemeButton type="icon" btntype="dashed" shape="circle" size="large" />
+            <Row justify="space-between" wrap={false}>
+              <Typography.Title level={mediaBelow480 ? 2 : 1}>Create new account</Typography.Title>
+              {/* <ThemeButton type="icon" btntype="dashed" shape="circle" size="large" /> */}
             </Row>
             <Form.Item
               name="email"
@@ -90,7 +93,6 @@ const RegisterPage = (props) => {
                 { required: true, message: "Trường này không được để trống." },
                 {
                   type: "email",
-                  warningOnly: true,
                   message: "Hãy nhập đúng định dạng email.",
                 },
               ]}

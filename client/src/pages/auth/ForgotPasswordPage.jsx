@@ -8,6 +8,7 @@ import { Link, useNavigate } from "react-router-dom";
 import styled from "styled-components";
 import { useDispatch } from "react-redux";
 import { setEmailVerifiedValue } from "src/stores/auth/auth.reducer";
+import { useMediaQuery } from "react-responsive";
 
 const FormWrapperStyles = styled.div`
   display: flex;
@@ -30,6 +31,7 @@ const FormWrapperStyles = styled.div`
 `;
 
 const ForgotPasswordPage = (props) => {
+  const mediaBelow480 = useMediaQuery({ maxWidth: 480 });
   const dispatch = useDispatch();
   const [status, setStatus] = React.useState("");
 
@@ -79,7 +81,7 @@ const ForgotPasswordPage = (props) => {
             layout="vertical"
             requiredMark={false}
           >
-            <Typography.Title>Quên mật khẩu?</Typography.Title>
+            <Typography.Title level={mediaBelow480 ? 2 : 1}>Quên mật khẩu?</Typography.Title>
             <Form.Item
               name="email"
               label={
@@ -91,12 +93,11 @@ const ForgotPasswordPage = (props) => {
                 { required: true, message: "Trường này không được để trống." },
                 {
                   type: "email",
-                  warningOnly: true,
                   message: "Hãy nhập đúng định dạng email.",
                 },
               ]}
             >
-              <Input prefix={<HiOutlineMail size={24} />} placeholder="Email..." />
+              <Input prefix={<HiOutlineMail size={24} />} placeholder="Email..." autoComplete="email"/>
             </Form.Item>
             <Form.Item style={{ marginTop: 16 }}>
               <Button

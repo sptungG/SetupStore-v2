@@ -33,6 +33,7 @@ import { useMediaQuery } from "react-responsive";
 import classNames from "classnames";
 import { useSelector } from "react-redux";
 import { isWishlisted, useToggleWishlist } from "src/common/useToggleWishlist";
+import { useAuth } from "src/common/useAuth";
 
 const getTotalInventoryQuantity = (variants) =>
   variants.reduce((currentValue, nextValue) => {
@@ -49,10 +50,7 @@ const ProductDetailPage = () => {
   let navigate = useNavigate();
   const { productId } = useParams();
   const { themeProvider } = useChangeThemeProvider();
-  const credential = useSelector((state) => state.auth);
-  const { data: user } = useSelector((state) => state.user);
-  const isSignedIn =
-    user != null && credential.authtoken != null && credential.refreshToken != null;
+  const { isSignedIn, user, credential } = useAuth();
   const { handleToggleWishlist, toggleProductWishlistLoading } = useToggleWishlist();
   const [productReviewsFilter, setProductReviewsFilter] = useState({
     rating: "",

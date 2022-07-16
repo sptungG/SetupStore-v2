@@ -58,6 +58,7 @@ import ReactionChipTags from "../chip/ReactionChipTags";
 import { useMediaQuery } from "react-responsive";
 import ThumbsSlider from "../silder/ThumbsSlider";
 import { isWishlisted, useToggleWishlist } from "src/common/useToggleWishlist";
+import { useAuth } from "src/common/useAuth";
 
 const MAX_COUNT_CART = 10;
 message.config({
@@ -73,11 +74,8 @@ const ProductDrawerDetail = ({ productId = null, setSelectedProduct }) => {
   const [container, setContainer] = useState(null);
   const drawerBodyRef = useRef(null);
   const { cart, addProductToCart } = useAddToCart();
+  const { isSignedIn, user, message401 } = useAuth();
 
-  const credential = useSelector((state) => state.auth);
-  const { data: user } = useSelector((state) => state.user);
-  const isSignedIn =
-    user != null && credential.authtoken != null && credential.refreshToken != null;
   const { data: productQuery, isSuccess: productQuerySuccess } = useGetProductQuery(productId, {
     skip: !productId,
   });
@@ -114,6 +112,7 @@ const ProductDrawerDetail = ({ productId = null, setSelectedProduct }) => {
     try {
       if (!quantity) message.error(`Tăng số lượng và thử lại nhé!`);
       if (!productId || !variant || !quantity) throw new Error("Invalid initdata");
+      if (!isSignedIn) return message401();
       const cartRes = await addProductToCart({ productId, variantId: variant, quantity }).unwrap();
       message.success({
         content: (

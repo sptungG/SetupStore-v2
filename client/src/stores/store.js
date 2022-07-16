@@ -19,6 +19,7 @@ import { reviewApi } from "./review/review.query";
 import { statisticApi } from "./statistic/statistic.query";
 import { userApi } from "./user/user.query";
 import { galleryApi } from "./unsplash/gallery.query";
+import { message } from "antd";
 // import { notification } from "antd";
 
 const persistConfig = {
@@ -49,7 +50,9 @@ const persistedReducer = persistReducer(persistConfig, reducers);
 export const rtkQueryErrorLogger = (api) => (next) => (action) => {
   if (isRejectedWithValue(action)) {
     console.warn(action.payload);
-    // notification.warning({ message: action.payload.status, description: action.payload.data.err });
+    const { status, data } = action.payload;
+    if (![404, 401].includes(status))
+      message.error({ content: `${status || 400} : ${data?.err || "Đã có lỗi xảy ra"}` });
   }
 
   return next(action);

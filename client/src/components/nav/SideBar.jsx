@@ -20,6 +20,7 @@ import Button from "../button/Button";
 import ThemeButton from "../button/ThemeButton";
 import LogoAndText from "./LogoAndText";
 import { useMediaQuery } from "react-responsive";
+import { useAuth } from "src/common/useAuth";
 
 const SideMenuWrapper = styled.div`
   display: flex;
@@ -73,10 +74,7 @@ const SideBar = () => {
   let navigate = useNavigate();
   const mediaBelow768 = useMediaQuery({ maxWidth: 768 });
   const headerState = useSelector((state) => state.headerState);
-  const credential = useSelector((state) => state.auth);
-  const { data: user } = useSelector((state) => state.user);
-  const isSignedIn =
-    user != null && credential.authtoken != null && credential.refreshToken != null;
+  const { isSignedIn, user, credential } = useAuth();
 
   return (
     <Drawer

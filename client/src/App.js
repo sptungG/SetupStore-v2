@@ -23,6 +23,7 @@ import { setAuthtokenCredential, setRefreshToken } from "./stores/auth/auth.redu
 import { persistor } from "./stores/store";
 import { setDataRedirectStatus } from "./stores/header/header.reducer";
 import { setUser } from "./stores/user/user.reducer";
+import { useAuth } from "./common/useAuth";
 
 const HomePage = lazy(() => import("src/pages/home/HomePage"));
 const ProductDetailPage = lazy(() => import("src/pages/product/ProductDetailPage"));
@@ -47,8 +48,7 @@ const AdminSettingPage = lazy(() => import("src/pagesadmin/setting/AdminSettingP
 
 function App() {
   let navigate = useNavigate();
-  const credential = useSelector((state) => state.auth);
-  const { data: user } = useSelector((state) => state.user);
+  const { isSignedIn, user, credential } = useAuth();
   const [
     currentUser,
     { isError: currentUserError, isSuccess: currentUserSuccess, isLoading: currentUserLoading },
