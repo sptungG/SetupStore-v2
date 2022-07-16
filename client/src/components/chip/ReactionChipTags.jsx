@@ -1,16 +1,33 @@
-import { Space, Typography } from "antd";
+import { message, Space, Spin, Typography } from "antd";
+
 import classNames from "classnames";
 import { rgba } from "polished";
 import React from "react";
 import { BsChatLeftText, BsEye, BsHeart, BsHeartFill, BsStar } from "react-icons/bs";
 import { useSelector } from "react-redux";
+import { useToggleProductWishlistMutation } from "src/stores/product/product.query";
 import styled from "styled-components";
+
+export const isWishlisted = (wishlist = [], userId) =>
+  userId && !!wishlist?.find((u) => u._id === userId);
 
 const ReactionChipTags = ({ colorful = true, size = 8, data }) => {
   const { data: user } = useSelector((state) => state.user);
-  const isWishlisted = (wishlist = [], userId) =>
-    userId && !!wishlist?.find((u) => u._id === userId);
-  const { numOfViews, avgRating, numOfReviews, wishlist } = data;
+  const { numOfViews, avgRating, numOfReviews, wishlist, _id } = data;
+  const [toggleProductWishlist, { isLoading: toggleProductWishlistLoading }] =
+    useToggleProductWishlistMutation();
+  const handleToggleWishlist = async (productId, isWishlisted) => {
+    try {
+      const productInWishlist = await toggleProductWishlist({ productId }).unwrap();
+      if (!isWishlisted) {
+        message.success("Thêm vào yêu thích thành công");
+      } else {
+        message.error("Hủy yêu thích thành công");
+      }
+    } catch (err) {
+      console.log("err", err);
+    }
+  };
   return (
     <ReactionsWrapper size={size} className={colorful ? "colorful" : "no-colorful"}>
       <div className="reaction">
@@ -32,7 +49,11 @@ const ReactionChipTags = ({ colorful = true, size = 8, data }) => {
         <h4>{numOfReviews || 0}</h4>
       </div>
       <div
-        className={classNames("reaction wishlist", { active: isWishlisted(wishlist, user?._id) })}
+        className={classNames("reaction wishlist", {
+          active: isWishlisted(wishlist, user?._id),
+          loading: toggleProductWishlistLoading,
+        })}
+        onClick={() => handleToggleWishlist(_id, isWishlisted(wishlist, user?._id))}
       >
         <span>
           {isWishlisted(wishlist, user?._id) ? <BsHeartFill size={14} /> : <BsHeart size={14} />}
@@ -108,6 +129,7 @@ const ReactionsWrapper = styled.div`
       background: ${rgba("#ffb703", 0.25)};
     }
     &:nth-child(4) {
+      cursor: pointer;
       color: #ff0054;
       background: ${rgba("#ff0054", 0.25)};
     }
@@ -115,6 +137,11 @@ const ReactionsWrapper = styled.div`
   & .reaction.wishlist.active {
     color: #ff0054;
   }
+  & .reaction.loading {
+      pointer-events: none;
+      cursor: wait;
+      background-color: ${rgba("#d9d9d9", 0.9)};
+    }
 `;
 
 export default ReactionChipTags;

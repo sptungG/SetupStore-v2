@@ -1,6 +1,14 @@
 import { Avatar, Image, Popover, Skeleton, Space, Statistic, Tag, Tooltip, Typography } from "antd";
 import React, { useState } from "react";
-import { BsCartPlus, BsChatLeftText, BsEye, BsHeart, BsLayoutWtf, BsStar } from "react-icons/bs";
+import {
+  BsCartPlus,
+  BsChatLeftText,
+  BsEye,
+  BsHeart,
+  BsHeartFill,
+  BsLayoutWtf,
+  BsStar,
+} from "react-icons/bs";
 import styled, { keyframes } from "styled-components";
 import { rgba } from "polished";
 import { Link, useNavigate } from "react-router-dom";
@@ -8,6 +16,7 @@ import Button from "../button/Button";
 import { useAddToCart } from "src/common/useAddToCart";
 import { useMediaQuery } from "react-responsive";
 import { NOT_FOUND_IMG } from "src/common/constant";
+import classNames from "classnames";
 
 export const ProductCardLoading = () => {
   return (
@@ -26,7 +35,11 @@ export const ProductCardLoading = () => {
   );
 };
 
-const ProductCard = ({ product, getSelectedProductId = (p) => console.log(p) }) => {
+const ProductCard = ({
+  product,
+  getSelectedProductId = (p) => console.log(p),
+  isWishlisted = false,
+}) => {
   const { setCart } = useAddToCart();
   let navigate = useNavigate();
   const mediaAbove1024 = useMediaQuery({ minWidth: 1024 });
@@ -100,10 +113,8 @@ const ProductCard = ({ product, getSelectedProductId = (p) => console.log(p) }) 
           </span>
           <h4>{product.avgRating}</h4>
         </div>
-        <div className="reaction">
-          <span>
-            <BsHeart size={14} />
-          </span>
+        <div className={classNames("reaction", { active: isWishlisted })}>
+          <span>{isWishlisted ? <BsHeartFill size={14} /> : <BsHeart size={14} />}</span>
           <h4>{product.wishlist.length}</h4>
         </div>
       </div>
@@ -274,21 +285,73 @@ const CardWrapper = styled.div`
         margin-bottom: 0;
       }
 
+      &.active,
       &:nth-child(1):hover {
         color: #00b4d8;
       }
+      &.active,
       &:nth-child(2):hover {
         color: #ffc300;
       }
+      &.active,
       &:nth-child(3):hover {
         color: #ffb703;
       }
+      &.active,
       &:nth-child(4):hover {
         color: #ff0054;
       }
+      &:nth-child(4) {
+        cursor: pointer;
+      }
     }
   }
-  &:hover {
+  @media screen and (min-width: 1024px) {
+    &:hover {
+      &::before {
+        width: 100%;
+        height: 100%;
+      }
+      & .card-img {
+        border-radius: 10px;
+      }
+      & .card-img::before {
+        content: "";
+        width: 100%;
+        height: 100%;
+        position: absolute;
+        top: 0px;
+        right: 0px;
+        /* background: linear-gradient(230deg, black 0%, transparent 100%); */
+      }
+      & .card-action-top {
+        opacity: 1;
+        visibility: visible;
+      }
+      & .reaction {
+        opacity: 1;
+        transform: translateY(0px);
+      }
+      & .reaction:nth-child(1) {
+        transition: all 0.2s 0.2s;
+        animation: ${card_option} 0.2s 0.2s;
+      }
+      & .reaction:nth-child(2) {
+        transition: all 0.2s 0.15s;
+        animation: ${card_option} 0.2s 0.15s;
+      }
+      & .reaction:nth-child(3) {
+        transition: all 0.15s 0.1s;
+        animation: ${card_option} 0.15s 0.1s;
+      }
+      & .reaction:nth-child(4) {
+        transition: all 0.2s;
+        animation: ${card_option} 0.2s;
+      }
+    }
+  }
+
+  @media screen and (max-width: 1023.98px) {
     &::before {
       width: 100%;
       height: 100%;
@@ -309,33 +372,11 @@ const CardWrapper = styled.div`
       opacity: 1;
       visibility: visible;
     }
-    & .reaction {
+
+    & .card-reactions .reaction {
       opacity: 1;
       transform: translateY(0px);
     }
-    & .reaction:nth-child(1) {
-      transition: all 0.2s 0.2s;
-      animation: ${card_option} 0.2s 0.2s;
-    }
-    & .reaction:nth-child(2) {
-      transition: all 0.2s 0.15s;
-      animation: ${card_option} 0.2s 0.15s;
-    }
-    & .reaction:nth-child(3) {
-      transition: all 0.15s 0.1s;
-      animation: ${card_option} 0.15s 0.1s;
-    }
-    & .reaction:nth-child(4) {
-      transition: all 0.2s;
-      animation: ${card_option} 0.2s;
-    }
-  }
-  @media screen and (max-width: 1023.98px) {
-    /* pointer-events: none;
-    .reaction {
-      opacity: 1;
-      transform: translateY(0px);
-    } */
   }
 `;
 

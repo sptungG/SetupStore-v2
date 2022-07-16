@@ -81,15 +81,20 @@ const ProductDetailPage = () => {
             <div className="container-info">
               <Row wrap={false} gutter={24}>
                 <Col flex="436px">
-                  <PostersSlider images={productData.images} />
-                  <div className="price">
-                    <span>Giá ~</span>
-                    <Statistic
-                      suffix="₫"
-                      className="price-tag"
-                      value={productData.price}
-                    ></Statistic>
-                  </div>
+                  <PostersSlider
+                    images={productData.images}
+                    thumbSize={52}
+                    actions={
+                      <div className="price">
+                        <span>Giá ~</span>
+                        <Statistic
+                          suffix="₫"
+                          className="price-tag"
+                          value={productData.price}
+                        ></Statistic>
+                      </div>
+                    }
+                  />
                 </Col>
                 <Col flex="auto" className="left-info">
                   <div className="left-info-top">
@@ -108,14 +113,18 @@ const ProductDetailPage = () => {
                     >
                       {productData.desc}
                     </Typography.Title>
-                    <Space wrap={false} split={<Divider type="vertical" />} style={{marginTop: "auto"}}>
+                    <Space
+                      wrap={false}
+                      split={<Divider type="vertical" />}
+                      style={{ marginTop: "auto" }}
+                    >
                       <ReactionChipTags colorful={false} size={16} data={productData} />
                     </Space>
                   </div>
                   <Row className="left-info-bottom" gutter={24} wrap={false}>
                     <Col flex="auto" className="bottom-left">
                       <Space
-                        wrap={false}
+                        wrap={true}
                         size={2}
                         split={<Divider type="vertical" />}
                         className="rating-wrapper ant-space-center-items"
@@ -316,7 +325,7 @@ const ProductDetailWrapper = styled.main`
     transform: translateY(-200px);
   }
   & .container-detail {
-    padding-top: calc(160px + 24px);
+    padding-top: 244px;
   }
   & .left-info {
     display: flex;
@@ -371,10 +380,6 @@ const ProductDetailWrapper = styled.main`
     }
   }
   & .price {
-    position: absolute;
-    bottom: 24px;
-    right: 36px;
-    z-index: 1;
     display: flex;
     justify-content: center;
     align-items: center;

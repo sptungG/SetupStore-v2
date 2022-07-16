@@ -54,7 +54,9 @@ import { useSelector } from "react-redux";
 import classNames from "classnames";
 import { useGetMyCartQuery } from "src/stores/user/user.query";
 import { useAddToCart } from "src/common/useAddToCart";
-import ReactionChipTags from "../chip/ReactionChipTags";
+import ReactionChipTags, { isWishlisted } from "../chip/ReactionChipTags";
+import { useMediaQuery } from "react-responsive";
+import ThumbsSlider from "../silder/ThumbsSlider";
 
 const MAX_COUNT_CART = 10;
 message.config({
@@ -63,17 +65,18 @@ message.config({
 });
 
 const ProductDrawerDetail = ({ productId = null, setSelectedProduct }) => {
+  const mediaBelow480 = useMediaQuery({ maxWidth: 480 });
+  const mediaAbove1280 = useMediaQuery({ minWidth: 1280 });
   const [form] = Form.useForm();
   let navigate = useNavigate();
   const [container, setContainer] = useState(null);
   const drawerBodyRef = useRef(null);
   const { cart, addProductToCart } = useAddToCart();
-  const [activeThumb, setActiveThumb] = useState();
+
   const credential = useSelector((state) => state.auth);
   const { data: user } = useSelector((state) => state.user);
   const isSignedIn =
     user != null && credential.authtoken != null && credential.refreshToken != null;
-  const isWishlisted = (wishlist = []) => !!wishlist?.find((u) => u._id === user._id);
   const { data: productQuery, isSuccess: productQuerySuccess } = useGetProductQuery(productId, {
     skip: !productId,
   });
@@ -115,7 +118,9 @@ const ProductDrawerDetail = ({ productId = null, setSelectedProduct }) => {
       message.success({
         content: (
           <>
-            <div>Thêm <b>{quantity}</b> sản phẩm vào giỏ hàng thành công</div>
+            <div>
+              Thêm <b>{quantity}</b> sản phẩm vào giỏ hàng thành công
+            </div>
             <Space style={{ color: "#52c41a", textDecoration: "underline" }} wrap={false} size={2}>
               <BsBoxArrowUpRight /> <span>Đến giỏ hàng ngay</span>
             </Space>
@@ -126,7 +131,6 @@ const ProductDrawerDetail = ({ productId = null, setSelectedProduct }) => {
         duration: 3,
       });
       setSelectedProduct(null);
-      setActiveThumb(undefined);
     } catch (err) {
       console.log("err", err);
     }
@@ -151,11 +155,10 @@ const ProductDrawerDetail = ({ productId = null, setSelectedProduct }) => {
       visible={!!productId}
       onClose={() => {
         setSelectedProduct(null);
-        setActiveThumb(undefined);
       }}
       closeIcon={<BsArrowLeft size={20} />}
-      width={480}
-      title={"Sản phẩm"}
+      width={mediaBelow480 ? "100%" : 480}
+      title={mediaBelow480 ? null : "Sản phẩm"}
       footerStyle={{
         padding: "10px 24px",
       }}
@@ -173,6 +176,7 @@ const ProductDrawerDetail = ({ productId = null, setSelectedProduct }) => {
           <Row wrap={false} gutter={10}>
             <Col flex="auto">
               <Tooltip
+                overlayClassName={mediaAbove1280 ? "" : "hidden"}
                 placement="topRight"
                 destroyTooltipOnHide
                 arrowPointAtCenter
@@ -203,11 +207,12 @@ const ProductDrawerDetail = ({ productId = null, setSelectedProduct }) => {
                   className="extra-actions-container"
                 >
                   <Tooltip
+                    overlayClassName={mediaAbove1280 ? "" : "hidden"}
                     placement="topRight"
                     destroyTooltipOnHide
                     title={
                       isSignedIn
-                        ? isWishlisted(productQuery?.data.wishlist)
+                        ? isWishlisted(productQuery?.data.wishlist, user?._id)
                           ? "Bạn đã thích sản phẩm này"
                           : "Thêm vào Yêu thích"
                         : "Đăng nhập trước nha"
@@ -215,17 +220,25 @@ const ProductDrawerDetail = ({ productId = null, setSelectedProduct }) => {
                   >
                     <button
                       className={classNames("btn-wishlist", {
-                        active: isWishlisted(productQuery?.data.wishlist),
+                        active: isWishlisted(productQuery?.data.wishlist, user?._id),
                       })}
                       onClick={() =>
-                        handleToggleWishlist(productId, isWishlisted(productQuery?.data.wishlist))
+                        handleToggleWishlist(
+                          productId,
+                          isWishlisted(productQuery?.data.wishlist, user?._id)
+                        )
                       }
                     >
-                      {isWishlisted(productQuery?.data.wishlist) ? <BsHeartFill /> : <BsHeart />}·
-                      <span>{productQuery?.data.wishlist.length}</span>
+                      {isWishlisted(productQuery?.data.wishlist, user?._id) ? (
+                        <BsHeartFill />
+                      ) : (
+                        <BsHeart />
+                      )}
+                      ·<span>{productQuery?.data.wishlist.length}</span>
                     </button>
                   </Tooltip>
                   <Tooltip
+                    overlayClassName={mediaAbove1280 ? "" : "hidden"}
                     placement="topRight"
                     destroyTooltipOnHide
                     title="Xem sản phẩm"
@@ -248,56 +261,16 @@ const ProductDrawerDetail = ({ productId = null, setSelectedProduct }) => {
     >
       <ProductDrawerBodyWrapper ref={setContainer}>
         <div className="images-wrapper">
-          {productQuerySuccess && (
-            <div className="action-on-image">
-              <Link to={`products/${productId}`}>
-                <BsBoxArrowUpRight /> Xem sản phẩm
-              </Link>
-            </div>
-          )}
           {productQuerySuccess ? (
-            <div className="product-images">
-              {productQuery.data.images.length < 1 || productQuery.data.images?.some((i) => !i) ? (
-                <div className="product-images-slider-error">
-                  <img src={NOT_FOUND_IMG} alt="NOT_FOUND_IMG" />
-                </div>
-              ) : (
-                <>
-                  <Swiper
-                    loop={true}
-                    slidesPerView={1}
-                    spaceBetween={10}
-                    navigation={productQuery.data.images.length > 1}
-                    modules={[Navigation, Thumbs]}
-                    grabCursor={true}
-                    thumbs={{ swiper: activeThumb }}
-                    className="product-images-slider"
-                  >
-                    {productQuery.data.images.map((item, index) => (
-                      <SwiperSlide key={item._id + "product-images-slider"}>
-                        <img src={item.url} alt={item._id} />
-                      </SwiperSlide>
-                    ))}
-                  </Swiper>
-                  <Swiper
-                    onSwiper={setActiveThumb}
-                    loop={productQuery.data.images.length > 4}
-                    spaceBetween={10}
-                    slidesPerView={4}
-                    modules={[Navigation, Thumbs]}
-                    className="product-images-slider-thumbs"
-                  >
-                    {productQuery.data.images.map((item, index) => (
-                      <SwiperSlide key={item._id + "product-images-slider-thumbs"}>
-                        <div className="product-images-slider-thumbs-wrapper">
-                          <img src={item.url} alt={item._id} />
-                        </div>
-                      </SwiperSlide>
-                    ))}
-                  </Swiper>
-                </>
-              )}
-            </div>
+            <ThumbsSlider
+              images={productQuery.data.images}
+              direction={mediaBelow480 ? "y" : "x"}
+              actions={
+                <Link to={`products/${productId}`}>
+                  <BsBoxArrowUpRight /> Xem sản phẩm
+                </Link>
+              }
+            />
           ) : (
             <Skeleton active />
           )}
@@ -313,7 +286,13 @@ const ProductDrawerDetail = ({ productId = null, setSelectedProduct }) => {
             >
               {productQuery.data.desc}
             </Typography.Paragraph>
-            <Space split={<Divider type="vertical" />} size={2} wrap={false} align="baseline">
+            <Space
+              split={mediaBelow480 ? null : <Divider type="vertical" />}
+              size={2}
+              wrap={mediaBelow480}
+              direction={mediaBelow480 ? "vertical" : "horizontal"}
+              align="baseline"
+            >
               <Space className="rating" wrap={false} size={8} align="baseline">
                 <Rate disabled defaultValue={productQuery.data.avgRating} />
                 <span className="rating-value">{`( ${productQuery.data.numOfReviews} đánh giá )`}</span>
@@ -396,35 +375,38 @@ const ProductDrawerDetail = ({ productId = null, setSelectedProduct }) => {
                                 ))}
                               </Descriptions>
                             </div>
-                            <div className="extra-content">
-                              <Tooltip
-                                destroyTooltipOnHide
-                                color={"#fafafa"}
-                                placement="leftBottom"
-                                overlayStyle={{ maxWidth: 140 }}
-                                title={
-                                  <Descriptions column={2} size="small">
-                                    <Descriptions.Item label="Đã bán" span={2}>
-                                      {item.sold}
-                                    </Descriptions.Item>
-                                    <Descriptions.Item label="Kho" span={2}>
-                                      {item.quantity}
-                                    </Descriptions.Item>
-                                  </Descriptions>
-                                }
-                              >
-                                <Space direction="vertical">
-                                  <Space size={2} split="·" align="center">
-                                    <BsCheck2Circle size={16.5} />
-                                    <span>{item.sold}</span>
+                            {!mediaBelow480 && (
+                              <div className="extra-content">
+                                <Tooltip
+                                  overlayClassName={mediaAbove1280 ? "" : "hidden"}
+                                  destroyTooltipOnHide
+                                  color={"#fafafa"}
+                                  placement="leftBottom"
+                                  overlayStyle={{ maxWidth: 140 }}
+                                  title={
+                                    <Descriptions column={2} size="small">
+                                      <Descriptions.Item label="Đã bán" span={2}>
+                                        {item.sold}
+                                      </Descriptions.Item>
+                                      <Descriptions.Item label="Kho" span={2}>
+                                        {item.quantity}
+                                      </Descriptions.Item>
+                                    </Descriptions>
+                                  }
+                                >
+                                  <Space direction="vertical">
+                                    <Space size={2} split="·" align="center">
+                                      <BsCheck2Circle size={16.5} />
+                                      <span>{item.sold}</span>
+                                    </Space>
+                                    <Space size={2} split="·" align="center">
+                                      <BsBoxSeam size={14} />
+                                      <span>{item.quantity}</span>
+                                    </Space>
                                   </Space>
-                                  <Space size={2} split="·" align="center">
-                                    <BsBoxSeam size={14} />
-                                    <span>{item.quantity}</span>
-                                  </Space>
-                                </Space>
-                              </Tooltip>
-                            </div>
+                                </Tooltip>
+                              </div>
+                            )}
                             <div className="actions">
                               {variantValue === item._id && (
                                 <Form.Item noStyle name={"quantity"}>
@@ -561,6 +543,9 @@ const VariantItemWrapper = styled.div`
         color: ${(props) => (props.checked ? props.theme.generatedColors[5] : "#8c8c8c")};
       }
     }
+    @media screen and (max-width: 480.01px) {
+      width: 132px;
+    }
   }
   & .actions {
     height: fit-content;
@@ -648,183 +633,6 @@ const ProductDrawerBodyWrapper = styled.div`
     flex-shrink: 0;
     position: relative;
     margin-bottom: 24px;
-  }
-  & .action-on-image {
-    position: absolute;
-    bottom: 10px;
-    right: 24px;
-    z-index: 10;
-    border-radius: 5px;
-    padding: 4px 12px;
-    background-color: ${(props) => rgba(props.theme.generatedColors[0], 0.5)};
-    backdrop-filter: blur(4px);
-    & a {
-      text-decoration: underline;
-      font-size: 16px;
-    }
-    &:hover {
-      background-color: ${(props) => props.theme.generatedColors[0]};
-    }
-  }
-  & .product-images {
-    position: relative;
-    width: 100%;
-    height: 100%;
-    display: flex;
-    justify-content: space-between;
-    align-items: flex-start;
-    flex-wrap: nowrap;
-    flex-shrink: 0;
-  }
-  & .product-images-slider-error {
-    width: 100%;
-    height: 240px;
-    overflow: hidden;
-    & > img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-      object-position: center;
-    }
-  }
-  & .product-images-slider {
-    width: 100%;
-    height: 100%;
-    max-height: 240px;
-    & .swiper-slide {
-      padding-top: 100%;
-      overflow: hidden;
-      position: relative;
-      border-radius: 5px;
-
-      img {
-        position: absolute;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        object-fit: cover;
-        object-position: center center;
-      }
-    }
-
-    & .swiper-button-prev {
-      left: 8px;
-      color: #000;
-    }
-
-    & .swiper-button-next {
-      right: 8px;
-      color: #000;
-    }
-  }
-
-  & .product-images-slider-thumbs {
-    order: -1;
-    flex-shrink: 0;
-    & .swiper-slide {
-      cursor: pointer;
-      border-radius: 5px;
-      position: relative;
-      width: 52px !important;
-
-      &-thumb-active::before {
-        content: "";
-        width: 100%;
-        height: 100%;
-        position: absolute;
-        top: 0px;
-        right: 0px;
-        z-index: 1;
-        backdrop-filter: blur(0.8px);
-        background: linear-gradient(230deg, #fff 0%, transparent 100%);
-      }
-    }
-    & .swiper-wrapper {
-      flex-direction: column;
-      gap: 10px;
-    }
-
-    &-wrapper {
-      width: 100%;
-      padding-top: 100%;
-      overflow: hidden;
-      position: relative;
-      border-radius: 5px;
-
-      img {
-        position: absolute;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        object-fit: cover;
-      }
-    }
-  }
-`;
-const ReactionsWrapper = styled.div`
-  height: fit-content;
-  width: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: flex-start;
-  gap: 8px;
-  & .reaction {
-    width: fit-content;
-    height: fit-content;
-    padding: 2px 8px;
-    position: relative;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 6px;
-    cursor: pointer;
-    background: transparent;
-    color: ${(props) => props.theme.generatedColors[9]};
-    font-size: 14px;
-    border-radius: 5px;
-
-    margin-top: 0px;
-    overflow: hidden;
-    &::before {
-      content: "";
-      width: 100%;
-      height: 100%;
-      background-color: #f8f9fa;
-      position: absolute;
-      z-index: -1;
-      top: 0px;
-      left: 0px;
-    }
-    & > span {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: inherit;
-    }
-    & > h4 {
-      font-size: inherit;
-      color: inherit;
-      margin-bottom: 0;
-    }
-
-    &:nth-child(1) {
-      color: #00b4d8;
-      background: ${rgba("#00b4d8", 0.25)};
-    }
-    &:nth-child(2) {
-      color: #ffb703;
-      background: ${rgba("#ffb703", 0.25)};
-    }
-    &:nth-child(3) {
-      color: #ffb703;
-      background: ${rgba("#ffb703", 0.25)};
-    }
-    &:nth-child(4) {
-      color: #ff0054;
-      background: ${rgba("#ff0054", 0.25)};
-    }
   }
 `;
 
