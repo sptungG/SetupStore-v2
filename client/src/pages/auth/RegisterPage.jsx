@@ -12,6 +12,7 @@ import styled from "styled-components";
 import { useDispatch } from "react-redux";
 import { setEmailVerifiedValue } from "src/stores/auth/auth.reducer";
 import { useMediaQuery } from "react-responsive";
+import AutocompleteEmailInput from "src/components/input/AutocompleteEmailInput";
 
 const FormWrapperStyles = styled.div`
   display: flex;
@@ -22,6 +23,9 @@ const FormWrapperStyles = styled.div`
   .carousel-wrapper {
     width: 100%;
     padding: 0 40px 24px 40px;
+    @media screen and (max-width: 374.98px) {
+      padding-bottom: 0;
+    }
   }
   .from-container {
     width: 100%;
@@ -97,7 +101,8 @@ const RegisterPage = (props) => {
                 },
               ]}
             >
-              <Input prefix={<HiOutlineMail size={24} />} placeholder="Email..." />
+              {/* <Input prefix={<HiOutlineMail size={24} />} placeholder="Email..." /> */}
+              <AutocompleteEmailInput placeholder="Email..." />
             </Form.Item>
             <Form.Item
               name="password"
@@ -134,7 +139,7 @@ const RegisterPage = (props) => {
               />
             </Form.Item>
 
-            <Form.Item style={{ marginTop: 16 }}>
+            <Form.Item style={mediaBelow480 ? { marginBottom: 0 } : {}}>
               <Button
                 type="primary"
                 htmlType="submit"

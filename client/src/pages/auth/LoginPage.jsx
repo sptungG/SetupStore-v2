@@ -13,6 +13,7 @@ import { auth, googleAuthProvider } from "src/common/firebase-config";
 import Button from "src/components/button/Button";
 import ThemeButton from "src/components/button/ThemeButton";
 import CarouselGallery from "src/components/images/CarouselGallery";
+import AutocompleteEmailInput from "src/components/input/AutocompleteEmailInput";
 import LogoAndText from "src/components/nav/LogoAndText";
 import GalleryBgLayout from "src/layout/GalleryBgLayout";
 import { useCreateOrUpdateUserMutation } from "src/stores/auth/auth.query";
@@ -39,6 +40,9 @@ const FormWrapperStyles = styled.div`
       width: 100%;
       height: 100%;
       object-fit: cover;
+    }
+    @media screen and (max-width: 374.98px) {
+      padding-bottom: 0;
     }
   }
   .from-container {
@@ -161,7 +165,9 @@ const LoginPage = (props) => {
                 </Button>
               </Col>
             </Row>
-            <Divider plain>Hoặc</Divider>
+            <Divider plain style={mediaBelow480 ? { margin: "8px 0" } : {}}>
+              Hoặc
+            </Divider>
             <Form.Item
               name="email"
               rules={[
@@ -172,7 +178,8 @@ const LoginPage = (props) => {
                 },
               ]}
             >
-              <Input prefix={<HiOutlineMail size={24} />} placeholder="Email..." />
+              {/* <Input prefix={<HiOutlineMail size={24} />} placeholder="Email..." /> */}
+              <AutocompleteEmailInput placeholder="Email..." />
             </Form.Item>
             <Form.Item
               name="password"
@@ -187,7 +194,7 @@ const LoginPage = (props) => {
                 placeholder="Mật khẩu..."
               />
             </Form.Item>
-            <Form.Item>
+            <Form.Item style={mediaBelow480 ? { marginBottom: 0 } : {}}>
               <Button
                 size="large"
                 type="primary"

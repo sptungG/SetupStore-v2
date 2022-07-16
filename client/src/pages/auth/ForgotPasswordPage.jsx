@@ -9,6 +9,7 @@ import styled from "styled-components";
 import { useDispatch } from "react-redux";
 import { setEmailVerifiedValue } from "src/stores/auth/auth.reducer";
 import { useMediaQuery } from "react-responsive";
+import AutocompleteEmailInput from "src/components/input/AutocompleteEmailInput";
 
 const FormWrapperStyles = styled.div`
   display: flex;
@@ -97,7 +98,8 @@ const ForgotPasswordPage = (props) => {
                 },
               ]}
             >
-              <Input prefix={<HiOutlineMail size={24} />} placeholder="Email..." autoComplete="email"/>
+              {/* <Input prefix={<HiOutlineMail size={24} />} placeholder="Email..." autoComplete="email"/> */}
+              <AutocompleteEmailInput placeholder="Email..." />
             </Form.Item>
             <Form.Item style={{ marginTop: 16 }}>
               <Button

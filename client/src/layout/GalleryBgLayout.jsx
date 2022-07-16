@@ -2,6 +2,7 @@ import React from "react";
 import Gallery from "src/components/images/Gallery";
 import styled from "styled-components";
 import LogoAndText from "src/components/nav/LogoAndText";
+import { useMediaQuery } from "react-responsive";
 
 const PageStyles = styled.div`
   position: relative;
@@ -48,10 +49,16 @@ const PageStyles = styled.div`
     max-width: 480px;
     width: 100%;
     height: 100vh;
+
     backdrop-filter: blur(10px);
     background-color: ${(props) =>
       props.theme.mode === "light" ? "rgba(255, 255, 255, 0.8)" : "rgba(20, 20, 20, 0.8)"};
     box-shadow: 0px 0px 16px 16px rgba(140, 140, 140, 0.25);
+    @media screen and (max-width: 374.98px) {
+      padding: 0 24px;
+      height: 100%;
+      max-height: 100%;
+    }
   }
   .modal-content form {
     width: 100%;
@@ -59,11 +66,10 @@ const PageStyles = styled.div`
 `;
 
 const GalleryBgLayout = ({ children }) => {
+  const mediaBelow768 = useMediaQuery({ maxWidth: 768 });
   return (
     <PageStyles>
-      <div className="modal-overlay">
-        <Gallery count={24} column={4} />
-      </div>
+      <div className="modal-overlay">{!mediaBelow768 && <Gallery count={24} column={4} />}</div>
       <header className="header">
         <LogoAndText logoSize={30} fontSize={28} fontWeight={700} />
       </header>

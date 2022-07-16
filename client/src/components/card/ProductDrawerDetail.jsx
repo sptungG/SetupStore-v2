@@ -126,7 +126,10 @@ const ProductDrawerDetail = ({ productId = null, setSelectedProduct }) => {
           </>
         ),
         style: { cursor: "pointer" },
-        onClick: () => navigate("/cart", { replace: true }),
+        onClick: () => {
+          navigate("/cart", { replace: true });
+          message.destroy();
+        },
         duration: 3,
       });
       setSelectedProduct(null);

@@ -29,7 +29,10 @@ export function useAuth() {
         </>
       ),
       style: { cursor: "pointer" },
-      onClick: () => navigate("/login", { replace: true }),
+      onClick: () => {
+        navigate("/login", { replace: true });
+        message.destroy();
+      },
       duration: 4,
     });
     return;
