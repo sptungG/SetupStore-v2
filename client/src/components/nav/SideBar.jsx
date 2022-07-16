@@ -78,6 +78,7 @@ const SideBar = () => {
 
   return (
     <Drawer
+      destroyOnClose
       closeIcon={null}
       title={null}
       placement={mediaBelow768 ? "right" : "left"}

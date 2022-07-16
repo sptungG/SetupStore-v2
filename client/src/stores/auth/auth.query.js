@@ -28,7 +28,8 @@ export const baseQueryWithReauth = async (args, api, extraOptions) => {
   await mutex.waitForUnlock();
   let result = await baseQuery(args, api, extraOptions);
   if (result.error && result.error.status === 401) {
-    console.log("baseQueryWithReauth ~ result", result);
+    if (process.env.REACT_APP_ENV !== "PRODUCTION")
+      console.log("baseQueryWithReauth ~ BEFORE - result", result);
     // checking whether the mutex is locked
     if (!mutex.isLocked()) {
       const release = await mutex.acquire();
@@ -75,7 +76,8 @@ export const baseQueryWithReauth = async (args, api, extraOptions) => {
       result = await baseQuery(args, api, extraOptions);
     }
   }
-  console.log("baseQueryWithReauth ~ result", result);
+  if (process.env.REACT_APP_ENV !== "PRODUCTION")
+    console.log("baseQueryWithReauth ~ AFTER - result", result);
   return result;
 };
 

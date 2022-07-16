@@ -50,9 +50,9 @@ const persistedReducer = persistReducer(persistConfig, reducers);
 export const rtkQueryErrorLogger = (api) => (next) => (action) => {
   if (isRejectedWithValue(action)) {
     console.warn(action.payload);
-    const { status, data } = action.payload;
-    if (![404, 401].includes(status))
-      message.error({ content: `${status || 400} : ${data?.err || "Đã có lỗi xảy ra"}` });
+    // const { status, data } = action.payload;
+    // if (![404, 401].includes(status))
+    //   message.error({ content: `${status || 400} : ${data?.err || "Đã có lỗi xảy ra"}` });
   }
 
   return next(action);

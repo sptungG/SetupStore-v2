@@ -22,8 +22,8 @@ export function useAddToCart() {
     refetch: myCartRefetch,
   } = useGetMyCartQuery({}, { skip: !isSignedIn });
   useEffect(() => {
-    if (addProductToCartSuccess || removeProductFromCartSuccess) myCartRefetch();
-  }, [addProductToCartSuccess, removeProductFromCartSuccess]);
+    if (isSignedIn && (addProductToCartSuccess || removeProductFromCartSuccess)) myCartRefetch();
+  }, [isSignedIn, addProductToCartSuccess, removeProductFromCartSuccess]);
 
   // console.log("useAddToCart ~ cart", cart);
 

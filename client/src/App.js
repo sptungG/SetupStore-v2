@@ -21,7 +21,7 @@ import AdminRoute from "./routes/AdminRoute";
 import { useCreateOrUpdateUserMutation, useCurrentUserMutation } from "./stores/auth/auth.query";
 import { setAuthtokenCredential, setRefreshToken } from "./stores/auth/auth.reducer";
 import { persistor } from "./stores/store";
-import { setDataRedirectStatus } from "./stores/header/header.reducer";
+import { setDataRedirectStatus, setVisibleType } from "./stores/header/header.reducer";
 import { setUser } from "./stores/user/user.reducer";
 import { useAuth } from "./common/useAuth";
 
@@ -32,7 +32,7 @@ const LoginPage = lazy(() => import("src/pages/auth/LoginPage"));
 const RegisterPage = lazy(() => import("src/pages/auth/RegisterPage"));
 const ForgotPasswordPage = lazy(() => import("src/pages/auth/ForgotPasswordPage"));
 const VerificationPage = lazy(() => import("src/pages/auth/VerificationPage"));
-// 
+//
 const DashboardPage = lazy(() => import("src/pagesadmin/DashboardPage"));
 const CategoryListPage = lazy(() => import("src/pagesadmin/category/CategoryListPage"));
 const ComboListPage = lazy(() => import("src/pagesadmin/combo/ComboListPage"));
@@ -40,7 +40,9 @@ const ComboDetailPage = lazy(() => import("src/pagesadmin/combo/ComboDetailPage"
 const OrderListPage = lazy(() => import("src/pagesadmin/order/OrderListPage"));
 const OrderDetailPage = lazy(() => import("src/pagesadmin/order/OrderDetailPage"));
 const ProductTableListPage = lazy(() => import("src/pagesadmin/product/ProductTableListPage"));
-const ProductCreateUpdateDetailPage = lazy(() => import("src/pagesadmin/product/ProductCreateUpdateDetailPage"));
+const ProductCreateUpdateDetailPage = lazy(() =>
+  import("src/pagesadmin/product/ProductCreateUpdateDetailPage")
+);
 const UserListPage = lazy(() => import("src/pagesadmin/user/UserListPage"));
 const UserDetailPage = lazy(() => import("src/pagesadmin/user/UserDetailPage"));
 const ReviewProductListPage = lazy(() => import("src/pagesadmin/review/ReviewProductListPage"));
@@ -111,7 +113,6 @@ function App() {
         primaryColor: themeProvider.primaryColor,
         generatedColors: themeProvider.generatedColors,
       }}
-
     >
       <PersistGate loading={<Loader />} persistor={persistor}>
         {/* <LoadingBarContainer
@@ -142,7 +143,10 @@ function App() {
               <Route path="/admin/orders/*" element={<OrderDetailPage />} />
               <Route path="/admin/products" element={<ProductTableListPage />} />
               <Route path="/admin/products/create" element={<ProductCreateUpdateDetailPage />} />
-              <Route path="/admin/products/:productId" element={<ProductCreateUpdateDetailPage />} />
+              <Route
+                path="/admin/products/:productId"
+                element={<ProductCreateUpdateDetailPage />}
+              />
               <Route path="/admin/users" element={<UserListPage />} />
               <Route path="/admin/users/*" element={<UserDetailPage />} />
               <Route path="/admin/reviews" element={<ReviewProductListPage />} />
