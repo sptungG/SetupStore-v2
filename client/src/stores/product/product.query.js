@@ -127,7 +127,7 @@ export const productApi = createApi({
     }),
     // ADMIN
     uploadAdminProductImage: builder.mutation({
-      query: ({ onModel = "Product", imageUrl, image }) => ({
+      query: ({ onModel = "Product", imageUrl = "", image = "" }) => ({
         url: `/admin/uploadimages?onModel=${onModel}`,
         method: "POST",
         body: { imageUrl, image },
@@ -161,5 +161,5 @@ export const {
   useDeleteVariantMutation,
   useUpdateVariantMutation,
   useAddProductToCartMutation,
-  useRemoveProductFromCartMutation
+  useRemoveProductFromCartMutation,
 } = productApi;

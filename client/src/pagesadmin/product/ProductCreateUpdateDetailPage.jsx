@@ -121,9 +121,9 @@ const ProductCreateUpdateDetailPage = () => {
     useCreateContentMutation();
   const [updateContentById, { data: updateContentData, isLoading: updateContentLoading }] =
     useUpdateContentByIdMutation();
-  const [uploadAdminImage, { data: uploadAdminImageData, isLoading: uploadAdminImageLoading }] =
+  const [uploadAdminProductImage, { data: uploadAdminProductImageData, isLoading: uploadAdminProductImageLoading }] =
     useUploadAdminProductImageMutation();
-  const [removeAdminImage, { data: removeAdminImageData, isLoading: removeAdminImageLoading }] =
+  const [removeAdminProductImage, { data: removeAdminProductImageData, isLoading: removeAdminProductImageLoading }] =
     useRemoveAdminProductImageMutation();
   const imageUrl = Form.useWatch("imageUrl", formImageUrl);
 
@@ -382,7 +382,7 @@ const ProductCreateUpdateDetailPage = () => {
       if (!imageUrl) throw new Error("Url ảnh không được trống");
       let allUploadedFiles = images;
       setImageUrlVisible(false);
-      const uploadResData = await uploadAdminImage({
+      const uploadResData = await uploadAdminProductImage({
         onModel: "Product",
         imageUrl: imageUrl,
         image: "",
@@ -407,7 +407,7 @@ const ProductCreateUpdateDetailPage = () => {
           100,
           0,
           (uri) => {
-            uploadAdminImage({ onModel: "Product", image: uri })
+            uploadAdminProductImage({ onModel: "Product", image: uri })
               .then(({ data: uploadResData }) => {
                 allUploadedFiles.push({ ...uploadResData.data, uid: uploadResData.data._id });
                 setImages([...allUploadedFiles]);
@@ -424,7 +424,7 @@ const ProductCreateUpdateDetailPage = () => {
   const handleImageRemove = async ({ _id: imageId }) => {
     try {
       if (images.length > 1) {
-        const removedImage = await removeAdminImage({ imageId }).unwrap();
+        const removedImage = await removeAdminProductImage({ imageId }).unwrap();
         const filteredImages = images.filter((item) => item._id !== imageId);
         setImages(filteredImages);
         const newVariantList =
@@ -553,7 +553,7 @@ const ProductCreateUpdateDetailPage = () => {
                 <Form.Item name="images" noStyle>
                   <Upload.Dragger
                     accept="image/*"
-                    disabled={uploadAdminImageLoading || removeAdminImageLoading}
+                    disabled={uploadAdminProductImageLoading || removeAdminProductImageLoading}
                     multiple={true}
                     maxCount={6}
                     listType="picture-card"
@@ -564,7 +564,7 @@ const ProductCreateUpdateDetailPage = () => {
                     onChange={handleFileUploadAndResize}
                     onRemove={(file) => handleImageRemove(file)}
                   >
-                    {uploadAdminImageLoading || removeAdminImageLoading ? (
+                    {uploadAdminProductImageLoading || removeAdminProductImageLoading ? (
                       <div className="ant-upload-drag-content">
                         <Spin size="large" indicator={<LogoCube loading size={28} />} />
                         <p className="ant-upload-text">Loading...</p>
@@ -628,7 +628,7 @@ const ProductCreateUpdateDetailPage = () => {
                                       setPreviewImage(null);
                                       handleImageRemove(item);
                                     }}
-                                    disabled={uploadAdminImageLoading || removeAdminImageLoading}
+                                    disabled={uploadAdminProductImageLoading || removeAdminProductImageLoading}
                                     icon={<BsTrash />}
                                   ></Button>
                                 </Tooltip>
@@ -1082,7 +1082,7 @@ const ProductCreateUpdateDetailPage = () => {
           setImageUrlVisible(false);
         }}
         okButtonProps={{
-          loading: uploadAdminImageLoading || removeAdminImageLoading,
+          loading: uploadAdminProductImageLoading || removeAdminProductImageLoading,
           disabled: !imageUrl || imageUrl === NOT_FOUND_IMG,
           icon: <BsUpload />,
         }}
