@@ -130,7 +130,7 @@ const LoginPage = (props) => {
             size="large"
             layout="vertical"
             requiredMark={false}
-            autoComplete="on"
+            autoComplete="off"
           >
             <Row justify="space-between" wrap={false}>
               <Typography.Title level={mediaBelow480 ? 2 : 1}>Welcome back</Typography.Title>
@@ -170,6 +170,7 @@ const LoginPage = (props) => {
             </Divider>
             <Form.Item
               name="email"
+              validateTrigger={"onChange"}
               rules={[
                 { required: true, message: "Trường này không được để trống." },
                 {
@@ -183,6 +184,8 @@ const LoginPage = (props) => {
             </Form.Item>
             <Form.Item
               name="password"
+              validateTrigger={"onKeyUp"}
+              hasFeedback
               rules={[
                 { required: true, message: "Trường này không được để trống." },
                 { min: 6, message: "Mật khẩu cần tối thiểu 6 kí tự." },

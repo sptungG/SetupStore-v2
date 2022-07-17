@@ -81,18 +81,22 @@ const ProductDrawerDetail = ({ productId = null, setSelectedProduct }) => {
   });
   const [productViewInc, { isLoading: productViewIncLoading }] = useProductViewIncMutation();
   const { handleToggleWishlist, toggleProductWishlistLoading } = useToggleWishlist();
+  const [maxCount, setMaxCount] = useState(MAX_COUNT_CART);
   const variantInCart = (variantId = null) =>
     variantId ? cart?.products.find((item) => item.variant._id === variantId) || null : null;
   const variantValue = Form.useWatch("variant", form);
   const quantityValue = Form.useWatch("quantity", form);
+  const foundVariant = variantInCart(variantValue);
   useEffect(() => {
+    console.log("useEffect ~ foundVariant", foundVariant);
     if (
-      productId === variantInCart(variantValue)?.product._id &&
-      (variantInCart(variantValue)?.count || 0) + quantityValue === MAX_COUNT_CART
+      foundVariant &&
+      foundVariant.product._id === productId &&
+      foundVariant.variant.quantity < MAX_COUNT_CART
     ) {
-      message.error(`Vượt quá LIMIT:${MAX_COUNT_CART} rồi!`);
-    }
-  }, [productId, quantityValue, variantValue]);
+      setMaxCount(foundVariant.variant.quantity);
+    } else setMaxCount(MAX_COUNT_CART);
+  }, [productId, foundVariant]);
 
   useEffect(() => {
     if (productQuerySuccess) {
@@ -107,6 +111,25 @@ const ProductDrawerDetail = ({ productId = null, setSelectedProduct }) => {
   // useEffect(() => {
   //   if (productId) productViewInc(productId);
   // }, [productId]);
+  const handleDecrQuantity = () => {
+    form.setFieldsValue({
+      quantity: quantityValue > 2 ? quantityValue - 1 : 1,
+    });
+  };
+  const handleIncQuantity = () => {
+    const validateValue = quantityValue + (foundVariant?.count || 0);
+    if (validateValue < maxCount) {
+      form.setFieldsValue({
+        quantity: quantityValue + 1,
+      });
+    } else {
+      const newQuantity = maxCount - (foundVariant?.count || 0);
+      form.setFieldsValue({
+        quantity: newQuantity > 0 ? newQuantity : 0,
+      });
+      message.error(`Vượt quá LIMIT:${maxCount} rồi!`);
+    }
+  };
 
   const handleAddToCart = async (productId, { variant = "", quantity = 0 }) => {
     try {
@@ -403,31 +426,29 @@ const ProductDrawerDetail = ({ productId = null, setSelectedProduct }) => {
                                 <Form.Item noStyle name={"quantity"}>
                                   <InputNumber
                                     addonBefore={
-                                      <BsDashLg
-                                        onClick={() =>
-                                          form.setFieldsValue({
-                                            quantity: quantityValue > 2 ? quantityValue - 1 : 1,
-                                          })
-                                        }
-                                      />
+                                      <Button
+                                        type="text"
+                                        className="btn-count"
+                                        htmlType="button"
+                                        onClick={handleDecrQuantity}
+                                      >
+                                        <BsDashLg />
+                                      </Button>
                                     }
                                     addonAfter={
-                                      <BsPlusLg
-                                        onClick={() =>
-                                          form.setFieldsValue({
-                                            quantity:
-                                              (variantInCart(variantValue)?.count || 0) +
-                                                quantityValue <
-                                              MAX_COUNT_CART
-                                                ? quantityValue + 1
-                                                : MAX_COUNT_CART -
-                                                  (variantInCart(variantValue)?.count || 0),
-                                          })
-                                        }
-                                      />
+                                      <Button
+                                        type="text"
+                                        className="btn-count"
+                                        htmlType="button"
+                                        onClick={handleIncQuantity}
+                                      >
+                                        <BsPlusLg />
+                                      </Button>
                                     }
+                                    onFocus={() => console.log()}
+                                    readOnly
                                     min={0}
-                                    max={MAX_COUNT_CART}
+                                    max={maxCount}
                                     controls={false}
                                     step={1}
                                   />
@@ -551,11 +572,24 @@ const VariantItemWrapper = styled.div`
     overflow: hidden;
     background-color: #fff;
     & .ant-input-number-group-addon {
-      background-color: transparent;
+      padding: 0;
+      cursor: pointer;
       &:hover {
         color: ${(props) => props.theme.primaryColor};
         background-color: ${(props) => props.theme.generatedColors[0]};
       }
+    }
+    & .ant-input-number-group-addon button {
+      background-color: transparent;
+      cursor: pointer;
+      border: none;
+      outline: none;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 8px 10px;
+      height: 100%;
+      max-height: 100%;
     }
     & .ant-input-number-input {
       text-align: center;

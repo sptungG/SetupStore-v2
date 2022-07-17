@@ -93,6 +93,7 @@ const RegisterPage = (props) => {
                 </Typography.Title>
               }
               tooltip="Email để nhận đường dẫn xác nhận đăng kí"
+              validateTrigger={"onChange"}
               rules={[
                 { required: true, message: "Trường này không được để trống." },
                 {
@@ -105,6 +106,7 @@ const RegisterPage = (props) => {
               <AutocompleteEmailInput placeholder="Email..." />
             </Form.Item>
             <Form.Item
+              validateTrigger={"onKeyUp"}
               name="password"
               rules={[
                 { required: true, message: "Trường này không được để trống." },
@@ -118,6 +120,7 @@ const RegisterPage = (props) => {
               />
             </Form.Item>
             <Form.Item
+              validateTrigger={"onKeyUp"}
               name="confirm"
               dependencies={["password"]}
               hasFeedback
