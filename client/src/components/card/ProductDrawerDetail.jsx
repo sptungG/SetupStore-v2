@@ -88,7 +88,6 @@ const ProductDrawerDetail = ({ productId = null, setSelectedProduct }) => {
   const quantityValue = Form.useWatch("quantity", form);
   const foundVariant = variantInCart(variantValue);
   useEffect(() => {
-    console.log("useEffect ~ foundVariant", foundVariant);
     if (
       foundVariant &&
       foundVariant.product._id === productId &&
@@ -113,7 +112,7 @@ const ProductDrawerDetail = ({ productId = null, setSelectedProduct }) => {
   // }, [productId]);
   const handleDecrQuantity = () => {
     form.setFieldsValue({
-      quantity: quantityValue > 2 ? quantityValue - 1 : 1,
+      quantity: quantityValue > 1 ? quantityValue - 1 : 0,
     });
   };
   const handleIncQuantity = () => {
@@ -127,7 +126,8 @@ const ProductDrawerDetail = ({ productId = null, setSelectedProduct }) => {
       form.setFieldsValue({
         quantity: newQuantity > 0 ? newQuantity : 0,
       });
-      message.error(`Vượt quá LIMIT:${maxCount} rồi!`);
+      if (newQuantity > 0) message.error(`Vượt quá LIMIT:${maxCount} rồi!`);
+      else message.error(`Sản phẩm chỉ còn lại ${maxCount}!`);
     }
   };
 
@@ -350,14 +350,60 @@ const ProductDrawerDetail = ({ productId = null, setSelectedProduct }) => {
                                     value={item.price}
                                   ></Statistic>
                                 </div>
-                                {!!variantInCart(item._id) && (
+                                <Tooltip
+                                  destroyTooltipOnHide
+                                  overlayClassName={mediaAbove1280 ? "hidden" : ""}
+                                  color={"#fafafa"}
+                                  placement="topLeft"
+                                  overlayStyle={{ maxWidth: 132 }}
+                                  trigger={"click"}
+                                  title={
+                                    <Descriptions column={2} size="small">
+                                      {!!variantInCart(item._id) && (
+                                        <Descriptions.Item label="Giỏ hàng" span={2}>
+                                          {variantInCart(item._id).count}
+                                        </Descriptions.Item>
+                                      )}
+                                      <Descriptions.Item label="Đã bán" span={2}>
+                                        {item.sold}
+                                      </Descriptions.Item>
+                                      <Descriptions.Item label="Kho" span={2}>
+                                        {item.quantity}
+                                      </Descriptions.Item>
+                                    </Descriptions>
+                                  }
+                                >
                                   <div className="incart">
-                                    <Space size={2} split="·" className="incart-tag">
-                                      <BsCartCheck size={16.5} />
-                                      {variantInCart(item._id).count}
-                                    </Space>
+                                    {!!variantInCart(item._id) && (
+                                      <Space size={2} split="·" className="incart-tag">
+                                        <BsCartCheck size={16.5} />
+                                        {variantInCart(item._id).count}
+                                      </Space>
+                                    )}
+                                    {mediaBelow480 && (
+                                      <Space wrap={false} size={4}>
+                                        <Space
+                                          size={2}
+                                          split="·"
+                                          align="center"
+                                          className="incart-tag"
+                                        >
+                                          <BsCheck2Circle size={16.5} />
+                                          <span>{item.sold}</span>
+                                        </Space>
+                                        <Space
+                                          size={2}
+                                          split="·"
+                                          align="center"
+                                          className="incart-tag"
+                                        >
+                                          <BsBoxSeam size={14} />
+                                          <span>{item.quantity}</span>
+                                        </Space>
+                                      </Space>
+                                    )}
                                   </div>
-                                )}
+                                </Tooltip>
                               </div>
                             </div>
                             <div className="content">
@@ -504,6 +550,12 @@ const VariantItemWrapper = styled.div`
       border-left: 1px solid #d9d9d9;
       align-self: ${(props) => (props.checked ? "flex-end" : "stretch")};
     }
+    @media screen and (max-width: 321.01px) {
+      gap: 8px;
+      & .content {
+        padding-left: 8px;
+      }
+    }
     & .extra-content {
       align-self: ${(props) => (props.checked ? "flex-end" : "stretch")};
       padding-bottom: 8px;
@@ -531,6 +583,10 @@ const VariantItemWrapper = styled.div`
       right: 12px;
       z-index: 1;
       transition: all 0.3s;
+      display: flex;
+      gap: 4px;
+      flex-direction: column;
+      align-items: flex-end;
       & .incart-tag {
         padding: 3px 6px 0px 6px;
         background-color: ${(props) =>
@@ -553,10 +609,22 @@ const VariantItemWrapper = styled.div`
       }
       & .price-tag .ant-statistic-content {
         color: ${(props) => (props.checked ? props.theme.generatedColors[5] : "#8c8c8c")};
+        font-weight: 500;
       }
     }
+
     @media screen and (max-width: 480.01px) {
       width: 132px;
+      height: 108px;
+      & .incart {
+        gap: 4px;
+        flex-direction: column;
+        align-items: flex-end;
+      }
+    }
+    @media screen and (max-width: 321.01px) {
+      width: 118px;
+      height: 108px;
     }
   }
   & .actions {
