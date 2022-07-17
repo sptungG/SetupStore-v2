@@ -45,7 +45,7 @@ const ThumbsSlider = ({
           </Swiper>
           <Swiper
             onSwiper={setActiveThumb}
-            loop={images.length > 4}
+            loop={direction === "x" && images.length > 4}
             spaceBetween={10}
             slidesPerView={4}
             modules={[Navigation, Thumbs]}
@@ -69,9 +69,9 @@ const ThumbsSlider = ({
 const SliderWrapper = styled.div`
   position: relative;
   width: 100%;
-  height: 100%;
+  height: ${(props) => String(props.slideHeight) + "px"};
+  overflow: hidden;
   display: flex;
-  justify-content: space-between;
   align-items: flex-start;
   flex-wrap: ${(props) => (props.direction === "x" ? "nowrap" : "wrap-reverse")};
   flex-shrink: 0;
@@ -166,6 +166,7 @@ const SliderWrapper = styled.div`
     & .swiper-wrapper {
       flex-direction: ${(props) => (props.direction === "x" ? "column" : "row")};
       gap: ${(props) => (props.direction === "x" ? "10px" : 0)};
+      transform: translate3d(0px, 0px, 0px) !important;
     }
 
     &-wrapper {

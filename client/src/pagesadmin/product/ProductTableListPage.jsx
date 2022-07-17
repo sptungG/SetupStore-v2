@@ -216,7 +216,7 @@ const ProductTableListPage = () => {
                   rowSelection={{
                     type: "radio",
                     selectedRowKeys: [selectedProduct?._id],
-                    defaultSelectedRowKeys: [productsFilteredQuery.data[0]._id],
+                    defaultSelectedRowKeys: [productsFilteredQuery.data[0]?._id],
                     onChange: (selectedRowKeys, selectedRows) => {
                       setSelectedProduct(selectedRows[0]);
                       console.log(

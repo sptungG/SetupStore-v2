@@ -7,7 +7,7 @@ import { baseQueryWithReauth } from "../auth/auth.query";
 export const productApi = createApi({
   reducerPath: "productApi",
   baseQuery: baseQueryWithReauth,
-  tagTypes: ["Products"],
+  tagTypes: ["Products", "Images", "Variants"],
   endpoints: (builder) => ({
     getProductsFiltered: builder.query({
       query: (filter) => `/products?${bindParamsFilter(filter)}`,
@@ -123,7 +123,13 @@ export const productApi = createApi({
     // ADMIN
     getProductImagesFiltered: builder.query({
       query: (filter) => `/images?${bindParamsFilter(filter)}`,
-      providesTags: [{ type: "Products", id: "LIST" }],
+      providesTags: (result) =>
+        result
+          ? [
+              ...result.data.map(({ _id }) => ({ type: "Images", id: _id })),
+              { type: "Images", id: "LIST" },
+            ]
+          : [{ type: "Images", id: "LIST" }],
     }),
     // ADMIN
     uploadAdminProductImage: builder.mutation({
@@ -132,7 +138,10 @@ export const productApi = createApi({
         method: "POST",
         body: { imageUrl, image },
       }),
-      invalidatesTags: (result, error, id) => [{ type: "Products", id: "LIST" }],
+      invalidatesTags: (result, error, id) => [
+        { type: "Products", id: "LIST" },
+        { type: "Images", id: "LIST" },
+      ],
     }),
     // ADMIN
     removeAdminProductImage: builder.mutation({
@@ -141,7 +150,10 @@ export const productApi = createApi({
         method: "DELETE",
         body: { imageId },
       }),
-      invalidatesTags: (result, error, id) => [{ type: "Products", id: "LIST" }],
+      invalidatesTags: (result, error, { imageId }) => [
+        { type: "Products", id: "LIST" },
+        { type: "Images", id: imageId },
+      ],
     }),
   }),
 });

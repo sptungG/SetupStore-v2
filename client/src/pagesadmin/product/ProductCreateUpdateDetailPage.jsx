@@ -102,9 +102,8 @@ const ProductCreateUpdateDetailPage = () => {
   const { data: productQuery, isSuccess: getProductSuccess } = useGetProductQuery(productId, {
     skip: !productId,
   });
-  const { data: imagesFilteredQuery, isSuccess: imagesFilteredSuccess } = useGetProductImagesFilteredQuery(
-    { onModel: "Product", sort: "", status: "" }
-  );
+  const { data: imagesFilteredQuery, isSuccess: imagesFilteredSuccess } =
+    useGetProductImagesFilteredQuery({ onModel: "Product", sort: "", status: "" });
   const [createProduct, { data: createProductData, isLoading: createProductLoading }] =
     useCreateProductMutation();
   const [updateProduct, { data: updateProductData, isLoading: updateProductLoading }] =
@@ -121,10 +120,14 @@ const ProductCreateUpdateDetailPage = () => {
     useCreateContentMutation();
   const [updateContentById, { data: updateContentData, isLoading: updateContentLoading }] =
     useUpdateContentByIdMutation();
-  const [uploadAdminProductImage, { data: uploadAdminProductImageData, isLoading: uploadAdminProductImageLoading }] =
-    useUploadAdminProductImageMutation();
-  const [removeAdminProductImage, { data: removeAdminProductImageData, isLoading: removeAdminProductImageLoading }] =
-    useRemoveAdminProductImageMutation();
+  const [
+    uploadAdminProductImage,
+    { data: uploadAdminProductImageData, isLoading: uploadAdminProductImageLoading },
+  ] = useUploadAdminProductImageMutation();
+  const [
+    removeAdminProductImage,
+    { data: removeAdminProductImageData, isLoading: removeAdminProductImageLoading },
+  ] = useRemoveAdminProductImageMutation();
   const imageUrl = Form.useWatch("imageUrl", formImageUrl);
 
   useEffect(() => {
@@ -407,12 +410,14 @@ const ProductCreateUpdateDetailPage = () => {
           100,
           0,
           (uri) => {
-            uploadAdminProductImage({ onModel: "Product", image: uri })
+            uploadAdminProductImage({ onModel: "Product", image: uri, imageUrl: "" })
               .then(({ data: uploadResData }) => {
-                allUploadedFiles.push({ ...uploadResData.data, uid: uploadResData.data._id });
-                setImages([...allUploadedFiles]);
-                form.setFieldsValue({ images: allUploadedFiles });
-                notification.success({ message: "Tải lên thành công" });
+                if (uploadResData) {
+                  allUploadedFiles.push({ ...uploadResData.data, uid: uploadResData.data._id });
+                  setImages([...allUploadedFiles]);
+                  form.setFieldsValue({ images: allUploadedFiles });
+                  notification.success({ message: "Tải lên thành công" });
+                }
               })
               .catch((err) => console.log("err", err));
           },
@@ -422,6 +427,7 @@ const ProductCreateUpdateDetailPage = () => {
     }
   };
   const handleImageRemove = async ({ _id: imageId }) => {
+    console.log("handleImageRemove ~ imageId", imageId);
     try {
       if (images.length > 1) {
         const removedImage = await removeAdminProductImage({ imageId }).unwrap();
@@ -628,7 +634,10 @@ const ProductCreateUpdateDetailPage = () => {
                                       setPreviewImage(null);
                                       handleImageRemove(item);
                                     }}
-                                    disabled={uploadAdminProductImageLoading || removeAdminProductImageLoading}
+                                    disabled={
+                                      uploadAdminProductImageLoading ||
+                                      removeAdminProductImageLoading
+                                    }
                                     icon={<BsTrash />}
                                   ></Button>
                                 </Tooltip>

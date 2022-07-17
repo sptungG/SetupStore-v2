@@ -7,11 +7,9 @@ import { setAuthtokenCredential, setRefreshToken } from "./auth.reducer";
 
 const baseQuery = fetchBaseQuery({
   baseUrl: process.env.REACT_APP_API,
-  mode: "cors",
   maxRetries: 1,
   prepareHeaders: (headers, { getState }) => {
     //  By default, if we have a token in the store, let's use that for authenticated requests
-    headers.set("Content-Type", "application/json");
     const authtoken = getState().auth.authtoken;
     if (authtoken) {
       headers.set("authtoken", authtoken);

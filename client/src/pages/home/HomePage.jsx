@@ -39,19 +39,18 @@ const HomePage = () => {
   return (
     <MainLayout>
       <ProductsWrapper>
-        {productsFilteredFetching &&
-          Array(4)
-            .fill(null)
-            .map((i, index) => <ProductCardLoading key={`ProductCardLoading_${index}`} />)}
-        {productsFilteredSuccess &&
-          productsFilteredQuery?.data.map((p) => (
-            <ProductCard
-              key={`ProductCard_${p._id}`}
-              product={p}
-              getSelectedProductId={(p) => setSelectedProductId(p)}
-              isWishlisted={isWishlisted(p.wishlist, user?._id)}
-            ></ProductCard>
-          ))}
+        {productsFilteredSuccess
+          ? productsFilteredQuery?.data.map((p) => (
+              <ProductCard
+                key={`ProductCard_${p._id}`}
+                product={p}
+                getSelectedProductId={(p) => setSelectedProductId(p)}
+                isWishlisted={isWishlisted(p.wishlist, user?._id)}
+              ></ProductCard>
+            ))
+          : Array(4)
+              .fill(null)
+              .map((i, index) => <ProductCardLoading key={`ProductCardLoading_${index}`} />)}
       </ProductsWrapper>
       {productsFilteredSuccess && (
         <ProductDrawerDetail

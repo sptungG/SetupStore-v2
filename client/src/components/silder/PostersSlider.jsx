@@ -72,7 +72,7 @@ const PostersSlider = ({ images = [], actions = null, thumbSize = 52 }) => {
       </div>
       <SwiperReact
         onSwiper={setActiveThumb}
-        loop={images.length > 4}
+        loop={false}
         spaceBetween={10}
         slidesPerView={4}
         modules={[Navigation, Thumbs]}
