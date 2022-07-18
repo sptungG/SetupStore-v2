@@ -79,6 +79,12 @@ const ProductDetailPage = () => {
   //   if (productId) productViewInc(productId);
   // }, [productId]);
 
+  const htmlDecode = (input) => {
+    var e = document.createElement("div");
+    e.innerHTML = input;
+    return e.childNodes.length === 0 ? "" : e.childNodes[0].nodeValue;
+  };
+
   return (
     <MainLayout>
       {productData ? (
@@ -270,8 +276,22 @@ const ProductDetailPage = () => {
                   ></Tabs.TabPane>
                 </Tabs>
               </div>
-              {JSON.stringify(productQuery)}
-              {JSON.stringify(productReviewsQuery)}
+              <ProductContentWrapper className={activeKey !== "content" ? "hidden" : ""}>
+                <Typography.Title level={2}>{productData.content?.title || ""}</Typography.Title>
+                <div
+                  className="entry-content"
+                  // Prevent XSS Attack recommend from React Docs
+                  dangerouslySetInnerHTML={{
+                    __html: productData.content?.content || "",
+                  }}
+                ></div>
+              </ProductContentWrapper>
+              <ProductReviewsWrapper className={activeKey !== "reviews" ? "hidden" : ""}>
+                {JSON.stringify(productReviewsQuery)}
+              </ProductReviewsWrapper>
+              <ProductCombosWrapper
+                className={activeKey !== "combos" ? "hidden" : ""}
+              ></ProductCombosWrapper>
             </div>
           </div>
           <div className={mediaBelow1124 ? "fixed-bottom-actions" : "hidden"}>
@@ -576,5 +596,9 @@ const ProductDetailWrapper = styled.main`
     }
   }
 `;
+
+const ProductContentWrapper = styled.section``;
+const ProductReviewsWrapper = styled.section``;
+const ProductCombosWrapper = styled.section``;
 
 export default ProductDetailPage;
