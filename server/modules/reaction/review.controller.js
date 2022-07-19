@@ -213,6 +213,7 @@ exports.getFilteredComboReviews = async (req, res) => {
 // createProductReview
 exports.createProductReview = async (req, res) => {
   try {
+    const { _id: userId } = req.user;
     const { productId, comboId } = req.query;
     const { rating, comment } = req.body;
 
@@ -237,7 +238,7 @@ exports.createProductReview = async (req, res) => {
     const foundModelReview = await Review.find({
       modelId: model.modelId,
       onModel: model.onModel,
-      createdBy: foundUser._id,
+      createdBy: userId,
       status: "active",
     });
 
@@ -247,7 +248,7 @@ exports.createProductReview = async (req, res) => {
     const reviewData = {
       modelId: model.modelId,
       onModel: model.onModel,
-      createdBy: foundUser._id,
+      createdBy: userId,
       rating: Number(rating),
       comment,
     };
