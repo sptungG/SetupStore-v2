@@ -29,7 +29,7 @@ import {
   Typography,
   Upload,
 } from "antd";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useLayoutEffect, useState } from "react";
 import { AiOutlineInbox, AiOutlineMinus, AiOutlinePlusCircle } from "react-icons/ai";
 import { useNavigate, useParams } from "react-router-dom";
 import Button from "src/components/button/Button";
@@ -65,15 +65,18 @@ import {
   useCreateVariantMutation,
   useDeleteVariantMutation,
   useUpdateVariantMutation,
-  useGetProductImagesFilteredQuery,
-  useRemoveAdminProductImageMutation,
-  useUploadAdminProductImageMutation,
 } from "src/stores/product/product.query";
 
 import {
   useCreateContentMutation,
   useUpdateContentByIdMutation,
 } from "src/stores/content/content.query";
+import {
+  useGetImagesFilteredQuery,
+  useRemoveAdminImageMutation,
+  useUploadAdminImageMutation,
+} from "src/stores/image/image.query";
+import MdEditor from "src/components/form/MdEditor";
 
 const validateMessages = {
   required: "Trường này chưa nhập giá trị!",
@@ -99,11 +102,16 @@ const ProductCreateUpdateDetailPage = () => {
   const [selectedVariant, setSelectedVariant] = useState(null);
   const { data: categoriesFilteredQuery, isSuccess: getCategoriesSuccess } =
     useGetAllCategoriesFilteredQuery({ sort: "", keyword: "" });
-  const { data: productQuery, isSuccess: getProductSuccess } = useGetProductQuery(productId, {
+  const {
+    data: productQuery,
+    isSuccess: getProductSuccess,
+    refetch: productQueryRefetch,
+  } = useGetProductQuery(productId, {
     skip: !productId,
   });
-  const { data: imagesFilteredQuery, isSuccess: imagesFilteredSuccess } =
-    useGetProductImagesFilteredQuery({ onModel: "Product", sort: "", status: "" });
+  const { data: imagesFilteredQuery, isSuccess: imagesFilteredSuccess } = useGetImagesFilteredQuery(
+    { onModel: "Product", sort: "", status: "" }
+  );
   const [createProduct, { data: createProductData, isLoading: createProductLoading }] =
     useCreateProductMutation();
   const [updateProduct, { data: updateProductData, isLoading: updateProductLoading }] =
@@ -120,15 +128,12 @@ const ProductCreateUpdateDetailPage = () => {
     useCreateContentMutation();
   const [updateContentById, { data: updateContentData, isLoading: updateContentLoading }] =
     useUpdateContentByIdMutation();
-  const [
-    uploadAdminProductImage,
-    { data: uploadAdminProductImageData, isLoading: uploadAdminProductImageLoading },
-  ] = useUploadAdminProductImageMutation();
-  const [
-    removeAdminProductImage,
-    { data: removeAdminProductImageData, isLoading: removeAdminProductImageLoading },
-  ] = useRemoveAdminProductImageMutation();
+  const [uploadAdminImage, { data: uploadAdminImageData, isLoading: uploadAdminImageLoading }] =
+    useUploadAdminImageMutation();
+  const [removeAdminImage, { data: removeAdminImageData, isLoading: removeAdminImageLoading }] =
+    useRemoveAdminImageMutation();
   const imageUrl = Form.useWatch("imageUrl", formImageUrl);
+  const foundVariantImage = (imageId) => imageId && images.find((img) => img._id === imageId);
 
   useEffect(() => {
     if (getProductSuccess) {
@@ -269,7 +274,7 @@ const ProductCreateUpdateDetailPage = () => {
       onOk: async () => {
         try {
           const deletedProduct = await deleteProduct(productId).unwrap();
-          notification.error({ message: "Xóa sản phẩm thành công" });
+          notification.info({ message: "Xóa sản phẩm thành công" });
           navigate("/admin/products", { replace: true });
         } catch (err) {
           console.log("err", err);
@@ -347,7 +352,7 @@ const ProductCreateUpdateDetailPage = () => {
       formAddVariant.resetFields();
       setSelectedVariant(null);
       setAddVariantVisible(false);
-      notification.error({ message: "Xóa phiên bản thành công" });
+      notification.info({ message: "Xóa phiên bản thành công" });
     } catch (err) {
       console.log("err", err);
     }
@@ -385,7 +390,7 @@ const ProductCreateUpdateDetailPage = () => {
       if (!imageUrl) throw new Error("Url ảnh không được trống");
       let allUploadedFiles = images;
       setImageUrlVisible(false);
-      const uploadResData = await uploadAdminProductImage({
+      const uploadResData = await uploadAdminImage({
         onModel: "Product",
         imageUrl: imageUrl,
         image: "",
@@ -395,6 +400,7 @@ const ProductCreateUpdateDetailPage = () => {
       form.setFieldsValue({ images: allUploadedFiles });
       notification.success({ message: "Tải lên thành công" });
     } catch (err) {
+      notification.error({ message: "Đã có lỗi xảy ra khi tải lên" });
       console.log("err", err);
     }
   };
@@ -410,7 +416,7 @@ const ProductCreateUpdateDetailPage = () => {
           100,
           0,
           (uri) => {
-            uploadAdminProductImage({ onModel: "Product", image: uri, imageUrl: "" })
+            uploadAdminImage({ onModel: "Product", image: uri, imageUrl: "" })
               .then(({ data: uploadResData }) => {
                 if (uploadResData) {
                   allUploadedFiles.push({ ...uploadResData.data, uid: uploadResData.data._id });
@@ -419,7 +425,10 @@ const ProductCreateUpdateDetailPage = () => {
                   notification.success({ message: "Tải lên thành công" });
                 }
               })
-              .catch((err) => console.log("err", err));
+              .catch((err) => {
+                notification.error({ message: "Đã có lỗi xảy ra khi tải lên" });
+                console.log("err", err);
+              });
           },
           "base64"
         );
@@ -427,10 +436,9 @@ const ProductCreateUpdateDetailPage = () => {
     }
   };
   const handleImageRemove = async ({ _id: imageId }) => {
-    console.log("handleImageRemove ~ imageId", imageId);
     try {
       if (images.length > 1) {
-        const removedImage = await removeAdminProductImage({ imageId }).unwrap();
+        const removedImage = await removeAdminImage({ imageId }).unwrap();
         const filteredImages = images.filter((item) => item._id !== imageId);
         setImages(filteredImages);
         const newVariantList =
@@ -454,14 +462,16 @@ const ProductCreateUpdateDetailPage = () => {
         form.setFieldsValue({
           images: filteredImages,
         });
-        notification.error({ message: "Xóa ảnh thành công" });
+        notification.info({ message: "Xóa ảnh thành công" });
       } else {
         notification.error({ message: "Sản phẩm chỉ còn 1 ảnh" });
       }
     } catch (err) {
+      notification.error({ message: "Đã có lỗi xảy ra khi xóa ảnh" });
       console.log("err", err);
     }
   };
+  const handleVariantImageError = (e) => {};
   return (
     <AdminLayout>
       <ContentWrapper>
@@ -502,7 +512,7 @@ const ProductCreateUpdateDetailPage = () => {
                   <Input placeholder="Tiêu đề..." />
                 </Form.Item>
                 <Form.Item name="contentValue" rules={[{ required: true }]}>
-                  <TextEditor placeholder="Bài viết sản phẩm..." />
+                  <MdEditor placeholder="Bài viết sản phẩm..." />
                 </Form.Item>
               </Card>
               <Card
@@ -559,7 +569,7 @@ const ProductCreateUpdateDetailPage = () => {
                 <Form.Item name="images" noStyle>
                   <Upload.Dragger
                     accept="image/*"
-                    disabled={uploadAdminProductImageLoading || removeAdminProductImageLoading}
+                    disabled={uploadAdminImageLoading || removeAdminImageLoading}
                     multiple={true}
                     maxCount={6}
                     listType="picture-card"
@@ -570,7 +580,7 @@ const ProductCreateUpdateDetailPage = () => {
                     onChange={handleFileUploadAndResize}
                     onRemove={(file) => handleImageRemove(file)}
                   >
-                    {uploadAdminProductImageLoading || removeAdminProductImageLoading ? (
+                    {uploadAdminImageLoading || removeAdminImageLoading ? (
                       <div className="ant-upload-drag-content">
                         <Spin size="large" indicator={<LogoCube loading size={28} />} />
                         <p className="ant-upload-text">Loading...</p>
@@ -623,23 +633,39 @@ const ProductCreateUpdateDetailPage = () => {
                                   ></Button>
                                 </Tooltip>
                                 <Tooltip title="Xóa ảnh" color={"#434343"}>
-                                  <Button
-                                    type="dashed"
-                                    shape="circle"
-                                    ghost
-                                    size="large"
-                                    onClick={(event) => {
+                                  <Popconfirm
+                                    title={
+                                      <Typography.Paragraph
+                                        ellipsis={{ rows: 3 }}
+                                        style={{ maxWidth: 280, margin: 0 }}
+                                      >
+                                        Bạn chắc chắc muốn xóa <b>{item._id}</b>?
+                                        <br />
+                                        {`(ảnh sẽ ko còn trong DB và cloud)`}
+                                      </Typography.Paragraph>
+                                    }
+                                    placement="bottomRight"
+                                    okText={<BsCheckLg />}
+                                    cancelText={<BsXLg />}
+                                    onConfirm={(event) => {
                                       event.stopPropagation();
-                                      setPreviewVisible(false);
-                                      setPreviewImage(null);
                                       handleImageRemove(item);
                                     }}
-                                    disabled={
-                                      uploadAdminProductImageLoading ||
-                                      removeAdminProductImageLoading
-                                    }
-                                    icon={<BsTrash />}
-                                  ></Button>
+                                  >
+                                    <Button
+                                      type="dashed"
+                                      shape="circle"
+                                      ghost
+                                      size="large"
+                                      onClick={(event) => {
+                                        event.stopPropagation();
+                                        setPreviewVisible(false);
+                                        setPreviewImage(null);
+                                      }}
+                                      disabled={uploadAdminImageLoading || removeAdminImageLoading}
+                                      icon={<BsTrash />}
+                                    ></Button>
+                                  </Popconfirm>
                                 </Tooltip>
                               </Space>
                             ),
@@ -663,16 +689,19 @@ const ProductCreateUpdateDetailPage = () => {
                       <VariantItemWrapper>
                         <div className="container">
                           <div className="image-wrapper">
-                            <img
+                            <Image
+                              preview={false}
                               alt={item._id}
-                              src={images.find((img) => img._id === item.image)?.url}
+                              src={foundVariantImage(item.image)?.url}
+                              onError={handleVariantImageError}
+                              fallback={NOT_FOUND_IMG}
                             />
                           </div>
                           <div className="content-wrapper">
                             <Descriptions column={1} size="small">
                               <Descriptions.Item label="Giá" span={1}>
                                 <Statistic
-                                  suffix="₫"
+                                  suffix="$"
                                   valueStyle={{ fontSize: 14 }}
                                   value={item.price}
                                 ></Statistic>
@@ -768,13 +797,17 @@ const ProductCreateUpdateDetailPage = () => {
                 <Form.Item name="brand" label={"Thương hiệu"} rules={[{ required: true }]}>
                   <Input placeholder="Nhập thương hiệu..." />
                 </Form.Item>
-                <Form.Item name="price" label={"Giá hiển thị"} rules={[{ required: true }]}>
+                <Form.Item
+                  name="price"
+                  label={"Giá hiển thị · USD"}
+                  rules={[{ required: true }]}
+                >
                   <InputNumber
                     min={0}
                     style={{ width: "100%" }}
                     formatter={(value) => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ",")}
                     parser={(value) => value.replace(/\$\s?|(,*)/g, "")}
-                    step={1000}
+                    step={10}
                     placeholder="Nhập giá sản phẩm..."
                   />
                 </Form.Item>
@@ -960,7 +993,7 @@ const ProductCreateUpdateDetailPage = () => {
                 style={{ width: "100%" }}
                 formatter={(value) => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ",")}
                 parser={(value) => value.replace(/\$\s?|(,*)/g, "")}
-                step={1000}
+                step={10}
                 placeholder={`Nhập giá phiên bản...`}
               />
             </Form.Item>
@@ -1091,8 +1124,8 @@ const ProductCreateUpdateDetailPage = () => {
           setImageUrlVisible(false);
         }}
         okButtonProps={{
-          loading: uploadAdminProductImageLoading || removeAdminProductImageLoading,
-          disabled: !imageUrl || imageUrl === NOT_FOUND_IMG,
+          loading: uploadAdminImageLoading || removeAdminImageLoading,
+          disabled: !imageUrl,
           icon: <BsUpload />,
         }}
         onOk={() => {

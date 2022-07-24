@@ -75,7 +75,7 @@ const ProductTableListPage = () => {
   };
   const columns = [
     {
-      title: "Tên danh mục",
+      title: "Tên sản phẩm",
       dataIndex: "name",
       key: "name",
       ellipsis: true,
@@ -133,7 +133,7 @@ const ProductTableListPage = () => {
       key: "price",
       width: 160,
       render: (text, record) => (
-        <Statistic suffix="₫" valueStyle={{ fontSize: 16 }} value={text}></Statistic>
+        <Statistic suffix="$" valueStyle={{ fontSize: 16 }} value={text}></Statistic>
       ),
       sorter: (a, b) => a.price - b.price,
     },
@@ -141,7 +141,7 @@ const ProductTableListPage = () => {
       title: "Kho hàng",
       dataIndex: "variants",
       key: "variants",
-      width: 120,
+      width: 125,
       render: (text, record) => {
         const totalQuantity = getTotalInventoryQuantity(text);
         const totalSold = getTotalInventorySold(text);
@@ -177,11 +177,14 @@ const ProductTableListPage = () => {
       title: <BsThreeDots size={24} />,
       dataIndex: "_id",
       key: "actions",
-      width: 120,
+      width: 125,
+      align: "center",
       render: (text, record) => (
-        <Typography.Link target="_blank" onClick={() => setSelectedProduct(record)}>
-          Xem chi tiết
-        </Typography.Link>
+        <Link to={`/admin/products/${text}`}>
+          <Button type="link" icon={<BsBoxArrowUpRight />} style={{padding: 0}}>
+            Xem chi tiết
+          </Button>
+        </Link>
       ),
     },
   ];
@@ -213,6 +216,14 @@ const ProductTableListPage = () => {
                 <Table
                   className="table-fixed-pagination"
                   rowKey={(record) => record._id}
+                  onRow={(record, rowIndex) => {
+                    return {
+                      onClick: (event) => {
+                        event.preventDefault();
+                        setSelectedProduct(record);
+                      }, // click row
+                    };
+                  }}
                   rowSelection={{
                     type: "radio",
                     selectedRowKeys: [selectedProduct?._id],
@@ -340,7 +351,7 @@ const ProductTableListPage = () => {
                     </Descriptions.Item>
                     <Descriptions.Item label="Giá hiển thị" span={2}>
                       <Statistic
-                        suffix="₫"
+                        suffix="$"
                         valueStyle={{ fontSize: 14 }}
                         value={selectedProduct.price}
                       ></Statistic>
@@ -365,7 +376,7 @@ const ProductTableListPage = () => {
                         ))}
                       </Avatar.Group>
                     ) : (
-                      <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} />
+                      <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} className="bordered" />
                     )}
                   </div>
                   <div className="product-variants">
@@ -373,6 +384,7 @@ const ProductTableListPage = () => {
                       Phiên bản · {selectedProduct.variants.length}
                     </Divider>
                     <List
+                      className="empty-bordered"
                       itemLayout="horizontal"
                       dataSource={selectedProduct.variants}
                       rowKey={(item) => `variant_${item._id}`}
@@ -390,7 +402,7 @@ const ProductTableListPage = () => {
                             <Descriptions column={2} size="small">
                               <Descriptions.Item label="Giá" span={2}>
                                 <Statistic
-                                  suffix="₫"
+                                  suffix="$"
                                   valueStyle={{ fontSize: 14 }}
                                   value={item.price}
                                 ></Statistic>

@@ -1,3 +1,17 @@
+const dayjs = require("dayjs");
+const customParseFormat = require("dayjs/plugin/customParseFormat");
+dayjs.extend(customParseFormat);
+const DAYJS_FORMAT = "DD-MM-YYYY";
+exports.getDateFormat = (date) => {
+  if (!date || !dayjs(date, DAYJS_FORMAT).isValid()) return null;
+  return dayjs(date, DAYJS_FORMAT).add(1, "day").toDate();
+};
+exports.checkIsBeforeDate = (date1, date2) => {
+  if (date1 && date2) return dayjs(date1).isBefore(dayjs(date2));
+  return false;
+};
+
+
 exports.convertToNumber = (value) => (Number.isNaN(Number(value)) ? 0 : Number(value));
 
 exports.getTotalPage = (total, limit) => {

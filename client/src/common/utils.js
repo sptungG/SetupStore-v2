@@ -16,6 +16,9 @@ export const sorterByWords = (sorterKey) => (a, b) =>
     ? -1
     : 0;
 
+export const getNameByValue = (value = "", arr = []) =>
+  arr.find((item) => item.value === value)?.name || null;
+
 export const sorterByDate = (sorterKey) => (a, b) => moment(b[sorterKey]) - moment(a[sorterKey]);
 
 export const getBadgeColorByStatus = (s) => {
@@ -29,6 +32,29 @@ export const getBadgeColorByStatus = (s) => {
     default:
       return "yellow";
   }
+};
+
+export const setColorByStatus = (orderStatus) => {
+  switch (orderStatus.toUpperCase()) {
+    case "PROCESSING":
+      return "blue";
+    case "CANCELLING":
+      return "yellow";
+    case "PACKED":
+      return "green";
+    case "DELIVERING":
+      return "blue";
+    case "DELIVERED":
+      return "green";
+    case "CANCELLED":
+      return "red";
+    default:
+      return "#8c8c8c";
+  }
+};
+
+export const findImageById = (id = "", images = []) => {
+  return id ? images.find((item) => item._id === id) : null;
 };
 
 export const bindParamsFilter = (filter) => {

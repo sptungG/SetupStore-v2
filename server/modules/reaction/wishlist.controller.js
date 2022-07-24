@@ -17,7 +17,7 @@ exports.getWishlistByUserId = async (req, res) => {
           { path: "category", select: "_id name" },
           { path: "images", select: "_id public_id url modelId onModel" },
           { path: "wishlist", select: "_id name picture" },
-          { path: "variants", select: "_id option_label option_name option_value image" },
+          { path: "variants", select: "_id price quantity options image sold status" },
         ],
       })
       .sort({ createdAt: -1 });
@@ -41,7 +41,7 @@ exports.getWishlistByUserId = async (req, res) => {
                 { path: "category", select: "_id name" },
                 { path: "images", select: "_id public_id url modelId onModel" },
                 { path: "wishlist", select: "_id name picture" },
-                { path: "variants", select: "_id option_label option_name option_value image" },
+                { path: "variants", select: "_id price quantity options image sold status" },
               ],
             },
           },
@@ -133,11 +133,7 @@ exports.toggleComboInWishlist = async (req, res) => {
       }).save();
 
       await Promise.all([
-        User.findByIdAndUpdate(
-          userId,
-          { $push: { wishlist_combos: comboId } },
-          { new: true }
-        ),
+        User.findByIdAndUpdate(userId, { $push: { wishlist_combos: comboId } }, { new: true }),
         Combo.findByIdAndUpdate(comboId, { $push: { wishlist: userId } }, { new: true }),
       ]);
 
@@ -149,11 +145,7 @@ exports.toggleComboInWishlist = async (req, res) => {
       const [foundWishlist] = foundComboInWishlist;
       const removedProductFromWishlist = await Wishlist.findByIdAndRemove(foundWishlist._id);
       await Promise.all([
-        User.findByIdAndUpdate(
-          userId,
-          { $pull: { wishlist_combos: comboId } },
-          { new: true }
-        ),
+        User.findByIdAndUpdate(userId, { $pull: { wishlist_combos: comboId } }, { new: true }),
         Combo.findByIdAndUpdate(comboId, { $pull: { wishlist: userId } }, { new: true }),
       ]);
       return res.status(200).json({

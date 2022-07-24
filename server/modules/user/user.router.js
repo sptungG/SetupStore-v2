@@ -14,6 +14,7 @@ const {
 const { getAllUsers, getUser, removeUser, updateUser, updateMyInfo } = require("./user.controller");
 // routes
 router.get("/user/address_list", authCheck, isAuthenticatedUser, getMyAddressList);
+router.get("/user/address_list/:userId", authCheck, isAuthenticatedUser, getMyAddressList);
 router.post("/user/address", authCheck, isAuthenticatedUser, addToMyAddressList);
 router.put("/user/address", authCheck, isAuthenticatedUser, updateAddressById);
 router.delete("/user/address", authCheck, isAuthenticatedUser, removeAddressById);

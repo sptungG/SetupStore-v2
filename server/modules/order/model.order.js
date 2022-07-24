@@ -49,10 +49,7 @@ const OrderSchema = new mongoose.Schema(
           type: Number,
           required: true,
         },
-        saved_variant: {
-          type: String,
-          required: true,
-        },
+        saved_variant: [{ name: String, value: String, auto: false }],
         product: {
           type: ObjectId,
           required: true,
@@ -66,12 +63,12 @@ const OrderSchema = new mongoose.Schema(
       },
     ],
     paymentInfo: {
-      id: {
-        type: String,
-      },
-      status: {
-        type: String,
-      },
+      id: String,
+      status: String,
+      payment_method_types: Array,
+      amount: String,
+      currency: String,
+      created: String,
     },
     paidAt: {
       type: Date,
@@ -92,7 +89,7 @@ const OrderSchema = new mongoose.Schema(
       type: Date,
     },
     orderStatus: {
-      value: { type: String, default: "Processing" },
+      value: { type: String, default: "PROCESSING" },
       name: { type: String, required: true },
     },
     orderLog: [{ createdAt: Date, createdBy: { type: ObjectId, ref: "User" }, content: String }],

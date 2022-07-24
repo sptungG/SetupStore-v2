@@ -6,7 +6,7 @@ const morgan = require("morgan");
 const compression = require("compression");
 const { readdirSync } = require("fs");
 const cloudinary = require("cloudinary").v2;
-// const fileupload = require("express-fileupload");
+const fileupload = require("express-fileupload");
 // app
 const app = express();
 app.use(compression({ level: 6, threshold: 100 * 1000 }));
@@ -29,9 +29,9 @@ mongoose
   .catch((err) => console.log("DB CONNECTION ERR", err));
 
 // middleware
-// app.use(fileupload({ useTempFiles: true }));
-app.use(express.json({ limit: "50mb" }));
-app.use(express.urlencoded({ limit: "50mb", extended: true }));
+app.use(fileupload({ useTempFiles: true }));
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 app.use(cors());
 
 // routes middleware

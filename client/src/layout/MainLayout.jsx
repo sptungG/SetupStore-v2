@@ -18,10 +18,10 @@ const Wrapper = styled.div`
   overflow: hidden;
 `;
 
-const MainLayout = ({ children }) => {
+const MainLayout = ({ hideSearch = false, children }) => {
   return (
     <>
-      <Header />
+      <Header hideSearch={hideSearch} />
       <SideBar />
       <MainWrapper>{children}</MainWrapper>
       {/* <Footer /> */}

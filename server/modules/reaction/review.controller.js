@@ -47,7 +47,7 @@ exports.getAllReviews = async (req, res) => {
 // getFilteredReviews (pagination, sort)
 exports.getFilteredReviews = async (req, res) => {
   try {
-    const { page, limit, sort, rating, onModel } = req.query;
+    const { page, limit, sort, rating, onModel, createdBy } = req.query;
     const currentPage = convertToNumber(page) || 1;
 
     const limitNumber = convertToNumber(limit) || 4;
@@ -69,6 +69,10 @@ exports.getFilteredReviews = async (req, res) => {
       if (sortField && sortDirection) {
         sortCondition[sortField] = sortDirection === "desc" ? -1 : 1;
       }
+    }
+
+    if (createdBy) {
+      filter.createdBy = createdBy;
     }
 
     const [reviews, totalReview] = await Promise.all([
@@ -138,7 +142,7 @@ exports.getFilteredProductReviews = async (req, res) => {
 
     res.status(200).json({
       success: true,
-      reviewers: reviewers.map((r) => r.createdBy),
+      reviewers: reviewers,
       data: reviews,
       pagination: {
         page: currentPage,
@@ -213,7 +217,7 @@ exports.getFilteredComboReviews = async (req, res) => {
 // createProductReview
 exports.createProductReview = async (req, res) => {
   try {
-    const { _id: userId } = req.user;
+    const { _id: userId, name, picture } = req.user;
     const { productId, comboId } = req.query;
     const { rating, comment } = req.body;
 
@@ -284,7 +288,7 @@ exports.createProductReview = async (req, res) => {
 
     res.status(200).json({
       success: true,
-      reviewer: { name: foundUser.name, picture: foundUser.picture },
+      reviewer: { name, picture },
       data: newReview,
     });
   } catch (err) {
@@ -296,9 +300,6 @@ exports.createProductReview = async (req, res) => {
 exports.removeReview = async (req, res) => {
   try {
     const { reviewId } = req.query;
-
-    // const foundUser = await User.findById(userId).exec();
-    // if (!foundUser) throw { status: 404, message: `${userId} not found` };
 
     // const foundModel = await Product.findOne({ _id: productId });
     // if (!foundModel) throw { status: 404, message: `${productId} not found!` };

@@ -5,7 +5,7 @@ import { auth } from "src/common/firebase-config";
 import { setUser } from "../user/user.reducer";
 import { setAuthtokenCredential, setRefreshToken } from "./auth.reducer";
 
-const baseQuery = fetchBaseQuery({
+export const baseQuery = fetchBaseQuery({
   baseUrl: process.env.REACT_APP_API,
   maxRetries: 1,
   prepareHeaders: (headers, { getState }) => {

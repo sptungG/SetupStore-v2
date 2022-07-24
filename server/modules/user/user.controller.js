@@ -9,9 +9,13 @@ const { isValidURL } = require("../../common/utils");
 // getAllUsers (non-pagination)
 exports.getAllUsers = async (req, res) => {
   try {
-    const { keyword, sort } = req.query;
+    const { keyword, sort, status } = req.query;
     let filter = {};
     let sortCondition = {};
+
+    if (status) {
+      filter.status = status;
+    }
 
     if (keyword) {
       const regex = new RegExp(`${keyword}`, "i");
@@ -55,18 +59,22 @@ exports.getUser = async (req, res) => {
 exports.updateMyInfo = async (req, res) => {
   try {
     const { _id: userId } = req.user;
-    const { picture, name, area, defaultAddress } = req.body;
-    if (!picture || !name || !area || !defaultAddress)
-      throw { status: 400, message: `Invalid info updating` };
-    const foundAddress = await Address.findById(defaultAddress);
-    if (!foundAddress) throw { status: 404, message: `Not found address: ${defaultAddress}` };
-    if (!isValidURL(picture)) throw { status: 400, message: `Invalid picture image ${picture}` };
+    const { picture, name, defaultAddress } = req.body;
+    let updateData = {};
+    if (name) {
+      updateData.name = name;
+    }
+    if (defaultAddress) {
+      const foundAddress = await Address.findById(defaultAddress);
+      if (!foundAddress) throw { status: 404, message: `Not found address: ${defaultAddress}` };
+      updateData.defaultAddress = defaultAddress;
+    }
+    if (picture) {
+      if (!isValidURL(picture)) throw { status: 400, message: `Invalid picture image ${picture}` };
+      updateData.picture = picture;
+    }
 
-    const updatedUser = await User.findByIdAndUpdate(
-      userId,
-      { picture, name, area, defaultAddress },
-      { new: true }
-    );
+    const updatedUser = await User.findByIdAndUpdate(userId, updateData, { new: true });
     res.status(200).json({
       success: true,
       data: updatedUser,

@@ -1,9 +1,10 @@
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import { NOT_FOUND_IMG } from "src/common/constant";
-import Swiper, { EffectCreative, Navigation, Parallax, Thumbs } from "swiper";
+import Swiper, { Autoplay, EffectCreative, Navigation, Parallax, Thumbs } from "swiper";
 import { Swiper as SwiperReact, SwiperSlide } from "swiper/react";
 import styled from "styled-components";
 import { rgba } from "polished";
+import { Image } from "antd";
 
 const PostersSlider = ({ images = [], actions = null, thumbSize = 52 }) => {
   const sliderRef = useRef(null);
@@ -27,49 +28,63 @@ const PostersSlider = ({ images = [], actions = null, thumbSize = 52 }) => {
   };
 
   return (
-    <SliderWrapper thumbSize={thumbSize}>
-      <div className="posters-slider" ref={sliderRef}>
-        <SwiperReact
-          modules={[Parallax, EffectCreative, Navigation, Thumbs]}
-          thumbs={{ swiper: activeThumb }}
-          effect={"creative"}
-          speed={600}
-          resistanceRatio={0}
-          grabCursor={true}
-          parallax={true}
-          loop={true}
-          navigation={true}
-          slidesPerView={1}
-          creativeEffect={{
-            limitProgress: images.length > 0 ? images.length : 1,
-            perspective: true,
-            shadowPerProgress: true,
-            prev: {
-              shadow: true,
-              translate: ["-25%", 0, -200],
-            },
-            next: {
-              translate: [calcNextOffset(), 0, 0],
-            },
-          }}
-        >
-          {images.length > 0 ? (
-            images.map((item, index) => (
-              <SwiperSlide key={item._id + "product-images-slider"}>
-                <img
-                  data-swiper-parallax-scale="1.1"
-                  src={item?.url || NOT_FOUND_IMG}
-                  alt={item?._id || "NOT_FOUND_IMG"}
-                />
+    <SliderWrapper className="poster-slider" thumbSize={thumbSize}>
+      <Image.PreviewGroup>
+        <div className="posters-slider" ref={sliderRef}>
+          <SwiperReact
+            modules={[Autoplay, Parallax, EffectCreative, Navigation, Thumbs]}
+            thumbs={{ swiper: activeThumb }}
+            effect={"creative"}
+            speed={600}
+            resistanceRatio={0}
+            grabCursor={true}
+            parallax={true}
+            loop={true}
+            autoplay={
+              images.length > 1
+                ? {
+                    delay: 4000,
+                    disableOnInteraction: false,
+                    pauseOnMouseEnter: false,
+                  }
+                : false
+            }
+            navigation={true}
+            slidesPerView={1}
+            creativeEffect={{
+              limitProgress: images.length > 0 ? images.length : 1,
+              perspective: true,
+              shadowPerProgress: true,
+              prev: {
+                shadow: true,
+                translate: ["-25%", 0, -200],
+              },
+              next: {
+                translate: [calcNextOffset(), 0, 0],
+              },
+            }}
+          >
+            {images.length > 0 ? (
+              images.map((item, index) => (
+                <SwiperSlide key={item._id + "product-images-slider"}>
+                  <Image
+                    width={"100%"}
+                    height={"100%"}
+                    data-swiper-parallax-scale="1.1"
+                    src={item?.url || NOT_FOUND_IMG}
+                    alt={item?._id || "NOT_FOUND_IMG"}
+                  />
+                </SwiperSlide>
+              ))
+            ) : (
+              <SwiperSlide>
+                <img data-swiper-parallax-scale="1.1" src={NOT_FOUND_IMG} alt="NOT_FOUND_IMG" />
               </SwiperSlide>
-            ))
-          ) : (
-            <SwiperSlide>
-              <img data-swiper-parallax-scale="1.1" src={NOT_FOUND_IMG} alt="NOT_FOUND_IMG" />
-            </SwiperSlide>
-          )}
-        </SwiperReact>
-      </div>
+            )}
+          </SwiperReact>
+          {actions && <div className="actions-on-image">{actions}</div>}
+        </div>
+      </Image.PreviewGroup>
       <SwiperReact
         onSwiper={setActiveThumb}
         loop={false}
@@ -98,7 +113,6 @@ const PostersSlider = ({ images = [], actions = null, thumbSize = 52 }) => {
           </SwiperSlide>
         )}
       </SwiperReact>
-      {actions && <div className="actions-on-image">{actions}</div>}
     </SliderWrapper>
   );
 };
@@ -109,12 +123,14 @@ const SliderWrapper = styled.div`
   max-width: 432px;
   height: 100%;
   display: flex;
-  align-items: flex-start;
-  flex-wrap: wrap-reverse;
+  align-items: flex-end;
+  justify-content: flex-end;
+  flex-direction: column-reverse;
+  gap: 10px;
   flex-shrink: 0;
   & .actions-on-image {
     position: absolute;
-    bottom: ${(props) => String(props.thumbSize + 32) + "px"};
+    bottom: 24px;
     right: 24px;
     z-index: 10;
   }
@@ -142,7 +158,7 @@ const SliderWrapper = styled.div`
       display: flex;
     }
     .swiper-slide-shadow {
-      background-color: ${(props) => rgba(props.theme.generatedColors[1], 0.5)};
+      background-color: ${(props) => props.theme.generatedColors[1]};
       backdrop-filter: blur(2px);
     }
     img {
@@ -153,17 +169,28 @@ const SliderWrapper = styled.div`
     .swiper-button-prev {
       color: #fff;
       mix-blend-mode: difference;
+      z-index: 10;
+      height: 100%;
+      transform: translateY(-50%);
+      margin: 0;
+      padding-left: 16px;
+      left: 0;
     }
 
     .swiper-button-next {
       color: #fff;
       mix-blend-mode: difference;
+      z-index: 10;
+      height: 100%;
+      transform: translateY(-50%);
+      margin: 0;
+      padding-right: 16px;
+      right: 0;
     }
   }
   & .product-images-slider-thumbs {
     order: -1;
     flex-shrink: 0;
-    margin-top: 10px;
     margin-left: 52px;
 
     & .swiper-slide {

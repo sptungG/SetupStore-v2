@@ -65,6 +65,7 @@ const LogoutItem = () => {
 };
 
 const ProfileDropdownMenu = () => {
+  let navigate = useNavigate();
   const { data: user } = useSelector((state) => state.user);
 
   const items = [
@@ -84,7 +85,7 @@ const ProfileDropdownMenu = () => {
     },
     {
       label: (
-        <Link to="/history" style={dropdownTextStyle}>
+        <Link to="/profile" style={dropdownTextStyle}>
           Đơn hàng <RiHistoryFill size={22} />
         </Link>
       ),
@@ -98,8 +99,8 @@ const ProfileDropdownMenu = () => {
 
   const menu = <Menu style={{ borderRadius: 8, padding: 8 }} items={items} />;
   return (
-    <Dropdown overlay={menu} placement="bottomRight">
-      <Button size="large" shape="circle">
+    <Dropdown overlay={menu} placement="bottomRight" trigger={["click"]}>
+      <Button size="large" shape="circle" onClick={() => ""} title="Đi đến trang cá nhân">
         <AvatarWrapper>
           <Avatar
             size={33}

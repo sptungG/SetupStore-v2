@@ -59,6 +59,7 @@ import { useMediaQuery } from "react-responsive";
 import ThumbsSlider from "../silder/ThumbsSlider";
 import { isWishlisted, useToggleWishlist } from "src/common/useToggleWishlist";
 import { useAuth } from "src/common/useAuth";
+import InputNumberGroup from "../input/InputNumberGroup";
 
 const MAX_COUNT_CART = 10;
 message.config({
@@ -86,16 +87,13 @@ const ProductDrawerDetail = ({ productId = null, setSelectedProduct }) => {
     variantId ? cart?.products.find((item) => item.variant._id === variantId) || null : null;
   const variantValue = Form.useWatch("variant", form);
   const quantityValue = Form.useWatch("quantity", form);
-  const foundVariant = variantInCart(variantValue);
+  const foundVariantInCart = variantInCart(variantValue);
+  const foundVariantInProduct = productQuery?.data.variants.find((v) => v._id === variantValue);
   useEffect(() => {
-    if (
-      foundVariant &&
-      foundVariant.product._id === productId &&
-      foundVariant.variant.quantity < MAX_COUNT_CART
-    ) {
-      setMaxCount(foundVariant.variant.quantity);
+    if (foundVariantInProduct && foundVariantInProduct.quantity < MAX_COUNT_CART) {
+      setMaxCount(foundVariantInProduct.quantity);
     } else setMaxCount(MAX_COUNT_CART);
-  }, [productId, foundVariant]);
+  }, [foundVariantInProduct]);
 
   useEffect(() => {
     if (productQuerySuccess) {
@@ -108,25 +106,25 @@ const ProductDrawerDetail = ({ productId = null, setSelectedProduct }) => {
   }, [productQuery?.data, productQuerySuccess]);
 
   // useEffect(() => {
-  //   if (productId) productViewInc(productId);
-  // }, [productId]);
+  //   if (productQuerySuccess) productViewInc(productId);
+  // }, [productId, productQuerySuccess]);
   const handleDecrQuantity = () => {
     form.setFieldsValue({
       quantity: quantityValue > 1 ? quantityValue - 1 : 0,
     });
   };
   const handleIncQuantity = () => {
-    const validateValue = quantityValue + (foundVariant?.count || 0);
+    const validateValue = quantityValue + (foundVariantInCart?.count || 0);
     if (validateValue < maxCount) {
       form.setFieldsValue({
         quantity: quantityValue + 1,
       });
     } else {
-      const newQuantity = maxCount - (foundVariant?.count || 0);
+      const newQuantity = maxCount - (foundVariantInCart?.count || 0);
       form.setFieldsValue({
         quantity: newQuantity > 0 ? newQuantity : 0,
       });
-      if (newQuantity > 0) message.error(`Vượt quá LIMIT:${maxCount} rồi!`);
+      if (newQuantity === MAX_COUNT_CART) message.error(`Vượt quá LIMIT:${MAX_COUNT_CART} rồi!`);
       else message.error(`Sản phẩm chỉ còn lại ${maxCount}!`);
     }
   };
@@ -259,7 +257,7 @@ const ProductDrawerDetail = ({ productId = null, setSelectedProduct }) => {
                     arrowPointAtCenter
                   >
                     <div className="btn-nav">
-                      <Link to={`products/${productId}`}>
+                      <Link to={`/products/${productId}`}>
                         <BsBoxArrowUpRight />
                       </Link>
                     </div>
@@ -280,7 +278,7 @@ const ProductDrawerDetail = ({ productId = null, setSelectedProduct }) => {
               images={productQuery.data.images}
               direction={mediaBelow480 ? "y" : "x"}
               actions={
-                <Link to={`products/${productId}`}>
+                <Link to={`/products/${productId}`}>
                   <BsBoxArrowUpRight /> Xem sản phẩm
                 </Link>
               }
@@ -344,7 +342,7 @@ const ProductDrawerDetail = ({ productId = null, setSelectedProduct }) => {
                                 />
                                 <div className="price">
                                   <Statistic
-                                    suffix="₫"
+                                    suffix="$"
                                     className="price-tag"
                                     valueStyle={{ fontSize: 14 }}
                                     value={item.price}
@@ -375,7 +373,11 @@ const ProductDrawerDetail = ({ productId = null, setSelectedProduct }) => {
                                 >
                                   <div className="incart">
                                     {!!variantInCart(item._id) && (
-                                      <Space size={2} split="·" className="incart-tag">
+                                      <Space
+                                        size={2}
+                                        split="·"
+                                        className="incart-tag ant-space-center-items"
+                                      >
                                         <BsCartCheck size={16.5} />
                                         {variantInCart(item._id).count}
                                       </Space>
@@ -386,7 +388,7 @@ const ProductDrawerDetail = ({ productId = null, setSelectedProduct }) => {
                                           size={2}
                                           split="·"
                                           align="center"
-                                          className="incart-tag"
+                                          className="incart-tag ant-space-center-items"
                                         >
                                           <BsCheck2Circle size={16.5} />
                                           <span>{item.sold}</span>
@@ -395,7 +397,7 @@ const ProductDrawerDetail = ({ productId = null, setSelectedProduct }) => {
                                           size={2}
                                           split="·"
                                           align="center"
-                                          className="incart-tag"
+                                          className="incart-tag ant-space-center-items"
                                         >
                                           <BsBoxSeam size={14} />
                                           <span>{item.quantity}</span>
@@ -470,33 +472,10 @@ const ProductDrawerDetail = ({ productId = null, setSelectedProduct }) => {
                             <div className="actions">
                               {variantValue === item._id && (
                                 <Form.Item noStyle name={"quantity"}>
-                                  <InputNumber
-                                    addonBefore={
-                                      <Button
-                                        type="text"
-                                        className="btn-count"
-                                        htmlType="button"
-                                        onClick={handleDecrQuantity}
-                                      >
-                                        <BsDashLg />
-                                      </Button>
-                                    }
-                                    addonAfter={
-                                      <Button
-                                        type="text"
-                                        className="btn-count"
-                                        htmlType="button"
-                                        onClick={handleIncQuantity}
-                                      >
-                                        <BsPlusLg />
-                                      </Button>
-                                    }
-                                    onFocus={() => console.log()}
-                                    readOnly
-                                    min={0}
-                                    max={maxCount}
-                                    controls={false}
-                                    step={1}
+                                  <InputNumberGroup
+                                    handleDecrQuantity={handleDecrQuantity}
+                                    handleIncQuantity={handleIncQuantity}
+                                    maxValue={maxCount}
                                   />
                                 </Form.Item>
                               )}
@@ -588,7 +567,7 @@ const VariantItemWrapper = styled.div`
       flex-direction: column;
       align-items: flex-end;
       & .incart-tag {
-        padding: 3px 6px 0px 6px;
+        padding: 0px 6px;
         background-color: ${(props) =>
           rgba(props.checked ? props.theme.generatedColors[1] : "#fafafa", 0.6)};
         backdrop-filter: blur(6px);
@@ -633,35 +612,6 @@ const VariantItemWrapper = styled.div`
     top: 0;
     right: 0;
     transform: translate(13px, -30px);
-  }
-  & .ant-input-number-group-wrapper {
-    max-width: 112px;
-    height: 32px;
-    overflow: hidden;
-    background-color: #fff;
-    & .ant-input-number-group-addon {
-      padding: 0;
-      cursor: pointer;
-      &:hover {
-        color: ${(props) => props.theme.primaryColor};
-        background-color: ${(props) => props.theme.generatedColors[0]};
-      }
-    }
-    & .ant-input-number-group-addon button {
-      background-color: transparent;
-      cursor: pointer;
-      border: none;
-      outline: none;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      padding: 8px 10px;
-      height: 100%;
-      max-height: 100%;
-    }
-    & .ant-input-number-input {
-      text-align: center;
-    }
   }
 `;
 

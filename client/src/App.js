@@ -1,33 +1,40 @@
+import { Elements } from "@stripe/react-stripe-js";
+import { loadStripe } from "@stripe/stripe-js";
 import { ConfigProvider } from "antd";
 import "antd/dist/antd.variable.min.css";
-import "swiper/css";
-import "swiper/css/navigation";
-import "swiper/css/thumbs";
-import "swiper/css/effect-creative";
-import "swiper/css/parallax";
 import { getRedirectResult, onAuthStateChanged } from "firebase/auth";
 import { lazy, Suspense, useEffect, useLayoutEffect } from "react";
-import { auth } from "src/common/firebase-config";
-import { ThemeProvider } from "styled-components";
-import { useChangeThemeProvider } from "./common/useChangeThemeProvider";
-
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
 import { Navigate, Route, Routes, useNavigate } from "react-router-dom";
 import { PersistGate } from "redux-persist/integration/react";
+import { auth } from "src/common/firebase-config";
 import Loader from "src/components/loader/Loader";
 import ErrorResult from "src/components/nav/ErrorResult";
-import GuestRoute from "./routes/GuestRoute";
+import { ThemeProvider } from "styled-components";
+import "swiper/css";
+import "swiper/css/autoplay";
+import "swiper/css/effect-creative";
+import "swiper/css/navigation";
+import "swiper/css/parallax";
+import "swiper/css/thumbs";
+import { useAuth } from "./common/useAuth";
+import { useChangeThemeProvider } from "./common/useChangeThemeProvider";
 import AdminRoute from "./routes/AdminRoute";
+import GuestRoute from "./routes/GuestRoute";
+import PrivateRoute from "./routes/PrivateRoute";
 import { useCreateOrUpdateUserMutation, useCurrentUserMutation } from "./stores/auth/auth.query";
 import { setAuthtokenCredential, setRefreshToken } from "./stores/auth/auth.reducer";
+import { setDataRedirectStatus } from "./stores/header/header.reducer";
 import { persistor } from "./stores/store";
-import { setDataRedirectStatus, setVisibleType } from "./stores/header/header.reducer";
 import { setUser } from "./stores/user/user.reducer";
-import { useAuth } from "./common/useAuth";
 
 const HomePage = lazy(() => import("src/pages/home/HomePage"));
+const StorePage = lazy(() => import("src/pages/filter/StorePage"));
 const ProductDetailPage = lazy(() => import("src/pages/product/ProductDetailPage"));
 const UserCartPage = lazy(() => import("src/pages/cart/UserCartPage"));
+const CheckoutPage = lazy(() => import("src/pages/checkout/CheckoutPage"));
+const CheckoutCODPage = lazy(() => import("src/pages/checkout/CheckoutCODPage"));
+const ProfilePage = lazy(() => import("src/pages/user/ProfilePage"));
 const LoginPage = lazy(() => import("src/pages/auth/LoginPage"));
 const RegisterPage = lazy(() => import("src/pages/auth/RegisterPage"));
 const ForgotPasswordPage = lazy(() => import("src/pages/auth/ForgotPasswordPage"));
@@ -47,14 +54,15 @@ const UserListPage = lazy(() => import("src/pagesadmin/user/UserListPage"));
 const UserDetailPage = lazy(() => import("src/pagesadmin/user/UserDetailPage"));
 const ReviewProductListPage = lazy(() => import("src/pagesadmin/review/ReviewProductListPage"));
 const AdminSettingPage = lazy(() => import("src/pagesadmin/setting/AdminSettingPage"));
+// Make sure to call loadStripe outside of a component’s render to avoid
+// recreating the Stripe object on every render.
+// This is your test publishable API key.
+const stripePromise = loadStripe(process.env.REACT_APP_STRIPE_KEY);
 
 function App() {
   let navigate = useNavigate();
   const { isSignedIn, user, credential } = useAuth();
-  const [
-    currentUser,
-    { isError: currentUserError, isSuccess: currentUserSuccess, isLoading: currentUserLoading },
-  ] = useCurrentUserMutation();
+  const [currentUser] = useCurrentUserMutation();
   const [createOrUpdateUser] = useCreateOrUpdateUserMutation();
   const { themeProvider } = useChangeThemeProvider();
   const dispatch = useDispatch();
@@ -124,8 +132,22 @@ function App() {
         <Suspense fallback={<Loader />}>
           <Routes>
             <Route path="/" element={<HomePage />} />
+            <Route path="/store" element={<StorePage />} />
             <Route path="/cart" element={<UserCartPage />} />
             <Route path="/products/:productId" element={<ProductDetailPage />} />
+
+            <Route element={<PrivateRoute />}>
+              <Route
+                path="/checkout"
+                element={
+                  <Elements stripe={stripePromise}>
+                    <CheckoutPage />
+                  </Elements>
+                }
+              />
+              <Route path="/checkout/cod" element={<CheckoutCODPage />} />
+              <Route path="/profile" element={<ProfilePage />} />
+            </Route>
 
             <Route element={<GuestRoute />}>
               <Route path="/login" element={<LoginPage />} />
@@ -148,7 +170,7 @@ function App() {
                 element={<ProductCreateUpdateDetailPage />}
               />
               <Route path="/admin/users" element={<UserListPage />} />
-              <Route path="/admin/users/*" element={<UserDetailPage />} />
+              <Route path="/admin/users/:userId" element={<UserDetailPage />} />
               <Route path="/admin/reviews" element={<ReviewProductListPage />} />
               <Route path="/admin/setting" element={<AdminSettingPage />} />
             </Route>

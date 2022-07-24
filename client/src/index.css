@@ -30,6 +30,9 @@ html {
   color: #999;
   background: #eee;
 }
+.ant-image img{
+  object-fit: cover;
+}
 .btndanger:hover {
   color: #ff4d4f;
   background: #ffccc7;
@@ -37,8 +40,12 @@ html {
 .ant-tooltip-inner {
   font-size: 14px;
 }
+.shadowed {
+  box-shadow: 0 2px 8px #f0f1f2 !important;
+}
 .hide-close .ant-drawer-close,
 .hide-title .ant-table-title,
+.hide-footer .ant-table-footer,
 .hide-error .ant-form-item-explain,
 .hide-error .ant-form-item-explain-connected {
   display: none;
@@ -79,9 +86,21 @@ html {
   box-shadow: 0px -1px 4px 0px rgba(153, 153, 153, 0.5);
   padding: 8px 24px;
 }
-.ant-space-center-items .ant-space-item{
+.ant-space-center-items .ant-space-item {
   display: flex;
   align-items: center;
   justify-content: center;
   flex-direction: column;
+}
+
+.bordered.ant-empty-normal,
+.bordered.ant-empty,
+.empty-bordered .ant-empty,
+.empty-bordered .ant-empty-normal {
+  border: 1px dashed #d9d9d9;
+  padding: 24px 0;
+  margin: 0;
+}
+.empty-bordered .ant-list-empty-text {
+  padding: 0;
 }

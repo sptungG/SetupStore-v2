@@ -18,9 +18,9 @@ import { useMediaQuery } from "react-responsive";
 import { NOT_FOUND_IMG } from "src/common/constant";
 import classNames from "classnames";
 
-export const ProductCardLoading = () => {
+export const ProductCardLoading = ({width = 330 }) => {
   return (
-    <CardWrapper className="loading">
+    <CardWrapper className="loading" cardWidth={width}>
       <div className="card-action-top">
         <Skeleton.Input active style={{ width: "100%", borderRadius: 5 }} size="small" />
       </div>
@@ -39,22 +39,24 @@ const ProductCard = ({
   product,
   getSelectedProductId = (p) => console.log(p),
   isWishlisted = false,
+  className = "",
+  width = 330,
 }) => {
   return (
-    <CardWrapper>
+    <CardWrapper className={className} cardWidth={width}>
       <Space className="card-action-top">
-        <Statistic value={product.price} suffix="₫" className="price-tag" />
+        <Statistic value={product.price} suffix="$" className="price-tag" />
       </Space>
       <div className="card-head">
-        <Link className="card-img" title={`Xem chi tiết sản phẩm`} to={`products/${product._id}`}>
-          <img src={product.images[0]?.url || NOT_FOUND_IMG} alt={product._id} />
+        <Link className="card-img" title={`Xem chi tiết sản phẩm`} to={`/products/${product?._id}`}>
+          <img src={product.images[0]?.url || NOT_FOUND_IMG} alt={product?._id} />
         </Link>
         <div className="card-content">
           <div className="card-content-detail">
             {product.combos.length > 0 ? (
               <Avatar.Group maxCount={1}>
                 {product.combos.map((c) => (
-                  <Link to={`combos/${c._id}`} key={`ProductCombos_${c._id}`}>
+                  <Link to={`/combos/${c._id}`} key={`ProductCombos_${c._id}`}>
                     <Avatar
                       size={40}
                       shape={"square"}
@@ -130,7 +132,7 @@ const card_option = keyframes`
 `;
 
 const CardWrapper = styled.div`
-  width: 330px;
+  width: ${(props) => String(props.cardWidth) + "px"};
   height: fit-content;
   padding: 20px;
   border-radius: 10px;
@@ -345,7 +347,35 @@ const CardWrapper = styled.div`
       }
     }
   }
+  &.no-animate {
+    &::before {
+      height: 100%;
+      width: 100%;
+    }
+    & .card-img {
+      border-radius: 10px;
+    }
+    & .card-img::before {
+      content: "";
+      width: 100%;
+      height: 100%;
+      position: absolute;
+      top: 0px;
+      right: 0px;
+      /* background: linear-gradient(230deg, black 0%, transparent 100%); */
+    }
+    & .card-action-top {
+      opacity: 1;
+      visibility: visible;
+    }
 
+    & .card-reactions .reaction {
+      opacity: 1;
+      transform: translateY(0px);
+      transition: none !important;
+      animation: none !important;
+    }
+  }
   @media screen and (max-width: 1023.98px) {
     &::before {
       height: 100%;
@@ -371,9 +401,12 @@ const CardWrapper = styled.div`
     & .card-reactions .reaction {
       opacity: 1;
       transform: translateY(0px);
+      transition: none !important;
+      animation: none !important;
     }
   }
   &.loading {
+    width: ${(props) => String(props.cardWidth) + "px"};
     pointer-events: none;
     &::before {
       background: #f8f9fa;

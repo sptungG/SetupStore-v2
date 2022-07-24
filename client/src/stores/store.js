@@ -9,6 +9,7 @@ import themeReducer from "./theme/theme.reducer";
 import headerReducer from "./header/header.reducer";
 
 import { addressApi } from "./address/address.query";
+import { cascadesApi } from "./address/cascades.query";
 import { authApi } from "./auth/auth.query";
 import { categoryApi } from "./category/category.query";
 import { comboApi } from "./combo/combo.query";
@@ -18,8 +19,9 @@ import { productApi } from "./product/product.query";
 import { reviewApi } from "./review/review.query";
 import { statisticApi } from "./statistic/statistic.query";
 import { userApi } from "./user/user.query";
+import { imageApi } from "./image/image.query";
 import { galleryApi } from "./unsplash/gallery.query";
-import { message } from "antd";
+import { stripeApi } from "./stripe/stripe.query";
 // import { notification } from "antd";
 
 const persistConfig = {
@@ -33,6 +35,7 @@ const reducers = combineReducers({
   themeProvider: themeReducer,
   headerState: headerReducer,
   user: userReducer,
+  [imageApi.reducerPath]: imageApi.reducer,
   [addressApi.reducerPath]: addressApi.reducer,
   [authApi.reducerPath]: authApi.reducer,
   [categoryApi.reducerPath]: categoryApi.reducer,
@@ -44,6 +47,8 @@ const reducers = combineReducers({
   [statisticApi.reducerPath]: statisticApi.reducer,
   [userApi.reducerPath]: userApi.reducer,
   [galleryApi.reducerPath]: galleryApi.reducer,
+  [stripeApi.reducerPath]: stripeApi.reducer,
+  [cascadesApi.reducerPath]: cascadesApi.reducer,
 });
 
 const persistedReducer = persistReducer(persistConfig, reducers);
@@ -68,6 +73,7 @@ export const store = configureStore({
       // loadingBarMiddleware({
       //   promiseTypeSuffixes: ["pending", "fulfilled", "rejected"],
       // }),
+      imageApi.middleware,
       addressApi.middleware,
       authApi.middleware,
       categoryApi.middleware,
@@ -78,7 +84,9 @@ export const store = configureStore({
       reviewApi.middleware,
       statisticApi.middleware,
       userApi.middleware,
+      stripeApi.middleware,
       galleryApi.middleware,
+      cascadesApi.middleware,
     ]),
 });
 

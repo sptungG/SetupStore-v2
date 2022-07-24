@@ -11,7 +11,13 @@ export const orderApi = createApi({
   endpoints: (builder) => ({
     getMyOrders: builder.query({
       query: (filter) => `/orders?${bindParamsFilter(filter)}`,
-      providesTags: ["Orders"],
+      providesTags: (result) =>
+        result
+          ? [
+              ...result.data.map(({ _id }) => ({ type: "Orders", id: _id })),
+              { type: "Orders", id: "LIST" },
+            ]
+          : [{ type: "Orders", id: "LIST" }],
     }),
     createOrder: builder.mutation({
       query: (initdata) => ({
@@ -19,7 +25,15 @@ export const orderApi = createApi({
         method: "POST",
         body: initdata,
       }),
-      invalidatesTags: ["Orders"],
+      invalidatesTags: [{ type: "Orders", id: "LIST" }],
+    }),
+    cancelMyOrder: builder.mutation({
+      query: ({ orderId, initdata }) => ({
+        url: `/order/cancel/${orderId}`,
+        method: "POST",
+        body: initdata,
+      }),
+      invalidatesTags: [{ type: "Orders", id: "LIST" }],
     }),
     createOrderCOD: builder.mutation({
       query: (initdata) => ({
@@ -27,26 +41,32 @@ export const orderApi = createApi({
         method: "POST",
         body: initdata,
       }),
-      invalidatesTags: ["Orders"],
+      invalidatesTags: [{ type: "Orders", id: "LIST" }],
     }),
     // ADMIN
     getAllOrders: builder.query({
       query: (filter) => `/admin/orders?${bindParamsFilter(filter)}`,
-      providesTags: ["Orders"],
+      providesTags: (result) =>
+        result
+          ? [
+              ...result.data.map(({ _id }) => ({ type: "Orders", id: _id })),
+              { type: "Orders", id: "LIST" },
+            ]
+          : [{ type: "Orders", id: "LIST" }],
     }),
     // ADMIN
     getOrderById: builder.query({
-      query: (orderId) => `/admin/order/${orderId}}`,
-      providesTags: ["Orders"],
+      query: (orderId) => `/admin/order/${orderId}`,
+      providesTags: (result, error, id) => [{ type: "Orders", id }],
     }),
     // ADMIN
     updateOrder: builder.mutation({
-      query: (orderId, initdata) => ({
+      query: ({ orderId, initdata }) => ({
         url: `/admin/order/${orderId}`,
         method: "PUT",
         body: initdata,
       }),
-      invalidatesTags: ["Orders"],
+      invalidatesTags: (result, error, { orderId }) => [{ type: "Orders", id: orderId }],
     }),
     // ADMIN
     deleteOrder: builder.mutation({
@@ -54,7 +74,7 @@ export const orderApi = createApi({
         url: `/admin/order/${orderId}`,
         method: "DELETE",
       }),
-      invalidatesTags: ["Orders"],
+      invalidatesTags: (result, error, id) => [{ type: "Orders", id }],
     }),
   }),
 });
@@ -66,4 +86,5 @@ export const {
   useGetMyOrdersQuery,
   useGetOrderByIdQuery,
   useUpdateOrderMutation,
+  useCancelMyOrderMutation,
 } = orderApi;

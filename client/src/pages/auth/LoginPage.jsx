@@ -63,6 +63,14 @@ const LoginPage = (props) => {
     form.setFieldsValue({ email: credential.emailVerifiedValue });
   }, [credential.emailVerifiedValue, form]);
 
+  const roleBasedRedirect = (role) => {
+    if (role === "admin") {
+      navigate("/admin/dashboard", { replace: true });
+    } else {
+      navigate("/", { replace: true });
+    }
+  };
+
   const handleSubmit = async ({ email, password }) => {
     setLoading(true);
     try {
@@ -75,7 +83,7 @@ const LoginPage = (props) => {
       dispatch(setUser(res));
       dispatch(setEmailVerifiedValue(""));
       setLoading(false);
-      navigate("/");
+      roleBasedRedirect(res?.role);
     } catch (error) {
       notification.error({
         message: error.message,

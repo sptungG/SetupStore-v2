@@ -21,7 +21,6 @@ exports.createOrder = async (req, res) => {
             populate: [
               { path: "category", select: "_id name" },
               { path: "images", select: "_id public_id url modelId onModel" },
-              { path: "wishlist", select: "_id name picture" },
             ],
           },
           { path: "variant", select: "_id price quantity options image sold status" },
@@ -29,6 +28,8 @@ exports.createOrder = async (req, res) => {
       },
     ]);
     if (!foundCart) throw { status: 404, message: `Not found cart with Id:${userId}!` };
+    if (foundCart.products.length === 0)
+      throw { status: 400, message: `Not found products in cart with Id:${userId}!` };
 
     const orderItemList = foundCart.products.map((p) => {
       return {
@@ -38,7 +39,7 @@ exports.createOrder = async (req, res) => {
         saved_image:
           p.product.images.find((item) => item._id.toString() === p.variant.image.toString())
             ?.url || NOT_FOUND_IMG,
-        saved_variant: p.variant.options.map((o) => `<p>${o.name}: ${o.value}</p>`),
+        saved_variant: p.variant.options,
         product: p.product,
         variant: p.variant,
       };
@@ -72,7 +73,7 @@ exports.createOrder = async (req, res) => {
       paymentInfo,
       paidAt: dayjs(),
       orderNote,
-      orderStatus: { value: "Processing", name: "Đơn đang được xử lý" },
+      orderStatus: { value: "PROCESSING", name: "Đơn đang được xử lý" },
       orderLog: [
         {
           createdAt: dayjs(),
@@ -86,6 +87,7 @@ exports.createOrder = async (req, res) => {
     const updatedPromisesResult = await Promise.all([
       User.findByIdAndUpdate(userId, { $push: { history: newOrder._id } }, { new: true }),
       Cart.findByIdAndUpdate(foundCart._id, { products: [], cartTotal: 0 }, { new: true }),
+      foundCart.products.map((item) => updateVariantProductQuantity(item.variant, item.count)),
     ]);
 
     res.status(200).json({
@@ -101,7 +103,12 @@ exports.createOrder = async (req, res) => {
 exports.getSingleOrder = async (req, res) => {
   try {
     const { orderId } = req.params;
-    const foundOrder = await Order.findById(orderId).populate("createdBy", "_id name mail picture");
+    const foundOrder = await Order.findById(orderId)
+      .populate("createdBy", "_id name mail picture")
+      .populate({
+        path: "orderLog",
+        populate: { path: "createdBy", select: "_id name mail picture" },
+      });
 
     if (!foundOrder) throw { status: 404, message: `No Order found with ID:${orderId}` };
 
@@ -117,8 +124,7 @@ exports.getSingleOrder = async (req, res) => {
 exports.getMyOrders = async (req, res) => {
   try {
     const { _id: userId } = req.user;
-    const foundOrders = await Order.find({ createdBy: userId });
-
+    const foundOrders = await Order.find({ createdBy: userId }).sort({ createdAt: -1 });
     res.status(200).json({
       success: true,
       data: foundOrders,
@@ -130,16 +136,19 @@ exports.getMyOrders = async (req, res) => {
 
 exports.getAllOrders = async (req, res) => {
   try {
-    const { sort } = req.query;
+    const { sort, orderStatus } = req.query;
+    let filter = {};
     let sortCondition = {};
-
+    if (orderStatus) {
+      filter["orderStatus.value"] = { $in: orderStatus.split(",") };
+    }
     if (sort) {
       const [sortField, sortDirection] = sort.split("_");
       if (sortField && sortDirection) {
         sortCondition[sortField] = sortDirection === "desc" ? -1 : 1;
       }
     }
-    const foundOrders = await Order.find().sort(sort ? sortCondition : { createdAt: -1 });
+    const foundOrders = await Order.find(filter).sort(sort ? sortCondition : { createdAt: -1 });
 
     let totalAmount = 0;
 
@@ -165,14 +174,14 @@ exports.cancelMyOrder = async (req, res) => {
     let foundOrder = await Order.findById(orderId);
     let currentStatus = foundOrder.orderStatus.value;
 
-    if (currentStatus !== "Processing")
+    if (currentStatus !== "PROCESSING")
       throw { status: 400, message: `Failed Cancelled Processed Order:${orderId}` };
 
     foundOrder = await Order.findByIdAndUpdate(
       orderId,
       {
         orderStatus: {
-          value: "Cancelling",
+          value: "CANCELLING",
           name: "Đang hủy đơn",
         },
         $push: {
@@ -189,7 +198,7 @@ exports.cancelMyOrder = async (req, res) => {
     res.status(200).json({
       success: true,
       data: foundOrder,
-      currentStatus: "Cancelling",
+      currentStatus: "CANCELLING",
     });
   } catch (err) {
     res.status(err?.status || 400).json({ success: false, err: err.message });
@@ -203,17 +212,9 @@ exports.updateOrder = async (req, res) => {
     let foundOrder = await Order.findById(orderId);
     let currentStatus = foundOrder.orderStatus.value;
 
-    if (currentStatus === "Delivered") throw { status: 400, message: `Order:${orderId} delivered` };
+    if (currentStatus === "DELIVERED") throw { status: 400, message: `Order:${orderId} delivered` };
 
-    if (currentStatus === "Cancelled") throw { status: 400, message: `Order:${orderId} cancelled` };
-
-    if (statusValue === "Delivered") {
-      await Promise.all(
-        foundOrder.orderItems.map((item) =>
-          updateVariantProductQuantity(item.variant, item.saved_quantity)
-        )
-      );
-    }
+    if (currentStatus === "CANCELLED") throw { status: 400, message: `Order:${orderId} cancelled` };
 
     foundOrder = await Order.findByIdAndUpdate(
       orderId,
@@ -260,6 +261,12 @@ exports.deleteOrder = async (req, res) => {
 
     if (!foundOrder) throw { status: 404, message: `No Order found with ID:${orderId}` };
 
+    const updatedPromisesResult = await Promise.all([
+      User.findByIdAndUpdate(userId, { $pull: { history: foundOrder._id } }, { new: true }),
+      foundOrder.orderItems.map(({ variant, saved_quantity }) =>
+        updateVariantProductQuantity(variant, -saved_quantity)
+      ),
+    ]);
     await foundOrder.remove();
 
     res.status(200).json({
@@ -284,7 +291,6 @@ exports.createCashOrder = async (req, res) => {
             populate: [
               { path: "category", select: "_id name" },
               { path: "images", select: "_id public_id url modelId onModel" },
-              { path: "wishlist", select: "_id name picture" },
             ],
           },
           { path: "variant", select: "_id price quantity options image sold status" },
@@ -292,6 +298,8 @@ exports.createCashOrder = async (req, res) => {
       },
     ]);
     if (!foundCart) throw { status: 404, message: `Not found cart with Id:${userId}!` };
+    if (foundCart.products.length === 0)
+      throw { status: 400, message: `Not found products in cart with Id:${userId}!` };
 
     const orderItemList = foundCart.products.map((p) => {
       return {
@@ -301,13 +309,12 @@ exports.createCashOrder = async (req, res) => {
         saved_image:
           p.product.images.find((item) => item._id.toString() === p.variant.image.toString())
             ?.url || NOT_FOUND_IMG,
-        saved_variant: p.variant.options.map((o) => `<p>${o.name}: ${o.value}</p>`),
+        saved_variant: p.variant.options,
         product: p.product,
         variant: p.variant,
       };
     });
-
-    const { shippingInfo, shippingPrice, orderNote } = req.body;
+    const { shippingInfo, shippingPrice, orderNote, paymentInfo } = req.body;
 
     if (
       shippingInfo == null ||
@@ -329,10 +336,16 @@ exports.createCashOrder = async (req, res) => {
       itemsPrice: foundCart.cartTotal,
       shippingPrice: shippingPriceNumber,
       totalPrice: foundCart.cartTotal + shippingPriceNumber,
-      paymentInfo: { id: uuidv4(), status: "Cash On Delivery" },
+      paymentInfo: {
+        id: uuidv4(),
+        status: "COD",
+        created: dayjs(),
+        payment_method_types: ["cash"],
+        ...paymentInfo,
+      },
       paidAt: dayjs(),
       orderNote,
-      orderStatus: { value: "Processing", name: "Đơn đang được xử lý" },
+      orderStatus: { value: "PROCESSING", name: "Đơn đang được xử lý" },
       orderLog: [
         {
           createdAt: dayjs(),
@@ -346,6 +359,7 @@ exports.createCashOrder = async (req, res) => {
     const updatedPromisesResult = await Promise.all([
       User.findByIdAndUpdate(userId, { $push: { history: newOrder._id } }, { new: true }),
       Cart.findByIdAndUpdate(foundCart._id, { products: [], cartTotal: 0 }, { new: true }),
+      foundCart.products.map((item) => updateVariantProductQuantity(item.variant, item.count)),
     ]);
 
     res.status(200).json({

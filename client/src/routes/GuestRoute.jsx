@@ -1,11 +1,11 @@
 import { useSelector } from "react-redux";
 import { Navigate, Outlet } from "react-router-dom";
+import { useAuth } from "src/common/useAuth";
 
 export default function GuestRoute() {
-  const credential = useSelector((state) => state.auth);
-  const { data: user } = useSelector((state) => state.user);
+  const { isSignedIn } = useAuth();
 
-  if (user != null) return <Navigate to="/" replace />;
+  if (isSignedIn) return <Navigate to="/" replace />;
 
   return <Outlet />;
 }

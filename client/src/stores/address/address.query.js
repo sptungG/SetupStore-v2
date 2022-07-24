@@ -7,11 +7,27 @@ import { baseQueryWithReauth } from "../auth/auth.query";
 export const addressApi = createApi({
   reducerPath: "addressApi",
   baseQuery: baseQueryWithReauth,
-  tagTypes: ["UserAddress"],
+  tagTypes: ["Addresses"],
   endpoints: (builder) => ({
     getMyAddressList: builder.query({
       query: () => `/user/address_list`,
-      providesTags: ["UserAddress"],
+      providesTags: (result) =>
+        result
+          ? [
+              ...result.data.map(({ _id }) => ({ type: "Addresses", id: _id })),
+              { type: "Addresses", id: "LIST" },
+            ]
+          : [{ type: "Addresses", id: "LIST" }],
+    }),
+    getAddressByUserId: builder.query({
+      query: (userId) => `/user/address_list/${userId}`,
+      providesTags: (result) =>
+        result
+          ? [
+              ...result.data.map(({ _id }) => ({ type: "Addresses", id: _id })),
+              { type: "Addresses", id: "LIST" },
+            ]
+          : [{ type: "Addresses", id: "LIST" }],
     }),
     addToMyAddressList: builder.mutation({
       query: (initdata) => ({
@@ -19,23 +35,23 @@ export const addressApi = createApi({
         method: "POST",
         body: initdata,
       }),
-      invalidatesTags: ["UserAddress"],
+      invalidatesTags: [{ type: "Addresses", id: "LIST" }],
     }),
     updateMyAddress: builder.mutation({
-      query: (addressId, initdata) => ({
-        url: `/user/address?addressId=${addressId}`,
+      query: ({ addressId, initdata }) => ({
+        url: `/user/address`,
         method: "PUT",
-        body: initdata,
+        body: { addressId, ...initdata },
       }),
-      invalidatesTags: ["UserAddress"],
+      invalidatesTags: (result, error, { addressId }) => [{ type: "Addresses", addressId }],
     }),
     removeAddressById: builder.mutation({
-      query: (addressId, initdata) => ({
-        url: `/user/address?addressId=${addressId}`,
+      query: ({ addressId, exchangeId }) => ({
+        url: `/user/address`,
         method: "DELETE",
-        body: initdata,
+        body: { addressId, exchangeId },
       }),
-      invalidatesTags: ["UserAddress"],
+      invalidatesTags: (result, error, { addressId }) => [{ type: "Addresses", addressId }],
     }),
   }),
 });
@@ -44,4 +60,5 @@ export const {
   useGetMyAddressListQuery,
   useRemoveAddressByIdMutation,
   useUpdateMyAddressMutation,
+  useGetAddressByUserIdQuery,
 } = addressApi;

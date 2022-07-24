@@ -32,22 +32,22 @@ export const userApi = createApi({
     }),
     // ADMIN
     getUserById: builder.query({
-      query: (userId) => `/admin/user/${userId})}`,
+      query: (userId) => `/admin/user/${userId}`,
       providesTags: [{ type: "Users", id: "LIST" }],
     }),
     // ADMIN
     updateUser: builder.mutation({
-      query: (userId, initdata) => ({
-        url: `/admin/user/${userId})}`,
+      query: (data) => ({
+        url: `/admin/user/${data.userId}`,
         method: "PUT",
-        body: initdata,
+        body: data.initdata,
       }),
       invalidatesTags: [{ type: "Users", id: "LIST" }],
     }),
     // ADMIN
     removeUser: builder.mutation({
       query: (userId) => ({
-        url: `/admin/user/${userId})}`,
+        url: `/admin/user/${userId}`,
         method: "DELETE",
       }),
       invalidatesTags: [{ type: "Users", id: "LIST" }],

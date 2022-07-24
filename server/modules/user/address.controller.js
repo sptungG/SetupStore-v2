@@ -4,7 +4,12 @@ const Address = require("./model.address");
 // getUser
 exports.getMyAddressList = async (req, res) => {
   try {
-    const { _id: userId } = req.user;
+    let userId = null;
+    if (req.query.userId) {
+      userId = req.query.userId;
+    } else {
+      userId = req.user._id;
+    }
     const foundAddresses = await Address.find({ createdBy: userId }).sort({ createdAt: -1 });
     res.status(200).json({
       success: true,
@@ -49,9 +54,13 @@ exports.addToMyAddressList = async (req, res) => {
 };
 exports.updateAddressById = async (req, res) => {
   try {
-    const { _id: userId } = req.user;
-    const { addressId } = req.query;
-    const { name, phoneNo, address, area, city, postalCode, country } = req.body;
+    let userId = null;
+    if (req.query?.userId) {
+      userId = req.query.userId;
+    } else {
+      userId = req.user._id;
+    }
+    const { addressId, name, phoneNo, address, area, city, postalCode, country } = req.body;
     if (!phoneNo || !name || !area || !address || !city || !postalCode || !country)
       throw { status: 400, message: `Invalid info address updating` };
 
@@ -76,9 +85,13 @@ exports.updateAddressById = async (req, res) => {
 // removeUsers
 exports.removeAddressById = async (req, res) => {
   try {
-    const { _id: userId, defaultAddress } = req.user;
-    const { addressId } = req.query;
-    const { exchangeId } = req.body;
+    let userId = null;
+    if (req.query?.userId) {
+      userId = req.query.userId;
+    } else {
+      userId = req.user._id;
+    }
+    const { addressId, exchangeId } = req.body;
     let deletedAddress = await Address.findById(addressId);
     if (!deletedAddress) throw { status: 404, message: `Not found Address:${addressId}` };
     if (deletedAddress.createdBy.toString() !== userId.toString())

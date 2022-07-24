@@ -61,7 +61,7 @@ const HeaderWrapper = styled.header`
   }
 `;
 
-const Header = () => {
+const Header = ({ hideSearch = false }) => {
   const mediaBelow768 = useMediaQuery({ maxWidth: 768 });
   const mediaAbove1280 = useMediaQuery({ minWidth: 1280 });
   const mediaAbove1350 = useMediaQuery({ minWidth: 1350 });
@@ -117,7 +117,7 @@ const Header = () => {
       </div>
 
       <div className="header-center" ref={ref}>
-        {!mediaBelow768 && <AutocompleteSearch width={width || 480} />}
+        {!hideSearch && !mediaBelow768 && <AutocompleteSearch width={width || 480} />}
       </div>
       <div className="header-right">
         {!mediaBelow768 && (

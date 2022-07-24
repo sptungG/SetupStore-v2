@@ -9,17 +9,17 @@ const ContentWrapper = styled.div`
   margin-bottom: 24px;
 `;
 
-const LocalSearch = ({ onFinish }) => {
+const LocalSearch = ({ onFinish, onValuesChange, placeholder = "Tìm kiếm trong bảng..." }) => {
   const [form] = Form.useForm();
 
   return (
-    <ContentWrapper>
-      <Form form={form} size="large" onFinish={onFinish}>
+    <ContentWrapper className="localsearch">
+      <Form form={form} size="middle" onFinish={onFinish} onValuesChange={onValuesChange}>
         <Form.Item name="keySearch" noStyle>
           <Input
             bordered={false}
             style={{ paddingRight: 6 }}
-            placeholder="Tìm kiếm trong bảng..."
+            placeholder={placeholder}
             allowClear
             suffix={
               <Button type="primary" htmlType="submit" size="middle">

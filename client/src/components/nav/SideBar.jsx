@@ -1,80 +1,27 @@
-import { Col, Drawer, Row, Space, Avatar, Typography } from "antd";
-import React from "react";
+import { Avatar, Col, Drawer, Row, Space, Typography } from "antd";
 import {
   BsBoxSeam,
   BsChatLeftText,
   BsCollection,
   BsHouseDoor,
   BsLayoutWtf,
-  BsPeople,
+  BsPeople
 } from "react-icons/bs";
-import { FaStore } from "react-icons/fa";
-import { FcAbout, FcLike, FcServices, FcShop, FcSms, FcViewDetails } from "react-icons/fc";
-import { RiQuestionAnswerLine } from "react-icons/ri";
+import { FcLike, FcServices, FcViewDetails } from "react-icons/fc";
 import { useDispatch, useSelector } from "react-redux";
-import { Link, Navigate, useNavigate } from "react-router-dom";
-import { useChangeThemeProvider } from "src/common/useChangeThemeProvider";
+import { useMediaQuery } from "react-responsive";
+import { Link, useNavigate } from "react-router-dom";
+import { useAuth } from "src/common/useAuth";
 import { setVisibleType } from "src/stores/header/header.reducer";
 import styled from "styled-components";
 import Button from "../button/Button";
-import ThemeButton from "../button/ThemeButton";
-import LogoAndText from "./LogoAndText";
-import { useMediaQuery } from "react-responsive";
-import { useAuth } from "src/common/useAuth";
-
-const SideMenuWrapper = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  height: 100%;
-  & .side-item {
-    padding: 8px;
-    width: 100%;
-  }
-  & .side-item.side-item-nav {
-    display: flex;
-    align-items: center;
-    flex-wrap: nowrap;
-    gap: 8px;
-    & .side-icon {
-      flex: 0 0 32px;
-      font-size: 20px;
-      color: ${(props) => props.theme.generatedColors[5]};
-      display: flex;
-      justify-content: center;
-      flex-direction: column;
-    }
-    & .side-content {
-      flex: 1 1 auto;
-      font-size: 16px;
-    }
-  }
-
-  & .side-user {
-    margin-top: auto;
-  }
-
-  & .side-item:hover {
-    background-color: ${(props) => props.theme.generatedColors[0]};
-  }
-`;
-
-const AvatarWrapper = styled.div`
-  height: 100%;
-  width: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 1px;
-  position: relative;
-`;
 
 const SideBar = () => {
   const dispatch = useDispatch();
   let navigate = useNavigate();
   const mediaBelow768 = useMediaQuery({ maxWidth: 768 });
   const headerState = useSelector((state) => state.headerState);
-  const { isSignedIn, user, credential } = useAuth();
+  const { isSignedIn, user, isAdmin } = useAuth();
 
   return (
     <Drawer
@@ -159,13 +106,13 @@ const SideBar = () => {
         </NavItem>
         {isSignedIn && (
           <div className="side-user">
-            <NavItem icon={<FcViewDetails />} linkto={"/categories"}>
+            <NavItem icon={<FcViewDetails />} linkto={"/profile"}>
               Đơn hàng
             </NavItem>
-            <NavItem icon={<FcLike />} linkto={"/about-us"}>
+            <NavItem icon={<FcLike />} linkto={"/profile"}>
               Yêu thích
             </NavItem>
-            <NavItem icon={<FcServices />} linkto={"/faq"}>
+            <NavItem icon={<FcServices />} linkto={"/profile"}>
               Cài đặt
             </NavItem>
           </div>
@@ -183,5 +130,52 @@ const NavItem = ({ icon, children, linkto = "/" }) => {
     </Link>
   );
 };
+
+const SideMenuWrapper = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  height: 100%;
+  & .side-item {
+    padding: 8px;
+    width: 100%;
+  }
+  & .side-item.side-item-nav {
+    display: flex;
+    align-items: center;
+    flex-wrap: nowrap;
+    gap: 8px;
+    & .side-icon {
+      flex: 0 0 32px;
+      font-size: 20px;
+      color: ${(props) => props.theme.generatedColors[5]};
+      display: flex;
+      justify-content: center;
+      flex-direction: column;
+    }
+    & .side-content {
+      flex: 1 1 auto;
+      font-size: 16px;
+    }
+  }
+
+  & .side-user {
+    margin-top: auto;
+  }
+
+  & .side-item:hover {
+    background-color: ${(props) => props.theme.generatedColors[0]};
+  }
+`;
+
+const AvatarWrapper = styled.div`
+  height: 100%;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1px;
+  position: relative;
+`;
 
 export default SideBar;

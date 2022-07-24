@@ -4,7 +4,7 @@ const { ObjectId } = mongoose.Schema;
 const UserSchema = mongoose.Schema(
   {
     name: String,
-    picture: String,
+    picture: { type: String, default: "https://source.unsplash.com/random?setup" },
     phone: String,
     email: {
       type: String,

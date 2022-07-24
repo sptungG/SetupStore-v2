@@ -31,6 +31,8 @@ export function useAddToCart() {
     cart: myCartQuerySuccess ? myCartQuery.data : null,
     addProductToCart,
     removeProductFromCart,
+    addProductToCartSuccess,
+    removeProductFromCartSuccess,
     myCartRefetch,
   };
 }

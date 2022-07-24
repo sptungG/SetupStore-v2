@@ -30,6 +30,16 @@ export const productApi = createApi({
       }),
       invalidatesTags: (result, error, id) => [{ type: "Products", id }],
     }),
+    getProductsWishlistByUserId: builder.query({
+      query: () => `/wishlist?onModel=Product`,
+      providesTags: (result) =>
+        result
+          ? [
+              ...result.data.map(({ modelId }) => ({ type: "Products", id: modelId._id })),
+              { type: "Products", id: "LIST" },
+            ]
+          : [{ type: "Products", id: "LIST" }],
+    }),
     toggleProductWishlist: builder.mutation({
       query: ({ productId }) => ({
         url: `/wishlist/product?productId=${productId}`,
@@ -118,43 +128,6 @@ export const productApi = createApi({
       }),
       invalidatesTags: [{ type: "Products", id: "LIST" }],
     }),
-    //
-    //
-    // ADMIN
-    getProductImagesFiltered: builder.query({
-      query: (filter) => `/images?${bindParamsFilter(filter)}`,
-      providesTags: (result) =>
-        result
-          ? [
-              ...result.data.map(({ _id }) => ({ type: "Images", id: _id })),
-              { type: "Images", id: "LIST" },
-            ]
-          : [{ type: "Images", id: "LIST" }],
-    }),
-    // ADMIN
-    uploadAdminProductImage: builder.mutation({
-      query: ({ onModel = "Product", imageUrl = "", image = "" }) => ({
-        url: `/admin/uploadimages?onModel=${onModel}`,
-        method: "POST",
-        body: { imageUrl, image },
-      }),
-      invalidatesTags: (result, error, id) => [
-        { type: "Products", id: "LIST" },
-        { type: "Images", id: "LIST" },
-      ],
-    }),
-    // ADMIN
-    removeAdminProductImage: builder.mutation({
-      query: ({ imageId }) => ({
-        url: `/admin/removeimage`,
-        method: "DELETE",
-        body: { imageId },
-      }),
-      invalidatesTags: (result, error, { imageId }) => [
-        { type: "Products", id: "LIST" },
-        { type: "Images", id: imageId },
-      ],
-    }),
   }),
 });
 export const {
@@ -166,12 +139,10 @@ export const {
   useProductViewIncMutation,
   useUpdateProductMutation,
   useToggleProductWishlistMutation,
-  useUploadAdminProductImageMutation,
-  useRemoveAdminProductImageMutation,
-  useGetProductImagesFilteredQuery,
   useCreateVariantMutation,
   useDeleteVariantMutation,
   useUpdateVariantMutation,
   useAddProductToCartMutation,
   useRemoveProductFromCartMutation,
+  useGetProductsWishlistByUserIdQuery,
 } = productApi;
