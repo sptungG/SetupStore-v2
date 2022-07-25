@@ -8,7 +8,7 @@ export function useResponsiveProductFilter() {
   const mediaAbove1040 = useMediaQuery({ minWidth: 1040 });
   const mediaAbove684 = useMediaQuery({ minWidth: 684 });
   const [productsFilterValue, setProductsFilterValue] = useState({ page: 1, limit: 4 });
-  // const debouncedProductsFilterValue = useDebounce(productsFilterValue, 500);
+  const debouncedProductsFilterValue = useDebounce(productsFilterValue, 500);
   const {
     data: productsFilteredQuery,
     isFetching: productsFilteredFetching,
@@ -30,7 +30,7 @@ export function useResponsiveProductFilter() {
     productsFilteredQuery,
     productsFilteredFetching,
     productsFilteredSuccess,
-    productsFilterValue,
+    productsFilterValue: debouncedProductsFilterValue,
     setProductsFilterValue,
   };
 }
