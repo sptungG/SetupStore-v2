@@ -13,9 +13,8 @@ export function useResponsiveProductFilter() {
     data: productsFilteredQuery,
     isFetching: productsFilteredFetching,
     isSuccess: productsFilteredSuccess,
-  } = useGetProductsFilteredQuery(debouncedProductsFilterValue, { refetchOnMountOrArgChange: true });
+  } = useGetProductsFilteredQuery(debouncedProductsFilterValue);
   useEffect(() => {
-    window.scrollTo({ top: 0, left: 0, behavior: "smooth" });
     if (mediaAbove1390) {
       setProductsFilterValue({ page: 1, limit: 4 });
     } else if (mediaAbove1040) {
@@ -25,6 +24,7 @@ export function useResponsiveProductFilter() {
     } else {
       setProductsFilterValue({ page: 1, limit: 1 });
     }
+    window.scrollTo({ top: 0, left: 0, behavior: "smooth" });
   }, [mediaAbove1390, mediaAbove1040, mediaAbove684]);
   return {
     productsFilteredQuery,
