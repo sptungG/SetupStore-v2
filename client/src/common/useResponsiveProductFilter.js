@@ -13,7 +13,7 @@ export function useResponsiveProductFilter() {
     data: productsFilteredQuery,
     isFetching: productsFilteredFetching,
     isSuccess: productsFilteredSuccess,
-  } = useGetProductsFilteredQuery(productsFilterValue, { refetchOnMountOrArgChange: true });
+  } = useGetProductsFilteredQuery(debouncedProductsFilterValue, { refetchOnMountOrArgChange: true });
   useEffect(() => {
     window.scrollTo({ top: 0, left: 0, behavior: "smooth" });
     if (mediaAbove1390) {
