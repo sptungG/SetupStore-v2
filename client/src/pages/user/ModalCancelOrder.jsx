@@ -24,7 +24,7 @@ const ModalCancelOrder = ({ selectedOrder = null, setSelectedOrder }) => {
         orderId,
         initdata: { orderContentNote },
       }).unwrap();
-      message.success("Yêu cầu hủy đơn thành công! Tài khoản của bạn sẽ được hoàn tiền sớm nhất");
+      message.success("Yêu cầu hủy đơn thành công! Tài khoản của bạn sẽ được hoàn tiền sớm nhất", 4);
       form.resetFields();
       setSelectedOrder(null);
     } catch (err) {

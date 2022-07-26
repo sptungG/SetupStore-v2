@@ -81,7 +81,6 @@ const OrderDrawerChangeStatus = ({ setSelectedOrder, selectedOrder = null }) => 
       ],
       "_id"
     );
-    console.log("handleValuesChange ~ newLog", newLog);
     setOrderLog(newLog);
   };
   const handleCancelUpdateOrder = () => {
