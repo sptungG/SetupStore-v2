@@ -61,17 +61,17 @@ const OrderDrawerChangeStatus = ({ setSelectedOrder, selectedOrder = null }) => 
     const { orderLogContent } = values;
     const newLog = lodash.uniqBy(
       [
-        ...orderLog,
         {
           _id: "newnewnew",
           content: orderLogContent || "",
           createdAt: undefined,
           createdBy: user,
         },
+        ...orderLog,
       ],
       "_id"
     );
-    setOrderLog(newLog);
+    setOrderLog(lodash.reverse(newLog));
   };
   const handleCancelUpdateOrder = () => {
     const { orderStatus, orderLog } = foundOrderData;
