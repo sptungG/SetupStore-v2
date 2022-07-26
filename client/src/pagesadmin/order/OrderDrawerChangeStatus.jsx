@@ -28,19 +28,19 @@ import { formatDate, setColorByStatus } from "src/common/utils";
 import Button from "src/components/button/Button";
 import ChipTag from "src/components/chip/ChipTag";
 import { useGetOrderByIdQuery, useUpdateOrderMutation } from "src/stores/order/order.query";
+import { useRefundPaymentMutation } from "src/stores/stripe/stripe.query";
 import styled from "styled-components";
 
 const validateMessages = {
   required: "Trường này chưa nhập giá trị!",
 };
 
-const OrderDrawerChangeStatus = ({
-  setSelectedOrder,
-  selectedOrder = null,
-}) => {
+const OrderDrawerChangeStatus = ({ setSelectedOrder, selectedOrder = null }) => {
   const [form] = Form.useForm();
   const { user } = useAuth();
   const [updateOrder, { isLoading: updateOrderLoading }] = useUpdateOrderMutation();
+  const [refundPayment, { isLoading: refundPaymentLoading }] = useRefundPaymentMutation();
+
   const { data: getOrderQuery, isSuccess: getOrderSuccess } = useGetOrderByIdQuery(selectedOrder, {
     skip: !selectedOrder,
   });
@@ -87,6 +87,10 @@ const OrderDrawerChangeStatus = ({
       if (!orderId) throw new Error("Mã đơn sai định dạng");
       message.loading("Đang xử lý ...");
       const updateOrderRes = await updateOrder({ orderId, initdata: values });
+      if (values.statusValue === "CANCELLED") {
+        const refundRes = await refundPayment(orderId).unwrap();
+        message.info("Hủy đơn hàng thành công. Xác nhận hoàn tiền về tài khoản khách hàng");
+      }
       message.success("Cập nhật trạng thái đơn hàng thành công");
       setSelectedOrder(null);
     } catch (err) {
