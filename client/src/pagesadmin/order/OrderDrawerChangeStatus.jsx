@@ -46,27 +46,42 @@ const OrderDrawerChangeStatus = ({ setSelectedOrder, selectedOrder = null }) => 
   });
   const statusValue = Form.useWatch("statusValue", form);
   const statusName = Form.useWatch("statusName", form);
+  // const orderLogContent = Form.useWatch("orderLogContent", form);
   const [orderLog, setOrderLog] = useState([]);
   const foundOrderData = getOrderSuccess ? getOrderQuery?.data : null;
 
   useEffect(() => {
     if (getOrderSuccess) {
       const { orderStatus, orderLog } = getOrderQuery?.data;
-      setOrderLog(orderLog);
-      form.setFieldsValue({ statusValue: orderStatus?.value, statusName: orderStatus?.name });
+      const reversedLog = lodash.reverse([...orderLog]);
+      setOrderLog(reversedLog);
+      form.setFieldsValue({
+        statusValue: orderStatus?.value,
+        statusName: orderStatus?.name,
+        orderLogContent: "",
+      });
     }
-  }, [getOrderSuccess]);
+  }, [getOrderSuccess, getOrderQuery?.data]);
 
-  const handleValuesChange = (changedValue, values) => {
+  // useEffect(() => {
+  //   if(orderLogContent)
+  // }, [orderLogContent])
+
+  const handleValuesChange = (currentOrderLog, values) => {
     const { orderLogContent } = values;
-    let newLog = orderLog;
-    newLog.push({
-      _id: "newnewnew",
-      content: orderLogContent || "",
-      createdAt: undefined,
-      createdBy: user,
-    });
-    newLog = lodash.uniqBy(newLog, "_id");
+    const newLog = lodash.uniqBy(
+      [
+        {
+          _id: "newnewnew",
+          content: orderLogContent || "",
+          createdAt: undefined,
+          createdBy: user,
+        },
+        ...currentOrderLog,
+      ],
+      "_id"
+    );
+    console.log("handleValuesChange ~ newLog", newLog);
     setOrderLog(newLog);
   };
   const handleCancelUpdateOrder = () => {
@@ -118,7 +133,9 @@ const OrderDrawerChangeStatus = ({ setSelectedOrder, selectedOrder = null }) => 
   return (
     <Drawer
       visible={!!selectedOrder}
-      onClose={() => setSelectedOrder(null)}
+      onClose={() => {
+        setSelectedOrder(null);
+      }}
       title={`Đơn hàng #${selectedOrder}`}
       destroyOnClose
       getContainer={false}
@@ -164,7 +181,7 @@ const OrderDrawerChangeStatus = ({ setSelectedOrder, selectedOrder = null }) => 
               ? handleCancelOrderStatus(selectedOrder, values, foundOrderData?.paymentInfo.status)
               : handleUpdateOrderStatus(selectedOrder, values)
           }
-          onValuesChange={handleValuesChange}
+          onValuesChange={(changedValue, values) => handleValuesChange(orderLog, values)}
           disabled={["DELIVERED", "CANCELLED"].includes(foundOrderData?.orderStatus.value)}
         >
           <Form.Item
