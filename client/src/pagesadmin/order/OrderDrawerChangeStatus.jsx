@@ -61,13 +61,13 @@ const OrderDrawerChangeStatus = ({ setSelectedOrder, selectedOrder = null }) => 
     const { orderLogContent } = values;
     const newLog = lodash.uniqBy(
       [
+        ...orderLog,
         {
           _id: "newnewnew",
           content: orderLogContent || "",
           createdAt: undefined,
           createdBy: user,
         },
-        ...orderLog,
       ],
       "_id"
     );
@@ -87,7 +87,20 @@ const OrderDrawerChangeStatus = ({ setSelectedOrder, selectedOrder = null }) => 
       if (!orderId) throw new Error("Mã đơn sai định dạng");
       message.loading("Đang xử lý ...");
       const updateOrderRes = await updateOrder({ orderId, initdata: values });
-      if (values.statusValue === "CANCELLED") {
+      message.success("Cập nhật trạng thái đơn hàng thành công");
+      setSelectedOrder(null);
+    } catch (err) {
+      message.error("Đã có lỗi xảy ra");
+      console.log("err", err);
+      setSelectedOrder(null);
+    }
+  };
+  const handleCancelOrderStatus = async (orderId, values, orderPaymentStatus) => {
+    try {
+      if (!orderId) throw new Error("Mã đơn sai định dạng");
+      message.loading("Đang xử lý ...");
+      const updateOrderRes = await updateOrder({ orderId, initdata: values });
+      if (values.statusValue === "CANCELLED" && String(orderPaymentStatus) !== "COD") {
         const refundRes = await refundPayment(orderId).unwrap();
         message.info("Hủy đơn hàng thành công. Xác nhận hoàn tiền về tài khoản khách hàng");
       }
@@ -150,7 +163,11 @@ const OrderDrawerChangeStatus = ({ setSelectedOrder, selectedOrder = null }) => 
           layout="vertical"
           requiredMark={false}
           validateMessages={validateMessages}
-          onFinish={(values) => handleUpdateOrderStatus(selectedOrder, values)}
+          onFinish={(values) =>
+            values.statusValue === "CANCELLED"
+              ? handleCancelOrderStatus(selectedOrder, values, foundOrderData?.paymentInfo.status)
+              : handleUpdateOrderStatus(selectedOrder, values)
+          }
           onValuesChange={handleValuesChange}
           disabled={["DELIVERED", "CANCELLED"].includes(foundOrderData?.orderStatus.value)}
         >
