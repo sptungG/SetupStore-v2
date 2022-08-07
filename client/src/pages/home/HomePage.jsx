@@ -109,19 +109,18 @@ const HomePage = () => {
             </ProductsContainer>
           </InfiniteScroll>
         )}
-        {productsFilteredSuccess && (
-          <ProductDrawerDetail
-            productId={selectedProductId || null}
-            setSelectedProduct={(value) => setSelectedProductId(value)}
-          />
-        )}
       </HomeWrapper>
+      {productsFilteredSuccess && (
+        <ProductDrawerDetail
+          productId={selectedProductId || null}
+          setSelectedProduct={(value) => setSelectedProductId(value)}
+        />
+      )}
     </MainLayout>
   );
 };
 
-const HomeWrapper = styled.div`
-`;
+const HomeWrapper = styled.div``;
 
 const ProductsContainer = styled.div`
   width: 100%;
