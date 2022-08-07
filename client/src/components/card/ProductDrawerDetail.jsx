@@ -181,7 +181,7 @@ const ProductDrawerDetail = ({ productId = null, setSelectedProduct }) => {
           <Skeleton.Input active block size="small" />
         )
       }
-      getContainer={false}
+      // getContainer={false}
       className="hide-scrollbar"
       footer={
         <FooterWrapper>
