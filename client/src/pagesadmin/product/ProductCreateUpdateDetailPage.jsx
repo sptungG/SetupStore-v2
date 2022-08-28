@@ -53,7 +53,6 @@ import {
 import { NOT_FOUND_IMG } from "src/common/constant";
 import MasonryLayout from "src/components/images/MasonryLayout";
 import { useDebounce } from "src/common/useDebounce";
-import TextEditor from "src/components/form/TextEditor";
 import { useGetAllCategoriesFilteredQuery } from "src/stores/category/category.query";
 import { checkValidColor, vietnameseSlug } from "src/common/utils";
 import lodash from "lodash";
