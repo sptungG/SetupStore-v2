@@ -23,7 +23,7 @@ import {
   Typography,
   Upload,
 } from "antd";
-import lodash from "lodash";
+import uniqBy from "lodash/uniqBy";
 import { useEffect, useState } from "react";
 import { AiOutlineInbox, AiOutlineMinus, AiOutlinePlusCircle } from "react-icons/ai";
 import {

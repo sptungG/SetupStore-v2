@@ -55,7 +55,7 @@ import MasonryLayout from "src/components/images/MasonryLayout";
 import { useDebounce } from "src/common/useDebounce";
 import { useGetAllCategoriesFilteredQuery } from "src/stores/category/category.query";
 import { checkValidColor, vietnameseSlug } from "src/common/utils";
-import lodash from "lodash";
+import uniqBy from "lodash/uniqBy";
 import {
   useCreateProductMutation,
   useDeleteProductMutation,
@@ -366,7 +366,7 @@ const ProductCreateUpdateDetailPage = () => {
   //
   const handleSelectImages = (value) => {
     const mappedValue = imagesFilteredQuery?.data.find((img) => img._id === value);
-    const newImages = lodash.uniqBy([...images, mappedValue], "_id");
+    const newImages = uniqBy([...images, mappedValue], "_id");
     setImages(newImages);
     form.setFieldsValue({ images: newImages });
   };
