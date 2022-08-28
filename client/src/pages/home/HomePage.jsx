@@ -4,7 +4,6 @@ import { useEffect, useState } from "react";
 import { AiOutlineSmile } from "react-icons/ai";
 import { BsArrowDown } from "react-icons/bs";
 import InfiniteScroll from "react-infinite-scroll-component";
-import { useMediaQuery } from "react-responsive";
 import { Link } from "react-router-dom";
 import { useAuth } from "src/common/useAuth";
 import { useResponsiveProductFilter } from "src/common/useResponsiveProductFilter";
@@ -17,9 +16,6 @@ import MainLayout from "src/layout/MainLayout";
 import styled from "styled-components";
 
 const HomePage = () => {
-  const mediaAbove1390 = useMediaQuery({ minWidth: 1391 });
-  const mediaAbove1040 = useMediaQuery({ minWidth: 1040 });
-  const mediaAbove684 = useMediaQuery({ minWidth: 684 });
   const { user } = useAuth();
   const {
     productsFilterValue,
@@ -57,20 +53,12 @@ const HomePage = () => {
         {productsFilteredSuccess && (
           <InfiniteScroll
             dataLength={productsFilteredQuery?.pagination.total}
-            next={() => {
-              if (mediaAbove1390) {
-                setProductsFilterValue((prev) => ({
-                  page: prev.page + 1,
-                  limit: 8,
-                }));
-              } else if (mediaAbove1040) {
-                setProductsFilterValue((prev) => ({ page: prev.page + 1, limit: 3 }));
-              } else if (mediaAbove684) {
-                setProductsFilterValue((prev) => ({ page: prev.page + 1, limit: 2 }));
-              } else {
-                setProductsFilterValue((prev) => ({ page: prev.page + 1, limit: 1 }));
-              }
-            }}
+            next={() =>
+              setProductsFilterValue(({ limit, page }) => ({
+                limit,
+                page: page + 1,
+              }))
+            }
             scrollThreshold="4px"
             hasMore={productsFilterValue.page < productsFilteredQuery?.pagination.totalPage}
             loader={
@@ -83,9 +71,9 @@ const HomePage = () => {
                 <div className="actions">
                   <Button
                     onClick={() =>
-                      setProductsFilterValue((prev) => ({
-                        ...prev,
-                        page: prev.page + 1,
+                      setProductsFilterValue(({ limit, page }) => ({
+                        limit,
+                        page: page + 1,
                       }))
                     }
                     size="large"
