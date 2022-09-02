@@ -35,6 +35,8 @@ app.use(express.urlencoded({ extended: true }));
 app.use(cors());
 
 // routes middleware
+app.get("/", (req, res) => res.send("Hello from SetupstoreV2!"));
+app.get("/api", (req, res) => res.send("Hello from SetupstoreV2!"));
 readdirSync("./modules").map((r) => app.use("/api", require("./modules/" + r)));
 
 // port
