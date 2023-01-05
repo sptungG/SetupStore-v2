@@ -181,7 +181,7 @@ const ProductTableListPage = () => {
       align: "center",
       render: (text, record) => (
         <Link to={`/admin/products/${text}`}>
-          <Button type="link" icon={<BsBoxArrowUpRight />} style={{padding: 0}}>
+          <Button type="link" icon={<BsBoxArrowUpRight />} style={{ padding: 0 }}>
             Xem chi tiết
           </Button>
         </Link>
@@ -197,6 +197,7 @@ const ProductTableListPage = () => {
             <Card
               title="Danh sách sản phẩm"
               loading={!getProductsSuccess}
+              bodyStyle={{ padding: 0 }}
               extra={
                 <Space>
                   <Link to={`/admin/products/create`}>
