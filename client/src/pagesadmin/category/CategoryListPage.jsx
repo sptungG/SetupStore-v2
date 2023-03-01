@@ -201,6 +201,7 @@ const CategoryListPage = () => {
                 </Space>
               }
               loading={!getCategoriesSuccess}
+              headStyle={{ paddingLeft: 16, paddingRight: 16 }}
               bodyStyle={{ padding: 0 }}
             >
               {getCategoriesSuccess && (

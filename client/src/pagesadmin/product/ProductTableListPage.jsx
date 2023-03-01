@@ -197,6 +197,7 @@ const ProductTableListPage = () => {
             <Card
               title="Danh sách sản phẩm"
               loading={!getProductsSuccess}
+              headStyle={{ paddingLeft: 48, paddingRight: 16 }}
               bodyStyle={{ padding: 0 }}
               extra={
                 <Space>

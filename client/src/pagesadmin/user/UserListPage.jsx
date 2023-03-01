@@ -135,7 +135,7 @@ const UserListPage = () => {
         />
         <Row gutter={24} wrap={false}>
           <Col flex="auto">
-            <Card title="Danh sách người dùng" loading={!getUsersSuccess} bodyStyle={{ padding: 0 }}>
+            <Card title="Danh sách người dùng" loading={!getUsersSuccess} headStyle={{ paddingLeft: 16, paddingRight: 16 }} bodyStyle={{ padding: 0 }}>
               {getUsersSuccess && (
                 <Table
                   className="table-fixed-pagination"
