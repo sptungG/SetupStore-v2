@@ -35,7 +35,7 @@ Ngô Việt Tùng - *sptungG*
       <td colspan="3">1. User</td>
      </tr>
       <tr>
-      <td><img width="385" alt="image" src="https://res.cloudinary.com/ngoviettung154/image/upload/v1713239093/_demo/setupstore-v2/053a19b1-60ed-4490-aa10-2811e48e028f.png"></td>
+      <td><img width="385" alt="image" src="https://res.cloudinary.com/ngoviettung154/image/upload/v1713255094/_demo/setupstore-v2/20d22a7e-d599-41cf-94ba-b83d1897f7a2.png"></td>
       <td><img width="385" alt="image" src="https://res.cloudinary.com/ngoviettung154/image/upload/v1713239307/_demo/setupstore-v2/66c53622-0a84-48bf-95e9-0cf53ad9aae2.png"></td>
       <td><img width="385" alt="image" src="https://res.cloudinary.com/ngoviettung154/image/upload/v1713239170/_demo/setupstore-v2/9a4e3eae-607e-4d00-915d-4bd055ede35a.png"></td>
      </tr>
