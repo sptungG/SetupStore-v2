@@ -1,5 +1,8 @@
 <div align="center">
     <table>
+     <tr>
+      <td colspan="3">1. User</td>
+     </tr>
       <tr>
       <td><img width="385" alt="image" src="https://res.cloudinary.com/ngoviettung154/image/upload/v1713239093/_demo/setupstore-v2/053a19b1-60ed-4490-aa10-2811e48e028f.png"></td>
       <td><img width="385" alt="image" src="https://res.cloudinary.com/ngoviettung154/image/upload/v1713239307/_demo/setupstore-v2/66c53622-0a84-48bf-95e9-0cf53ad9aae2.png"></td>
@@ -38,28 +41,49 @@
      <tr>
       <td>Trang cá nhân (Đơn hàng)</td>
       <td>Xem đơn hàng</td>
-      <td></td>
+      <td>Yêu thích</td>
      </tr>
       <tr>
       <td><img width="385" alt="image" src="https://res.cloudinary.com/ngoviettung154/image/upload/v1713238943/_demo/setupstore-v2/4ebe3757-1226-43eb-ba57-91340f3bb6f1.png"></td>
       <td><img width="385" alt="image" src="https://res.cloudinary.com/ngoviettung154/image/upload/v1713238998/_demo/setupstore-v2/a7231f75-ea4f-4b15-9edf-bb815c9ac03e.png"></td>
       <td><img width="385" alt="image" src="https://res.cloudinary.com/ngoviettung154/image/upload/v1713238976/_demo/setupstore-v2/096ba77a-f8dd-4057-9847-066c5fc4b1ea.png"></td>
      </tr>
-    </table>
-</div>
-
-<div align="center">
-    <table>
+     <tr>
+      <td>Quản lý thông tin nhận hàng</td>
+      <td>Đánh giá</td>
+      <td>Cài đặt, Đổi mật khẩu</td>
+     </tr>
+     <tr>
+      <td colspan="3"></td>
+     </tr>
+     <tr>
+      <td colspan="3">2. Admin</td>
+     </tr>
       <tr>
       <td><img width="385" alt="image" src="https://res.cloudinary.com/ngoviettung154/image/upload/v1713239545/_demo/setupstore-v2/1e60a6bc-48d2-46fd-b880-05d0989ed40a.png"></td>
       <td><img width="385" alt="image" src="https://res.cloudinary.com/ngoviettung154/image/upload/v1713239552/_demo/setupstore-v2/c9eca10e-9907-4b0c-8f70-422706fed827.png"></td>
       <td><img width="385" alt="image" src="https://res.cloudinary.com/ngoviettung154/image/upload/v1713239682/_demo/setupstore-v2/11289934-9eb6-459e-9365-536bec94a602.png"></td>
       </tr>
       <tr>
+      <td>Tổng quan, Thống kê</td>
+      <td>Danh sách đơn hàng</td>
+      <td>Cập nhật đơn hàng</td>
+     </tr>
+      <tr>
       <td><img width="385" alt="image" src="https://res.cloudinary.com/ngoviettung154/image/upload/v1713239907/_demo/setupstore-v2/5a5cfd50-7e9f-41a9-8b27-9d45eacaa6ec.png"></td>
       <td><img width="385" alt="image" src="https://res.cloudinary.com/ngoviettung154/image/upload/v1713239768/_demo/setupstore-v2/f605928a-afb5-4d5e-9ac0-d96a961fe521.png"></td>
       <td><img width="385" alt="image" src="https://res.cloudinary.com/ngoviettung154/image/upload/v1713239901/_demo/setupstore-v2/e8ac1ab0-daac-4244-900f-9f1bf15fcfc5.png"></td>
       </tr>
+      <tr>
+      <td>Quản lý danh mục</td>
+      <td>Quản lý sản phẩm</td>
+      <td>Cập nhật sản phẩm</td>
+     </tr>
+     <tr>
+      <td>Quản lý bộ sưu tập</td>
+      <td>Quản lý người dùng</td>
+      <td>Quản lý đánh giá</td>
+     </tr>
     </table>
 </div>
 
