@@ -54,8 +54,13 @@
       <td>Cài đặt, Đổi mật khẩu</td>
      </tr>
      <tr>
-      <td colspan="3"></td>
+      <td colspan="3">...</td>
      </tr>
+    </table>
+</div>
+
+<div align="center">
+    <table>
      <tr>
       <td colspan="3">2. Admin</td>
      </tr>
@@ -83,6 +88,9 @@
       <td>Quản lý bộ sưu tập</td>
       <td>Quản lý người dùng</td>
       <td>Quản lý đánh giá</td>
+     </tr>
+     <tr>
+      <td colspan="3">...</td>
      </tr>
     </table>
 </div>
